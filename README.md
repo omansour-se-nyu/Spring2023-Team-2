@@ -1,2 +1,4 @@
-# Spring2023-Team-2
-This is team repository for Team 2 (Spring 2023)
+## Mentcare
+### Assignment 1: Add button to GUI
+
+![CS6063 Button](https://github.com/iamaryaak/Mentcare/blob/main/button_eg.png)
