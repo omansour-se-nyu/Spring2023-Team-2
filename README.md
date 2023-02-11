@@ -1,3 +1,5 @@
+<img src="https://github.com/omansour-se-nyu/Spring2023-Team-2/blob/main/mentcare-frontend/src/assets/mentcare_logo.png" height=150 align='right'/>
+
 # Mentcare (Team-2)
 
 To start development environment:
