@@ -1,2 +1,5 @@
-# Spring2023-Team-2
-This is team repository for Team 2 (Spring 2023)
+# Mentcare (Team-2)
+
+For development environment
+To run client: npm run dev
+To run server: python3 manage.py runserver
