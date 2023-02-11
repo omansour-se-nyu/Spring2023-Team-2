@@ -1,7 +1,7 @@
 # Mentcare (Team-2)
 
-For development environment:
+To start development environment:
 
-+ To run client: ```npm run dev```
-
-+ To run server: ```python3 manage.py runserver```
+1. Initialize python virtual environment: ```source venv/bin/activate```
+2. To run client: (in mentcare-frontend folder): ```npm run dev```
+3. To run server: (in Spring2023-Team-2 folder): ```python3 manage.py runserver```
