@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import mentcare_svg from './assets/mentcare_logo.svg';
-import './App.css';
+import { ChakraProvider } from '@chakra-ui/react';
+import LoginPage from './LoginPage';
 
 function App() {
   return (
-    <div className='App'>
-      <img src={mentcare_svg} />
-    </div>
+    <ChakraProvider>
+      <LoginPage />
+    </ChakraProvider>
   );
 }
 
