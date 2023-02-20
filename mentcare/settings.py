@@ -75,10 +75,15 @@ WSGI_APPLICATION = 'mentcare.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mzyjmmgx',
+        'USER': 'mzyjmmgx',
+        'PASSWORD': '9Z6SeXp-cz8H0Ws12OfaR65h4-vB86WA',
+        'HOST': 'salt.db.elephantsql.com',
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
