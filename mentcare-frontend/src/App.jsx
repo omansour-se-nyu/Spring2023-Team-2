@@ -1,12 +1,18 @@
+import { ChakraProvider } from '@chakra-ui/react';
+import { AppContext } from './context/AppContext';
 import { useState } from 'react';
-import mentcare_svg from './assets/mentcare_logo.svg';
-import './App.css';
+import LoginPage from './LoginPage';
 
 function App() {
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [isStaff, setIsStaff] = useState(false);
+
   return (
-    <div className='App'>
-      <img src={mentcare_svg} />
-    </div>
+    <ChakraProvider>
+      <AppContext.Provider value={{ isAdmin, setIsAdmin, isStaff, setIsStaff }}>
+        <LoginPage />
+      </AppContext.Provider>
+    </ChakraProvider>
   );
 }
 
