@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.documentation import include_docs_urls
+from rest_framework.simplejwt import views as jwt_views
+
+from mentcarebackend import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", views.ListMentcareAPIView.as_view(), name="Mentcare_list"),
+    path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
+    path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
+    path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
+    path('docs/', include_docs_urls(title='Mentcare Api')),
 ]
