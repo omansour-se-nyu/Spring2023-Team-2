@@ -7,4 +7,4 @@ const Menu = () => {
   );
 };
 
-export default Manu;
+export default Menu;
