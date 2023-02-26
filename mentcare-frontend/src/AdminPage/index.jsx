@@ -1,23 +1,14 @@
 import { Grid, GridItem } from '@chakra-ui/react';
+import Dashboard from './Dashboard';
 
 const AdminPage = () => {
   return (
     <Grid templateColumns='repeat(12, 1fr)' height='100%'>
-      <GridItem
-        style={{
-          border: '1px solid red',
-        }}
-        colSpan={3}
-      >
+      <GridItem colSpan={3} backgroundColor='#F488C4'>
         Menu
       </GridItem>
-      <GridItem
-        style={{
-          border: '1px solid blue',
-        }}
-        colSpan={9}
-      >
-        Dashboard
+      <GridItem colSpan={9}>
+        <Dashboard />
       </GridItem>
     </Grid>
   );
