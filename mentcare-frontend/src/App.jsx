@@ -11,7 +11,7 @@ function App() {
   return (
     <ChakraProvider>
       <AppContext.Provider value={{ isAdmin, setIsAdmin, isStaff, setIsStaff }}>
-        <LoginPage />
+        <NoAccess />
       </AppContext.Provider>
     </ChakraProvider>
   );
