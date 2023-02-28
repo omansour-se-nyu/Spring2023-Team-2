@@ -1,3 +1,5 @@
+import http
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -5,8 +7,9 @@ from django.shortcuts import render
 # Create your views here.
 
 from django.shortcuts import render
+from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
 from rest_framework import generics, status
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.authtoken.models import Token
@@ -27,8 +30,10 @@ class AuthenticatedView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-        msg = "You connected successfully!"
-        return Response(msg, status=status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            return Response(status.HTTP_200_OK)
+        else:
+            return Response(status.HTTP_403_FORBIDDEN)
 
 
 class ListMentcareLoginsAPIView(APIView):
