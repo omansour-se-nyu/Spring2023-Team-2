@@ -20,15 +20,17 @@ from rest_framework.documentation import include_docs_urls
 # from rest_framework.simplejwt import views as jwt_views
 
 from mentcarebackend import views
+from mentcarebackend.views import AuthenticatedView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", views.ListMentcareAPIView.as_view(), name="Mentcare_list"),
-    path("create/<int:pk>/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
+    # path("", views.ListMentcareAPIView.as_view(), name="Mentcare_list"),
+    path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
     path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
     path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
     path('docs/', include_docs_urls(title='Mentcare Api')),
     path('api/token', obtain_auth_token, name="auth_token"),
+    path('', AuthenticatedView.as_view(), name="Mentcare Authorize Login"),
     # path('api/jwt/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/jwt/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 ]
