@@ -27,7 +27,8 @@ class AuthenticatedView(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request):
-        return Response(status=status.HTTP_200_OK)
+        msg = "You connected successfully!"
+        return Response(msg, status=status.HTTP_200_OK)
 
 
 class ListMentcareLoginsAPIView(APIView):
