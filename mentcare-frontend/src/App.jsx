@@ -2,7 +2,6 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { AppContext } from './context/AppContext';
 import { useState } from 'react';
 import LoginPage from './LoginPage';
-import NoAccess from './NoAccess';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(true);
