@@ -1,4 +1,4 @@
-import { HStack, Text } from '@chakra-ui/react';
+import { HStack, VStack, Text } from '@chakra-ui/react';
 
 const Menu = () => {
   return (
@@ -10,10 +10,7 @@ const Menu = () => {
         </Text>
       </HStack>
 
-      <nav>
-        This is the nav menu
-        <div>placehodler</div>
-      </nav>
+      <VStack padding='10px'></VStack>
     </>
   );
 };
