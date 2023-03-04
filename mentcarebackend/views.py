@@ -21,8 +21,8 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from mentcarebackend.serializers import MentcareSerializer
-from mentcarebackend.models import MentcareModel, MentcareLogins
+from mentcarebackend.serializers import MentcareSerializer, MentcareLoginsSerializer
+from mentcarebackend.models import MentcareModel, MentcareLoginsModel
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
@@ -39,8 +39,8 @@ class AuthenticatedView(APIView):
 class ListMentcareLoginsAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [BasicAuthentication]
-    queryset = MentcareLogins.objects.all()
-    serializer_class = MentcareSerializer
+    queryset = MentcareLoginsModel.objects.all()
+    serializer_class = MentcareLoginsSerializer
 
     def get(self, request, format=None):
         content = {
