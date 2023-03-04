@@ -1,4 +1,4 @@
-import { Card, Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem } from '@chakra-ui/react';
 import CardSelection from './CardSelection';
 
 const DashboardMainDisplay = () => {

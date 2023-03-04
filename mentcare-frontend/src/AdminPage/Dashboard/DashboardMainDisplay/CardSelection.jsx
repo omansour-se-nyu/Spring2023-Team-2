@@ -14,10 +14,10 @@ const CardSelection = ({ title, imageLink }) => {
       _hover={{
         opacity: '70%',
         cursor: 'pointer',
-        transform: 'scale(0.97)',
       }}
       _active={{
         opacity: '90%',
+        transform: 'scale(0.97)',
       }}
     >
       Image here
