@@ -1,53 +1,98 @@
-import http
+import json
+from json import JSONDecodeError
 
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.generics import CreateAPIView
+from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import ListAPIView
+from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
+from mentcarebackend.models import MentcareModel, MentcareLoginsModel
+from mentcarebackend.serializers import MentcareSerializer, MentcareLoginsSerializer
+
 
 # Create your views here.
 
-from django.shortcuts import render
-from django.utils.html import escape
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
-from rest_framework import generics, status
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import ListAPIView
-from rest_framework.generics import CreateAPIView
-from rest_framework.generics import DestroyAPIView
-from rest_framework.generics import UpdateAPIView
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from mentcarebackend.serializers import MentcareSerializer
-from mentcarebackend.models import MentcareModel, MentcareLogins
-from rest_framework.permissions import IsAuthenticated, AllowAny
+class UserAuthentication(UpdateAPIView):
+    model = MentcareLoginsModel
+
+    def get_user(self, queryset=None):
+        return MentcareLoginsModel.objects.get(user=self.request.user)
 
 
-class AuthenticatedView(APIView):
-    permission_classes = [IsAuthenticated, ]
+@csrf_exempt
+def login_view(request):
+    if request.method == 'POST':
+        # print(data)
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            return Response(status.HTTP_200_OK)
-        else:
-            return Response(status.HTTP_403_FORBIDDEN)
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+            username = data['username']
+            # print(username)
+            password = data['password']
+
+            if username is None or password is None:
+                return JsonResponse({'status': 'Error', 'message': 'No username or password given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # print(password)
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return JsonResponse({'status': 'Success', 'message': 'Login successful',
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
+                                     'code': status.HTTP_403_FORBIDDEN})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error', 'message': 'No username or password given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+# class AuthenticatedView(APIView):
+# permission_classes = [IsAuthenticated, ]
+
+# def get(self, request):
+#     if request.user.is_authenticated:
+#         return Response(status.HTTP_200_OK)
+#     else:
+#         return Response(status.HTTP_403_FORBIDDEN)
 
 
 class ListMentcareLoginsAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [BasicAuthentication]
-    queryset = MentcareLogins.objects.all()
-    serializer_class = MentcareSerializer
+    permission_classes = IsAuthenticated
+    queryset = MentcareLoginsModel.objects.all()
+    serializer_class = MentcareLoginsSerializer
 
-    def get(self, request, format=None):
-        content = {
-            'user': str(request.user),  # `django.contrib.auth.User` instance.
-            'password': str(request.auth),  # None
-        }
-        return Response(content)
+    # def login(request):
+    #     username = request.POST['username']
+    #     password = request.POST['password']
+    #     user = authenticate(username=username, password=password)
+    #
+    #     if user is not None:
+    #         login(request, user)
+    #     else:
+    #         Response(status.HTTP_403_FORBIDDEN)
+    #
+    # @permission_classes([IsAuthenticated])
+    # def get(self, request):
+    #     content = {
+    #         'user': str(request.user),  # `django.contrib.auth.User` instance.
+    #         'password': str(request.auth),  # None
+    #     }
+    #     return Response(content)
 
 
 # Create your views here.
