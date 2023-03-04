@@ -12,4 +12,4 @@ class MentcareSerializer(serializers.ModelSerializer):
 class MentcareLoginsSerializer(serializers.ModelSerializer):
     class Meta:
         model = MentcareLoginsModel
-        fields = ['username', 'password']
+        fields = "__all__"
