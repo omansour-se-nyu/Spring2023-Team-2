@@ -1,13 +1,20 @@
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem, Text } from '@chakra-ui/react';
 import DashboardMainDisplay from './DashboardMainDisplay';
 
 const Dashboard = () => {
   return (
     <Grid>
-      <GridItem maxHeight='100px' minHeight='70px'>
-        Overview
+      <GridItem
+        height='15vh'
+        display='flex'
+        alignItems='flex-end'
+        paddingLeft='30px'
+      >
+        <Text color='#FB5058' fontWeight='bold' fontSize='5xl'>
+          Overview
+        </Text>
       </GridItem>
-      <GridItem>
+      <GridItem height='85vh'>
         <DashboardMainDisplay />
       </GridItem>
     </Grid>
