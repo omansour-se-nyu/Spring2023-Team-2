@@ -1,8 +1,6 @@
 import { FormControl, Button, Input, Link, Text } from '@chakra-ui/react';
 import { useNavigate } from "react-router-dom";
 
-
-
 const NoAccess = () => {
   // fix Page Linking for "go back" button
   return (
