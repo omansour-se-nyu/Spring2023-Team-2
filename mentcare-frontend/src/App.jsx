@@ -11,8 +11,8 @@ function App() {
   return (
     <ChakraProvider>
       <AppContext.Provider value={{ isAdmin, setIsAdmin, isStaff, setIsStaff }}>
-        {/* <LoginPage /> */}
-        <AdminPage />
+        <LoginPage />
+        {/* <AdminPage /> */}
       </AppContext.Provider>
     </ChakraProvider>
   );

@@ -1,6 +1,29 @@
 import { FormControl, Button, Input, Link, Text } from '@chakra-ui/react';
 
 const Login = () => {
+
+  
+  const handleLogin = async () => {
+    const url = 'http://127.0.0.1:8000/login/';
+    const data = {
+      username: 'administrator',
+      password: 'administrator',
+    };
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const loginResponse = await fetch(url, config).then((res) => res.json());
+      console.log('repsonse received', loginResponse);
+    } catch (err) {
+      console.log('error is', err);
+    }
+  };
+
   return (
     <form>
       <FormControl
@@ -52,6 +75,7 @@ const Login = () => {
           _active={{
             opacity: '90%',
           }}
+          onClick={handleLogin}
         >
           Login
         </Button>
