@@ -20,7 +20,7 @@ class DoctorInformationModel(models.Model):
 
 
 class PatientInformationModel(models.Model):
-    # patient_id = models.IntegerField(primary_key=True)  # unique ID for each patient/SSN
+    patient_id = models.IntegerField(auto_created=True ,primary_key=True)  # unique ID for each patient/SSN
     first_name = models.CharField(max_length=100)  # patient first name
     last_name = models.CharField(max_length=100)  # patient last name
     # patient genders
@@ -39,7 +39,7 @@ class PatientInformationModel(models.Model):
                                               ],
                                               blank=True,
                                               null=True)
-    dob = models.DateField()  # patient date of birth
+    dob = models.DateField()  # patient date of birth, format YYYY-MM-DD
     address = models.TextField()  # address of patient
     phone_num = PhoneNumberField(blank=True)  # phone number of patient
     # doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
