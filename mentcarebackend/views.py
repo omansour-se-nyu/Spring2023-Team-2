@@ -63,6 +63,12 @@ def register_user(reqeust):
 
 @csrf_exempt
 def create_patient_records(request):
+    """
+    Create a patient record, and add to the database. Patient ID number is randomly generated
+
+    :param JSON body: a patient's first name, last name, gender, date of birth, address, phone
+    :return: JSON response stating patient record was successfully created
+    """
     if request.method == 'POST':
         try:
             data = request.body.decode('utf-8')
@@ -93,11 +99,9 @@ def create_patient_records(request):
 
                 record.save()
 
-                print(record.first_name)
-
                 return JsonResponse({'status': 'Success',
                                      'message': 'Patient record created successfully',
-                                     'code': status.HTTP_200_OK})
+                                     'code': status.HTTP_201_CREATED})
 
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error', 'message': 'No username or password given',
@@ -119,4 +123,35 @@ def update_patient_records(request):
 
 @csrf_exempt
 def delete_patient_records(request):
-    pass
+    """
+    Delete a patient's records from the database
+
+    :param patient_id in JSON body: ID number of the patient's to be deleted
+    :return: JSON response stating patient record was successfully deleted
+    """
+    if request.method == 'DELETE':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+            patient_id = data['patient_id']
+
+            # tests that patient_id was given and isn't NULL
+            if patient_id is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Patient ID not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            else:
+                record = PatientInformationModel.objects.get(patient_id=patient_id)
+                record.delete()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Patient record successfully deleted',
+                                     'code': status.HTTP_200_OK})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No patient ID given, cannot delete patient record',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
