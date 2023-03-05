@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { FormControl, Button, Input, Link, Text } from '@chakra-ui/react';
 
 const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [invalidLogin, setInvalidLogin] = useState(false);
 
-  
-  const handleLogin = async () => {
+  const onClickLogin = async () => {
     const url = 'http://127.0.0.1:8000/login/';
     const data = {
-      username: 'administrator',
-      password: 'administrator',
+      username: username,
+      password: password,
     };
     const config = {
       method: 'POST',
@@ -18,10 +21,23 @@ const Login = () => {
     };
     try {
       const loginResponse = await fetch(url, config).then((res) => res.json());
+      const { message } = loginResponse;
+      if (message === 'Access Forbidden') {
+        setInvalidLogin(true);
+        setTimeout(() => setInvalidLogin(false), 1000);
+      }
       console.log('repsonse received', loginResponse);
     } catch (err) {
       console.log('error is', err);
     }
+  };
+
+  const onChangeUsername = (event) => {
+    setUsername(event.target.value);
+  };
+
+  const onChangePassword = (event) => {
+    setPassword(event.target.value);
   };
 
   return (
@@ -45,6 +61,7 @@ const Login = () => {
           size='md'
           type='email'
           width='100%'
+          onChange={onChangeUsername}
           borderRadius='80px'
           backgroundColor='#F3EED9'
           autoComplete='off'
@@ -57,6 +74,7 @@ const Login = () => {
           size='md'
           type='password'
           borderRadius='80px'
+          onChange={onChangePassword}
           backgroundColor='#F3EED9'
           auto
           autoComplete='off'
@@ -64,6 +82,7 @@ const Login = () => {
             outlineColor: '#F3EED9',
           }}
         />
+        {invalidLogin ? <Text fontSize='sm'>Invalid Login</Text> : null}
         <Button
           borderRadius='80px'
           minWidth='200px'
@@ -75,7 +94,7 @@ const Login = () => {
           _active={{
             opacity: '90%',
           }}
-          onClick={handleLogin}
+          onClick={onClickLogin}
         >
           Login
         </Button>
