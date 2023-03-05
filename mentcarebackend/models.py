@@ -18,9 +18,10 @@ class DoctorInformationModel(models.Model):
 
 
 class PatientInformationModel(models.Model):
-    patient_id = models.IntegerField(primary_key=True)  # unique ID for each patient
+    patient_id = models.IntegerField(primary_key=True)  # unique ID for each patient/SSN
     first_name = models.CharField(max_length=100)  # patient first name
     last_name = models.CharField(max_length=100)  # patient last name
+    dob = models.DateField()  # patient date of birth
     address = models.TextField()  # address of patient
     phone_num = PhoneNumberField(blank=True)  # phone number of patient
     doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
@@ -73,7 +74,7 @@ class StayInformationModel(models.Model):
     # ID of patient referenced in PatientInformationModel
     room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
     # room number ID of where patient is staying, referenced in RoomInformationModel
-    start_time = models.TimeField() # time when patient was admitted
+    start_time = models.TimeField()  # time when patient was admitted
     end_time = models.TimeField()  # time when patient left
 
 
