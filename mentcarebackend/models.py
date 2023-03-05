@@ -1,3 +1,5 @@
+from importlib.resources import _
+
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
@@ -9,14 +11,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
-# class User(AbstractUser):
-#     USER_TYPE_CHOICES = (
-#         (1, "admin"),
-#         (2, "doctor")
-#     )
-#
-#     user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES)
-
 
 class DoctorInformationModel(models.Model):
     doctor_id = models.IntegerField(primary_key=True, unique=True)  # unique ID for each doctor
@@ -26,12 +20,29 @@ class DoctorInformationModel(models.Model):
 
 
 class PatientInformationModel(models.Model):
-    patient_id = models.IntegerField(primary_key=True)  # unique ID for each patient
+    # patient_id = models.IntegerField(primary_key=True)  # unique ID for each patient/SSN
     first_name = models.CharField(max_length=100)  # patient first name
     last_name = models.CharField(max_length=100)  # patient last name
+    # patient genders
+    # option are 1 = Male 2 = Female, 3 = Genderfluid, 4= Genderqueer, 5 = Bigender, 6 = Agender,
+    # 7 = Non-binary, 8 = Polygender
+    gender = models.PositiveSmallIntegerField(_('gender'),
+                                              choices=[
+                                                  (1, 'Male'),
+                                                  (2, 'Female'),
+                                                  (3, 'Genderfluid'),
+                                                  (4, 'Genderqueer'),
+                                                  (5, 'Bigender'),
+                                                  (6, 'Agender'),
+                                                  (7, 'Non-binary'),
+                                                  (8, 'Polygender')
+                                              ],
+                                              blank=True,
+                                              null=True)
+    dob = models.DateField()  # patient date of birth
     address = models.TextField()  # address of patient
     phone_num = PhoneNumberField(blank=True)  # phone number of patient
-    doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
+    # doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of primary doctor of patient, referenced in DoctorInformationModel
 
 
@@ -81,7 +92,7 @@ class StayInformationModel(models.Model):
     # ID of patient referenced in PatientInformationModel
     room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
     # room number ID of where patient is staying, referenced in RoomInformationModel
-    start_time = models.TimeField() # time when patient was admitted
+    start_time = models.TimeField()  # time when patient was admitted
     end_time = models.TimeField()  # time when patient left
 
 
