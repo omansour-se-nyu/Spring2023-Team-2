@@ -9,3 +9,29 @@ To start development environment:
 3. To run server: (in Spring2023-Team-2 folder): ```python3 manage.py runserver```
 
 To create a python virtual environment: ```virtualenv venv```
+
+## Libraries to install
+
+1. Django REST framework
+
+```pip install djangorestframework```
+
+https://pypi.org/project/djangorestframework/
+
+2. Cors Headers
+
+``` pip install django-cors-headers ```
+
+https://pypi.org/project/django-cors-headers/
+
+3. psycopg2
+
+``` pip install psycopg2 ```
+
+https://pypi.org/project/psycopg2/
+
+4. CoreAPI
+
+``` pip install coreapi```
+
+https://www.coreapi.org
