@@ -9,14 +9,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
-# class User(AbstractUser):
-#     USER_TYPE_CHOICES = (
-#         (1, "admin"),
-#         (2, "doctor")
-#     )
-#
-#     user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES)
-
 
 class DoctorInformationModel(models.Model):
     doctor_id = models.IntegerField(primary_key=True, unique=True)  # unique ID for each doctor
