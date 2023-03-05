@@ -20,7 +20,7 @@ class DoctorInformationModel(models.Model):
 
 
 class PatientInformationModel(models.Model):
-    patient_id = models.IntegerField(auto_created=True ,primary_key=True)  # unique ID for each patient/SSN
+    patient_id = models.IntegerField(auto_created=True,primary_key=True)  # unique ID for each patient/SSN
     first_name = models.CharField(max_length=100)  # patient first name
     last_name = models.CharField(max_length=100)  # patient last name
     # patient genders
