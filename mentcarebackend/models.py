@@ -13,7 +13,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class DoctorInformationModel(models.Model):
-    doctor_id = models.IntegerField(primary_key=True, unique=True)  # unique ID for each doctor
+    doctor_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique ID for each doctor
     name = models.CharField(max_length=100)  # name of doctor
     email = models.CharField(max_length=100)  # email of doctor
     position = models.CharField(max_length=100)  # doctor's designation
@@ -47,14 +47,14 @@ class PatientInformationModel(models.Model):
 
 
 class AdminInformationModel(models.Model):
-    admin_id = models.IntegerField(primary_key=True, unique=True)
+    admin_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     position = models.CharField(max_length=100)
 
 
 class AppointmentInformationModel(models.Model):
-    appointment_id = models.IntegerField(primary_key=True, unique=True)
+    appointment_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
     # unique ID for each appointment
     patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
     # ID number of patient
@@ -66,7 +66,7 @@ class AppointmentInformationModel(models.Model):
 
 
 class MedicationModel(models.Model):
-    medication_id = models.IntegerField(primary_key=True, unique=True)  # unique medication ID
+    medication_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique medication ID
     medication_name = models.CharField(max_length=255)  # name of medicine
     brand = models.CharField(max_length=100)  # brand of medicine
     description = models.TextField()  # description of medicine
@@ -87,7 +87,7 @@ class PrescribeMedicationModel(models.Model):
 
 
 class StayInformationModel(models.Model):
-    stay_id = models.IntegerField(primary_key=True, unique=True)  # unique ID for each patient admission
+    stay_id = models.IntegerField(auto_created=True,primary_key=True, unique=True)  # unique ID for each patient admission
     patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
     # ID of patient referenced in PatientInformationModel
     room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
@@ -97,12 +97,12 @@ class StayInformationModel(models.Model):
 
 
 class RoomInformationModel(models.Model):
-    room_number = models.IntegerField(primary_key=True, unique=True)  # unique ID of each room
+    room_number = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique ID of each room
     is_available = models.BooleanField()  # logical column, indicating if room is free or not
 
 
 class DepartmentInformationModel(models.Model):
-    department_id = models.IntegerField(primary_key=True, unique=True)  # ID number for the department
+    department_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # ID number for the department
     department_name = models.CharField(max_length=255)  # department name
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of the doctor that's head of the department, referencing column doctor_id of DoctorInformationModel
