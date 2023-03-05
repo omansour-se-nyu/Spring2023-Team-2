@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
 
+import random
+
 
 # Create your views here.
 
@@ -63,14 +65,15 @@ def register_user(reqeust):
 def create_patient_records(request):
     if request.method == 'POST':
         try:
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            gender = request.POST.get('gender')
-            dob = request.POST.get('dob')
-            address = request.POST.get('address')
-            phone_num = request.POST.get('phone_num')
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+            first_name = data['first_name']
+            last_name = data['last_name']
+            gender = data['gender']
+            dob = data['dob']
+            address = data['address']
+            phone_num = data['phone_num']
 
-            # test all fields are present
             if (first_name is None or last_name is None or gender is None or dob is None
                     or address is None or phone_num is None):
                 return JsonResponse({'status': 'Error',
@@ -79,6 +82,7 @@ def create_patient_records(request):
 
             else:
                 record = PatientInformationModel.objects.create(
+                    patient_id=random.randint(1001,10000),
                     first_name=first_name,
                     last_name=last_name,
                     gender=gender,
