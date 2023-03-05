@@ -5,10 +5,6 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from rest_framework.generics import CreateAPIView
-from rest_framework.generics import DestroyAPIView
-from rest_framework.generics import ListAPIView
-from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
