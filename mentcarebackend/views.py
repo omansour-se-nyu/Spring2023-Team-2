@@ -89,6 +89,8 @@ def create_patient_records(request):
 
                 record.save()
 
+                print(record.first_name)
+
                 return JsonResponse({'status': 'Success',
                                      'message': 'Patient record created successfully',
                                      'code': status.HTTP_200_OK})
@@ -99,3 +101,18 @@ def create_patient_records(request):
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def retrieve_patient_records(request):
+    pass
+
+
+@csrf_exempt
+def update_patient_records(request):
+    pass
+
+
+@csrf_exempt
+def delete_patient_records(request):
+    pass
