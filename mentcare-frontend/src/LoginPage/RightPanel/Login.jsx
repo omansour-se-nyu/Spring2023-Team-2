@@ -7,9 +7,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [invalidLogin, setInvalidLogin] = useState(false);
   const [validLogin, setValidLogin] = useState(false);
+  const [logginIn, setLoggingIn] = useState(false);
 
   const onClickLogin = async () => {
     if (username && password) {
+      setLoggingIn(true);
       const url = 'http://127.0.0.1:8000/login/';
       const data = {
         username: username,
@@ -37,6 +39,7 @@ const Login = () => {
       } catch (err) {
         console.log('error is', err);
       }
+      setLoggingIn(false);
     }
     return;
   };
@@ -97,6 +100,7 @@ const Login = () => {
           <Button
             borderRadius='80px'
             minWidth='200px'
+            isLoading={logginIn}
             backgroundColor='#FB5058'
             color='#FFFFFF'
             _hover={{
