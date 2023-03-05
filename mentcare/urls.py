@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/login/', views.login_view, name="Login Page"),
     path('account/register/', views.register_user, name="Registration Page"),
+    path('staff/patients/records/create', views.create_patient_records, name="Create Patient Records"),
     # path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
     # path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
     # path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
