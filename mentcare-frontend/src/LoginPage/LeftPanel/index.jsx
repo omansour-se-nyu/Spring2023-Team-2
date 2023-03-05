@@ -43,7 +43,7 @@ const LeftPanel = () => {
           backgroundColor='#EC408B'
           color='#FFFFFF'
           opacity={isAdmin ? '100%' : '50%'}
-          fontweight='medium'
+          fontWeight='medium'
           onClick={handleClickUser}
         >
           admin
