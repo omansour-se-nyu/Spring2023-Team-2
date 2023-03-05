@@ -35,3 +35,9 @@ https://pypi.org/project/psycopg2/
 ``` pip install coreapi```
 
 https://www.coreapi.org
+
+5. django-phonenumber-field
+
+``` pip install django-phonenumber-field[phonenumbers]```
+
+https://django-phonenumber-field.readthedocs.io/en/latest/
