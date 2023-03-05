@@ -66,9 +66,9 @@ class AppointmentInformationModel(models.Model):
 
 
 class MedicationModel(models.Model):
-    medication_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique medication ID
+    medication_id = models.IntegerField(auto_created=True, primary_key=True)  # unique medication ID
     medication_name = models.CharField(max_length=255)  # name of medicine
-    brand = models.CharField(max_length=100)  # brand of medicine
+    brand = models.CharField(max_length=1000)  # brand of medicine
     description = models.TextField()  # description of medicine
     cost = models.IntegerField()  # cost of medicine
 

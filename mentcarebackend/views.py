@@ -4,12 +4,15 @@ from json import JSONDecodeError
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
 
 import random
+import logging
+import re  # use to match string in Update
 
 
 # Create your views here.
@@ -57,7 +60,7 @@ def logout_user(request):
 
 @csrf_exempt
 # todo: add user registration functionality
-def register_user(reqeust):
+def register_user(request):
     pass
 
 
@@ -104,7 +107,7 @@ def create_patient_records(request):
                                      'code': status.HTTP_201_CREATED})
 
         except (json.JSONDecodeError, JSONDecodeError):
-            return JsonResponse({'status': 'Error', 'message': 'No username or password given',
+            return JsonResponse({'status': 'Error', 'message': 'No patient information given',
                                  'code': status.HTTP_400_BAD_REQUEST})
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
@@ -113,12 +116,75 @@ def create_patient_records(request):
 
 @csrf_exempt
 def retrieve_patient_records(request):
-    pass
+    """
+    Retrieve a patient's records from the database
+
+    :param patient_id in JSON body: ID number of the patient's to be retrieved
+    :return: JSON response body of patient records
+    """
+
+    if request.method == 'GET':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            patient_id = data['patient_id']
+
+            # tests that patient_id was given and isn't NULL
+            if patient_id is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Patient ID not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            else:
+                record = PatientInformationModel.objects.filter(patient_id=patient_id)
+                json_records = serializers.serialize("json", record)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Patient record successfully retrieved',
+                                     'patient_information': json_records,
+                                     'code': status.HTTP_200_OK})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error', 'message': 'Missing patient ID to retrieve',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
 def update_patient_records(request):
-    pass
+    """
+   Update some parameter in a patient record
+
+   :param JSON body of field to update:
+   :return: JSON response stating patient record was successfully updated
+   """
+    if request.method == 'PUT':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            first_name = data['first_name']
+            last_name = data['last_name']
+            gender = data['gender']
+            dob = data['dob']
+            address = data['address']
+            phone_num = data['phone_num']
+
+            return JsonResponse({'status': 'Success',
+                                 'message': 'Patient record successfully updated',
+                                 'code': status.HTTP_200_OK})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'Missing field to update',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
