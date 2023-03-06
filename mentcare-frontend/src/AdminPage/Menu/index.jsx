@@ -1,8 +1,9 @@
 import { useContext } from 'react';
-import { HStack, VStack, Text } from '@chakra-ui/react';
+import { HStack, VStack, Text, Image } from '@chakra-ui/react';
 import { AdminContext } from '../context/AdminContext';
 import MenuText from './MenuText';
 import { v4 as uuid } from 'uuid';
+import userPng from '../../assets/user.png';
 
 const Menu = () => {
   const menuText = [
@@ -24,7 +25,7 @@ const Menu = () => {
   return (
     <>
       <HStack padding='10px'>
-        <p>Image</p>
+        <Image src={userPng} alt='user image png' height='80px' />
         <Text color='#FB5058' fontSize='4xl' fontWeight='bold'>
           admin
         </Text>

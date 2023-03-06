@@ -1,4 +1,4 @@
-import { Card, Text, scaleFadeConfig } from '@chakra-ui/react';
+import { Card, Text, Image } from '@chakra-ui/react';
 
 const CardSelection = ({ title, imageLink }) => {
   return (
@@ -8,6 +8,7 @@ const CardSelection = ({ title, imageLink }) => {
       display='flex'
       justifyContent='center'
       alignItems='center'
+      gap='20%'
       flexDirection='column'
       height='100%'
       transitionDuration='0.5s'
@@ -20,7 +21,7 @@ const CardSelection = ({ title, imageLink }) => {
         transform: 'scale(0.97)',
       }}
     >
-      Image here
+      <Image src={imageLink} alt='icon' height='45%' />
       <Text color='#FB5058' fontSize='xl' fontWeight='semibold'>
         {title}
       </Text>

@@ -1,14 +1,18 @@
 import { Grid, GridItem } from '@chakra-ui/react';
 import CardSelection from './CardSelection';
 import { v4 as uuid } from 'uuid';
+import usersIcon from '../../../assets/usersIcon.png';
+import settingsIcon from '../../../assets/settingsIcon.png';
+import reportsIcon from '../../../assets/reportsIcon.png';
+import hipaaIcon from '../../../assets/HIPAA_Icon.png';
 
 const DashboardMainDisplay = () => {
   const cardTitleImages = [
     // import images link when it is imported later
-    ['User Management', 'Image for UM'],
-    ['Settings', 'Image for S'],
-    ['Monthly Reports', 'Image for MR'],
-    ['HIPPA Compliance', 'Image for HC'],
+    ['User Management', usersIcon],
+    ['Settings', settingsIcon],
+    ['Monthly Reports', reportsIcon],
+    ['HIPPA Compliance', hipaaIcon],
   ];
 
   return (
