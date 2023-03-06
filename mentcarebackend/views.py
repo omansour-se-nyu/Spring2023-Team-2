@@ -38,8 +38,10 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
-                return JsonResponse({'status': 'Success', 'message': 'Login successful',
-                                     'code': status.HTTP_200_OK})
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Login successful',
+                                     'code': status.HTTP_200_OK,
+                                     'staff_username': username})
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
                                      'code': status.HTTP_403_FORBIDDEN})
