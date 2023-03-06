@@ -16,7 +16,7 @@ class DoctorInformationModel(models.Model):
     doctor_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique ID for each doctor
     name = models.CharField(max_length=100)  # name of doctor
     email = models.CharField(max_length=100)  # email of doctor
-    position = models.CharField(max_length=100)  # doctor's designation
+    department = models.CharField(max_length=100)  # doctor's department
 
 
 class PatientInformationModel(models.Model):
@@ -25,7 +25,7 @@ class PatientInformationModel(models.Model):
     last_name = models.CharField(max_length=100)  # patient last name
     # patient genders
     # option are 1 = Male 2 = Female, 3 = Genderfluid, 4= Genderqueer, 5 = Bigender, 6 = Agender,
-    # 7 = Non-binary, 8 = Polygender
+    # 7 = Non-binary, 8 = Polygender, 9 = Unknown
     gender = models.PositiveSmallIntegerField(_('gender'),
                                               choices=[
                                                   (1, 'Male'),
@@ -35,7 +35,8 @@ class PatientInformationModel(models.Model):
                                                   (5, 'Bigender'),
                                                   (6, 'Agender'),
                                                   (7, 'Non-binary'),
-                                                  (8, 'Polygender')
+                                                  (8, 'Polygender'),
+                                                  (9, 'Unknown')
                                               ],
                                               blank=True,
                                               null=True)
