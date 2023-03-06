@@ -175,27 +175,32 @@ def update_patient_records(request):
                                      'message': 'Patient ID not given',
                                      'code': status.HTTP_400_BAD_REQUEST})
             else:
-                first_name = ""
-                last_name = ""
-                gender = ""
-                dob = ""
-                address = ""
-                phone_num = ""
-
                 # fills missing fields with pre-existing data from database, to ensure it doesn't
                 # accidentally get changed
                 if "first_name" not in data:
                     first_name = PatientInformationModel.objects.get(patient_id=patient_id).first_name
+                else:
+                    first_name = data['first_name']
                 if "last_name" not in data:
                     last_name = PatientInformationModel.objects.get(patient_id=patient_id).last_name
+                else:
+                    last_name = data['last_name']
                 if "gender" not in data:
                     gender = PatientInformationModel.objects.get(patient_id=patient_id).gender
+                else:
+                    gender = data['gender']
                 if "dob" not in data:
                     dob = PatientInformationModel.objects.get(patient_id=patient_id).dob
+                else:
+                    dob = data['dob']
                 if "address" not in data:
                     address = PatientInformationModel.objects.get(patient_id=patient_id).address
+                else:
+                    address = data['address']
                 if "phone_num" not in data:
                     phone_num = PatientInformationModel.objects.get(patient_id=patient_id).phone_num
+                else:
+                    phone_num = data['phone_num']
 
                 record = PatientInformationModel.objects.filter(patient_id=patient_id).update(
                     first_name=first_name,
