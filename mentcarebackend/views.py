@@ -36,12 +36,21 @@ def login_view(request):
             # print(password)
             user = authenticate(request, username=username, password=password)
 
+            if request.user.is_superuser:
+                # user logged in is admin, return int 0 indicating user is admin
+                user_id = 0
+            else:
+                # user logged in is staff, return int 1
+                user_id = 1
+
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
-                                     'staff_username': username})
+                                     'staff_username': username,
+                                    'user_id': user_id,
+                                     })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
                                      'code': status.HTTP_403_FORBIDDEN})
