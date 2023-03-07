@@ -22,7 +22,7 @@ const OverviewDisplay = () => {
   ];
 
   return (
-    <Grid templateColumns='repeat(2, 1fr)' gap='5' padding='30px' height='100%'>
+    <Grid templateColumns='repeat(3, 1fr)' gap='5' padding='30px' height='100%'>
       {cardTitleImages.map(([title, imageLink]) => (
         <GridItem colSpan={1} key={uuid()}>
           <CardSelection title={title} imageLink={imageLink} />
