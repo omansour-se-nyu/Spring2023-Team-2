@@ -22,8 +22,13 @@ from mentcarebackend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name="Login Page"),
-    path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
-    path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
-    path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
-    path('docs/', include_docs_urls(title='Mentcare Api')),
+    path('account/register/', views.register_user, name="Registration Page"),
+    path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
+    path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
+    path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
+    path('staff/patients/records/delete/', views.delete_patient_records, name="Delete Patient Records"),
+    # path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
+    # path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
+    # path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
+    # path('docs/', include_docs_urls(title='Mentcare Api')),
 ]

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'coreapi',
-    'corsheaders'
+    'corsheaders',
+    'phonenumber_field'
 ]
 
 REST_FRAMEWORK = {
@@ -67,6 +68,7 @@ CORS_ORIGIN_WHITELIST = [
 # AUTH_USER_MODEL =
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
