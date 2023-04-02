@@ -27,7 +27,6 @@ urlpatterns = [
     path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
     path('staff/patients/records/delete/', views.delete_patient_records, name="Delete Patient Records"),
-    path('admin/compliance/', views.get_hipaa, name="Compliance Records"),
     # path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
     # path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
     # path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),

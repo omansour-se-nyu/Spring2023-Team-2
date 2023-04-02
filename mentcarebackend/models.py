@@ -118,8 +118,3 @@ class AffiliatedWithModel(models.Model):
     department_id = models.ForeignKey(DepartmentInformationModel, on_delete=models.CASCADE)
     # Department ID referenced in DepartmentInformationModel
     is_affiliated = models.BooleanField()  # indicating if department/doc are affiliated yet
-
-
-class HipaaRecordsModel(models.Model):
-    doc_id_num = models.IntegerField(auto_created=True, primary_key=True, unique=True, default=1)
-    hipaa_doc_link = models.CharField(max_length=150)
