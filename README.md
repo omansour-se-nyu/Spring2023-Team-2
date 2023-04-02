@@ -50,4 +50,4 @@ https://django-phonenumber-field.readthedocs.io/en/latest/
 
 1. Run ```npm install ``` in the ```mentcare-frontend``` folder to install the necessary dependencies for the frontend
 2. Run ``` pip install -r requirements.txt ``` to install backend dependencies
-3Start the development environment (mentioned above)
+3. Start the development environment (mentioned above)
