@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from mentcarebackend.models import *
 
 import random
+import pandas as pd
 import logging
 import re  # use to match string in Update
 
@@ -43,13 +44,18 @@ def login_view(request):
                 # user logged in is staff, return int 1
                 user_id = 1
 
+            first_name = request.user.first_name
+            last_name = request.user.last_name
+
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
                                      'staff_username': username,
-                                    'user_id': user_id,
+                                     'user_id': user_id,
+                                     'first_name': first_name,
+                                     'last_name': last_name
                                      })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
@@ -273,3 +279,4 @@ def delete_patient_records(request):
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
+

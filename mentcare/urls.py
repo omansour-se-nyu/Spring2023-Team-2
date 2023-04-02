@@ -20,7 +20,7 @@ from rest_framework.documentation import include_docs_urls
 from mentcarebackend import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('login/', views.login_view, name="Login Page"),
     path('account/register/', views.register_user, name="Registration Page"),
     path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
