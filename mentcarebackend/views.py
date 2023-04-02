@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from mentcarebackend.models import *
 
 import random
+import pandas as pd
 import logging
 import re  # use to match string in Update
 
@@ -43,13 +44,18 @@ def login_view(request):
                 # user logged in is staff, return int 1
                 user_id = 1
 
+            first_name = request.user.first_name
+            last_name = request.user.last_name
+
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
                                      'staff_username': username,
-                                    'user_id': user_id,
+                                     'user_id': user_id,
+                                     'first_name': first_name,
+                                     'last_name': last_name
                                      })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
@@ -269,6 +275,50 @@ def delete_patient_records(request):
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No patient ID given, cannot delete patient record',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def get_hipaa(request):
+    """
+    Function to get HIPAA documentation.
+    First link returns hospital HIPAA compliance notice.
+    Second link returns HIPAA Employer/Employee Confidentiality Agreement
+
+    :param integer of either 1 or 2: ID of document link in the table
+    :return hipaa_doc_link: Link to hosted Google Doc with HIPAA notice or HIPAA Agreement
+    """
+
+    if request.method == 'GET':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            id_num = data['doc_id_num']
+
+            # check which ID number was passed into request
+            # if ID = 1, return compliance notice, if 2 return confidentiality agreement
+            if id_num == 1:
+                data = HipaaRecordsModel.objects.filter(doc_id_num=1)
+            elif id_num == 2:
+                data = HipaaRecordsModel.objects.filter(doc_id_num=2)
+
+            # serialize data from table into JSON-readable format
+            compliance_link = serializers.serialize("json", data)
+
+            compliance_link = json.loads(compliance_link)
+            print(compliance_link)
+            return JsonResponse({'status': 'Success',
+                                 'message': 'Successful getting HIPAA compliance notice',
+                                 'doc_link': compliance_link,
+                                 'code': status.HTTP_200_OK})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'Something happened. Please try again',
                                  'code': status.HTTP_400_BAD_REQUEST})
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',

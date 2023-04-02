@@ -88,7 +88,8 @@ class PrescribeMedicationModel(models.Model):
 
 
 class StayInformationModel(models.Model):
-    stay_id = models.IntegerField(auto_created=True,primary_key=True, unique=True)  # unique ID for each patient admission
+    stay_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # unique ID for each patient admission
     patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
     # ID of patient referenced in PatientInformationModel
     room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
@@ -103,10 +104,12 @@ class RoomInformationModel(models.Model):
 
 
 class DepartmentInformationModel(models.Model):
-    department_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # ID number for the department
+    department_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # ID number for the department
     department_name = models.CharField(max_length=255)  # department name
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
-    # ID number of the doctor that's head of the department, referencing column doctor_id of DoctorInformationModel
+    # ID number of the doctor that's head of the department
+    # referencing column doctor_id of DoctorInformationModel
 
 
 class AffiliatedWithModel(models.Model):
@@ -115,3 +118,8 @@ class AffiliatedWithModel(models.Model):
     department_id = models.ForeignKey(DepartmentInformationModel, on_delete=models.CASCADE)
     # Department ID referenced in DepartmentInformationModel
     is_affiliated = models.BooleanField()  # indicating if department/doc are affiliated yet
+
+
+class HipaaRecordsModel(models.Model):
+    doc_id_num = models.IntegerField(auto_created=True, primary_key=True, unique=True, default=1)
+    hipaa_doc_link = models.CharField(max_length=150)
