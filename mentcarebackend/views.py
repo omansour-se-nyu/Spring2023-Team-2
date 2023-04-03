@@ -1,7 +1,7 @@
 import json
 from json import JSONDecodeError
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -72,9 +72,12 @@ def login_view(request):
 
 
 @csrf_exempt
-# todo: add logout functionality
 def logout_user(request):
-    pass
+    logout(request)
+
+    return JsonResponse({'status': 'Error',
+                         'message': 'Sucessfully logged user out',
+                         'code': status.HTTP_200_OK})
 
 
 @csrf_exempt
