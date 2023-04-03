@@ -86,8 +86,36 @@ def logout_user(request):
 
 @csrf_exempt
 def change_password(request):
-    # @todo: add ability for admin and doctor to change password
-    pass
+    if request.method == 'PUT':
+        data = request.body.decode('utf-8')
+        data = json.loads(data)
+
+        username = data['username']
+
+        if username is None:
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No username given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
+        password = data['new_password']
+
+        if password is None:
+            return JsonResponse({'status': 'Error',
+                                 'message': 'New password for account is required',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
+        account = User.objects.get(username=username)
+
+        account.set_password(password)
+
+        account.save()
+
+        return JsonResponse({'status': 'Success',
+                             'message': 'Successfully updated password',
+                             'code': status.HTTP_200_OK})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 @csrf_exempt
 # todo: add user registration functionality

@@ -24,6 +24,7 @@ urlpatterns = [
     path('login/', views.login_view, name="Login Page"),
     path('logout/', views.logout, name="Logout"),
     path('account/register/', views.register_user, name="Registration Page"),
+    path('account/change-password/', views.change_password, name="Change Password"),
     path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
     path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
