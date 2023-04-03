@@ -2,6 +2,7 @@ import json
 from json import JSONDecodeError
 
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -9,6 +10,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
+from datetime import datetime
 
 import random
 import pandas as pd
@@ -76,6 +78,11 @@ def logout_user(request):
 
 
 @csrf_exempt
+def change_password(request):
+    # @todo: add ability for admin and doctor to change password
+    pass
+
+@csrf_exempt
 # todo: add user registration functionality
 def register_user(request):
     pass
@@ -102,7 +109,7 @@ def create_patient_records(request):
             allergies = data['allergies']
 
             if (first_name is None or last_name is None or gender is None or dob is None
-                    or address is None or phone_num is None):
+                    or address is None or phone_num is None or allergies is None):
                 return JsonResponse({'status': 'Error',
                                      'message': 'Missing field. Cannot create patient record',
                                      'code': status.HTTP_400_BAD_REQUEST})
@@ -225,7 +232,7 @@ def update_patient_records(request):
                 else:
                     allergies = data['allergies']
 
-                record = PatientInformationModel.objects.filter(patient_id=patient_id).update(
+                PatientInformationModel.objects.filter(patient_id=patient_id).update(
                     first_name=first_name,
                     last_name=last_name,
                     gender=gender,
@@ -289,13 +296,113 @@ def delete_patient_records(request):
 
 
 @csrf_exempt
-def administer_doctor_account(request):
+def create_doctor_account(request):
     """
-    An administrator user will work with doctor accounts within the Mentcare database system.
-    @todo: allow admins to create, modify, and delete doctor accounts
+    An administrator user will create doctor accounts within the Mentcare database system.
+    @param request:
+    @return: JSON request body stating doctor account creation was successful
+    """
+    if request.method == 'POST':
+        # create a new doctor account in system
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+            name = data['name']
+            department = data['department']
+            email = data['email']  # must be in format FirstnameLastname@mentcare.org
+
+            if name is None or department is None or email is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Missing field. Cannot create doctor account',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            else:
+                # Creates record of the new doctor in the Doctor Information table
+                record = DoctorInformationModel.objects.create(
+                    doctor_id=random.randint(1001, 10000),
+                    name=name,
+                    department=department,
+                    email=email
+                )
+
+                record.save()
+
+                name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+                # doctor's username is first letter of first name plus all of last name
+                doctor_username = name[0] + name_str[2]
+
+                doctor_first_name = name_str[0]
+                doctor_last_name = name_str[2]
+
+                # create a temporary password for the doctor, this password should be changed
+                doctor_password = "Mentcare2023!"
+
+                new_doctor_account = User.objects.create_user(
+                    username=doctor_username,
+                    first_name=doctor_first_name,
+                    last_name=doctor_last_name,
+                    email=email,
+                    date_joined=datetime.now(),
+                    last_login=None,
+                    is_active=True,
+                    is_superuser=False,  # user would have all permissions without explicit allow
+                    is_staff=False,  # user would have access to Django admin site, no need
+                    password=doctor_password
+                )
+
+                new_doctor_account.save()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Doctor created successfully',
+                                     'code': status.HTTP_201_CREATED})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid doctor information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def modify_doctor_account(request):
+    """
+    An administrator user be able to modify doctor accounts within the Mentcare database system.
+    @todo: allow admins to modify doctor accounts
     @param request:
     """
-    pass
+    if request.method == 'PUT':
+        # modify doctor information in the system
+        try:
+            pass
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No doctor information given to modify',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+def delete_doctor_account(request):
+    """
+    An administrator user will be able to delete doctor accounts using this
+    @param request:
+    @return:
+    @todo: allow admins to delete doctor accounts
+    """
+    if request.method == 'DELETE':
+        # delete the doctor's whole account/row in database
+        try:
+            pass
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No doctor information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
@@ -313,13 +420,19 @@ def daily_patient_summary(request):
 @csrf_exempt
 def monthly_reports(request):
     """
-    This function is a general function to deal with all aspects of monthly reports required by doctors.
+    This function is a general function to deal with all aspects of monthly reports required by
+    doctors.
     @param request:
     @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on the number of patients treated" use stay information model
-    @todo: same todo as below, edit stay information model to include actual dates/times of patient stays
-    @todo: for story "receive monthly reports on number of patients who have entered/left system" use stay
-    @todo: for story "receive monthly reports on drugs prescribed to each patient" use prescribe medication
+    @todo: for story "receive monthly reports on the number of patients treated" use stay
+    information model
+    @todo: same todo as below, edit stay information model to include actual dates/times of patient
+    stays
+    @todo: for story "receive monthly reports on number of patients who have entered/left system"
+    use stay
+    @todo: for story "receive monthly reports on drugs prescribed to each patient" use
+    prescribe medication
     model, and sort by patient ID (use for individual doctor, their patients)
-    @todo: for story "receive monthly reports on cost of drugs prescribed" sum the cost of drugs per patient ID
+    @todo: for story "receive monthly reports on cost of drugs prescribed" sum the
+    cost of drugs per patient ID
     """
