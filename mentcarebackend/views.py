@@ -434,7 +434,23 @@ def delete_doctor_account(request):
     if request.method == 'DELETE':
         # delete the doctor's whole account/row in database
         try:
-            pass
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            doctor_id = data['doctor_id']
+
+            # check that a valid doctor ID was given
+            if doctor_id is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Doctor ID not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+            else:
+                doctor_record = DoctorInformationModel.objects.get(doctor_id=doctor_id)
+                doctor_record.delete()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Doctor account successfully deleted',
+                                     'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No doctor information given',
