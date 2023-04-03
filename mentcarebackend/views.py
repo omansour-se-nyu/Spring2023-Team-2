@@ -99,6 +99,7 @@ def create_patient_records(request):
             dob = data['dob']
             address = data['address']
             phone_num = data['phone_num']
+            allergies = data['allergies']
 
             if (first_name is None or last_name is None or gender is None or dob is None
                     or address is None or phone_num is None):
@@ -114,7 +115,8 @@ def create_patient_records(request):
                     gender=gender,
                     dob=dob,
                     address=address,
-                    phone_num=phone_num
+                    phone_num=phone_num,
+                    allergies=allergies
                 )
 
                 record.save()
@@ -218,6 +220,10 @@ def update_patient_records(request):
                     phone_num = PatientInformationModel.objects.get(patient_id=patient_id).phone_num
                 else:
                     phone_num = data['phone_num']
+                if "allergies" not in data:
+                    allergies = PatientInformationModel.objects.get(patient_id=patient_id).allergies
+                else:
+                    allergies = data['allergies']
 
                 record = PatientInformationModel.objects.filter(patient_id=patient_id).update(
                     first_name=first_name,
@@ -225,7 +231,8 @@ def update_patient_records(request):
                     gender=gender,
                     dob=dob,
                     address=address,
-                    phone_num=phone_num
+                    phone_num=phone_num,
+                    allergies=allergies
                 )
 
                 json_records = PatientInformationModel.objects.filter(patient_id=patient_id)
@@ -280,3 +287,39 @@ def delete_patient_records(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
+@csrf_exempt
+def administer_doctor_account(request):
+    """
+    An administrator user will work with doctor accounts within the Mentcare database system.
+    @todo: allow admins to create, modify, and delete doctor accounts
+    @param request:
+    """
+    pass
+
+
+@csrf_exempt
+def daily_patient_summary(request):
+    """
+    Create a summary of statuses of all patients assigned to the specific doctor.
+    @param request:
+    @param doctor_id: ID number of doctor from which to gather all relevant patient information
+    @return: JSON response of all patient statuses assigned to that particular doctor
+    """
+    # @todo: create all mock data for database in order to do monthly reports/status summaries
+    # @todo: create this function
+    pass
+
+@csrf_exempt
+def monthly_reports(request):
+    """
+    This function is a general function to deal with all aspects of monthly reports required by doctors.
+    @param request:
+    @return: JSON response body of relevant information
+    @todo: for story "receive monthly reports on the number of patients treated" use stay information model
+    @todo: same todo as below, edit stay information model to include actual dates/times of patient stays
+    @todo: for story "receive monthly reports on number of patients who have entered/left system" use stay
+    @todo: for story "receive monthly reports on drugs prescribed to each patient" use prescribe medication
+    model, and sort by patient ID (use for individual doctor, their patients)
+    @todo: for story "receive monthly reports on cost of drugs prescribed" sum the cost of drugs per patient ID
+    """
