@@ -73,11 +73,15 @@ def login_view(request):
 
 @csrf_exempt
 def logout_user(request):
-    logout(request)
+    if request.method == 'POST':
+        logout(request)
 
-    return JsonResponse({'status': 'Error',
-                         'message': 'Sucessfully logged user out',
-                         'code': status.HTTP_200_OK})
+        return JsonResponse({'status': 'Error',
+                             'message': 'Sucessfully logged user out',
+                             'code': status.HTTP_200_OK})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
