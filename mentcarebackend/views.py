@@ -86,8 +86,8 @@ def create_patient_records(request):
     """
     Create a patient record, and add to the database. Patient ID number is randomly generated
 
-    :param JSON body: a patient's first name, last name, gender, date of birth, address, phone
-    :return: JSON response stating patient record was successfully created
+    @param JSON body: a patient's first name, last name, gender, date of birth, address, phone
+    @return: JSON response stating patient record was successfully created
     """
     if request.method == 'POST':
         try:
@@ -136,8 +136,8 @@ def retrieve_patient_records(request):
     """
     Retrieve a patient's records from the database
 
-    :param patient_id in JSON body: ID number of the patient's to be retrieved
-    :return: JSON response body of patient records
+    @param patient_id in JSON body: ID number of the patient's to be retrieved
+    @return: JSON response body of patient records
     """
 
     if request.method == 'GET':
@@ -176,8 +176,8 @@ def update_patient_records(request):
     """
    Update some parameter in a patient record
 
-   :param JSON body of field to update:
-   :return: JSON response stating patient record was successfully updated
+   @param JSON body of field to update:
+   @return: JSON response stating patient record was successfully updated
    """
     if request.method == 'PUT':
         try:
@@ -250,8 +250,8 @@ def delete_patient_records(request):
     """
     Delete a patient's records from the database
 
-    :param patient_id in JSON body: ID number of the patient's to be deleted
-    :return: JSON response stating patient record was successfully deleted
+    @param patient_id in JSON body: ID number of the patient's to be deleted
+    @return: JSON response stating patient record was successfully deleted
     """
     if request.method == 'DELETE':
         try:
