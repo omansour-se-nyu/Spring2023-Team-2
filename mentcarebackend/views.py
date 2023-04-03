@@ -369,13 +369,52 @@ def create_doctor_account(request):
 def modify_doctor_account(request):
     """
     An administrator user be able to modify doctor accounts within the Mentcare database system.
-    @todo: allow admins to modify doctor accounts
     @param request:
+    @return: JSON body response of successful doctor information edit
     """
     if request.method == 'PUT':
         # modify doctor information in the system
         try:
-            pass
+            data = request.body.decode("utf-8")
+            data = json.loads(data)
+
+            # modifying specific doctor information in Doctor Information Model
+            doctor_id = data['doctor_id']
+
+            # check that a doctor ID was given
+            if doctor_id is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Doctor ID not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            else:
+                # fill any missing data with pre-existing data to prevent data overwrite
+                if "name" not in data:
+                    name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
+                else:
+                    name = data["name"]
+                if "email" not in data:
+                    email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
+                else:
+                    email = data["email"]
+                if "department" not in data:
+                    department = DoctorInformationModel.objects.get(doctor_id=doctor_id).department
+                else:
+                    department = data['department']
+
+                DoctorInformationModel.objects.filter(doctor_id=doctor_id).update(
+                    name=name,
+                    email=email,
+                    department=department
+                )
+
+                json_records = DoctorInformationModel.objects.filter(doctor_id=doctor_id)
+                json_records = serializers.serialize("json", json_records)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Doctor information successfully updated',
+                                     'patient_information': json_records,
+                                     'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No doctor information given to modify',
