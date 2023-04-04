@@ -22,6 +22,11 @@ import re  # use to match string in Update
 
 @csrf_exempt
 def login_view(request):
+    """
+    An authorized user can log in, as log as the HTTP method is POST
+    @param request:
+    @return: JSON body stating login of user was successful
+    """
     if request.method == 'POST':
         # print(data)
 
@@ -73,6 +78,11 @@ def login_view(request):
 
 @csrf_exempt
 def logout_user(request):
+    """
+    Logs out a user who is logged in
+    @param request:
+    @return: JSON body stating log out of session was successful
+    """
     if request.method == 'POST':
         logout(request)
 
@@ -86,6 +96,12 @@ def logout_user(request):
 
 @csrf_exempt
 def change_password(request):
+    """
+    Any user that is logged in is able to change their own password.
+    Immediately after password change, they will be logged out
+    @param request:
+    @return: JSON body stating password change was a success
+    """
     if request.method == 'PUT':
         data = request.body.decode('utf-8')
         data = json.loads(data)
