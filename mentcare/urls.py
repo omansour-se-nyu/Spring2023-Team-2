@@ -20,13 +20,18 @@ from rest_framework.documentation import include_docs_urls
 from mentcarebackend import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('login/', views.login_view, name="Login Page"),
+    path('logout/', views.logout, name="Logout"),
     path('account/register/', views.register_user, name="Registration Page"),
+    path('account/change-password/', views.change_password, name="Change Password"),
     path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
     path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
     path('staff/patients/records/delete/', views.delete_patient_records, name="Delete Patient Records"),
+    path('admin/staff/create/', views.create_doctor_account, name="Create Doctor Accounts"),
+    path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
+    path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts")
     # path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
     # path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
     # path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),

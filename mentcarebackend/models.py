@@ -43,6 +43,7 @@ class PatientInformationModel(models.Model):
     dob = models.DateField()  # patient date of birth, format YYYY-MM-DD
     address = models.TextField()  # address of patient
     phone_num = PhoneNumberField(blank=True)  # phone number of patient
+    allergies = models.TextField(blank=True)  # any allergies of the patient
     # doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of primary doctor of patient, referenced in DoctorInformationModel
 
@@ -88,7 +89,8 @@ class PrescribeMedicationModel(models.Model):
 
 
 class StayInformationModel(models.Model):
-    stay_id = models.IntegerField(auto_created=True,primary_key=True, unique=True)  # unique ID for each patient admission
+    stay_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # unique ID for each patient admission
     patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
     # ID of patient referenced in PatientInformationModel
     room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
@@ -103,10 +105,12 @@ class RoomInformationModel(models.Model):
 
 
 class DepartmentInformationModel(models.Model):
-    department_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # ID number for the department
+    department_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # ID number for the department
     department_name = models.CharField(max_length=255)  # department name
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
-    # ID number of the doctor that's head of the department, referencing column doctor_id of DoctorInformationModel
+    # ID number of the doctor that's head of the department
+    # referencing column doctor_id of DoctorInformationModel
 
 
 class AffiliatedWithModel(models.Model):

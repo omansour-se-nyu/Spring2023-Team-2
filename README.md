@@ -38,11 +38,16 @@ https://www.coreapi.org
 
 5. django-phonenumber-field
 
-``` pip install django-phonenumber-field[phonenumbers]```
+```pip install django-phonenumber-field[phonenumbers]```
 
 https://django-phonenumber-field.readthedocs.io/en/latest/
 
+6. pandas
+
+```pip install pandas```
+
 ## Using the application
 
-1. Run ```npm install ``` to install the necessary dependencies
-2. Start the development environment (mentioned above)
+1. Run ```npm install ``` in the ```mentcare-frontend``` folder to install the necessary dependencies for the frontend
+2. Run ``` pip install -r requirements.txt ``` to install backend dependencies
+3. Start the development environment (mentioned above)
