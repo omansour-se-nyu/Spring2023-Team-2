@@ -43,6 +43,7 @@ class PatientInformationModel(models.Model):
     dob = models.DateField()  # patient date of birth, format YYYY-MM-DD
     address = models.TextField()  # address of patient
     phone_num = PhoneNumberField(blank=True)  # phone number of patient
+    allergies = models.TextField(blank=True)  # any allergies of the patient
     # doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of primary doctor of patient, referenced in DoctorInformationModel
 
