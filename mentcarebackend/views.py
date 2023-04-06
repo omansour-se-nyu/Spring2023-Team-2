@@ -19,7 +19,7 @@ import re  # use to match string in Update
 
 
 # Create your views here.
-
+# @todo: add way for backend to cache state of database?
 @csrf_exempt
 def login_view(request):
     """
@@ -113,7 +113,7 @@ def change_password(request):
                                  'message': 'No username given',
                                  'code': status.HTTP_400_BAD_REQUEST})
 
-        password = data['new_password']
+        password = data['password']
 
         if password is None:
             return JsonResponse({'status': 'Error',
@@ -133,10 +133,121 @@ def change_password(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
 @csrf_exempt
 # todo: add user registration functionality
 def register_user(request):
-    pass
+    """
+    Any user can add themselves to the database of authorized users.
+    This can work to add either an admin user or a doctor user.
+    @param request:
+    @return: JSON body stating user registration was successful
+    """
+    if request.method == 'POST':
+        # create a user in the system
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            name = data['name']
+            email = data['email']
+            user_type = data['user_type']
+
+            if name is None or email is None or user_type is None:
+                # need int representing account as admin or doctor is present
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Cannot create user. '
+                                                'Missing name, email address, or user type',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            department = data['department']
+            position = data['position']
+
+            # check combinations of account type, and inclusion of position/department
+            # if user is an admin and there's no position given
+            if user_type == 0:  # administrator user
+                if "position" not in data:  # admin user has no position
+                    return JsonResponse({'status': 'Error',
+                                         'message': 'Cannot create user. No admin position given',
+                                         'code': status.HTTP_400_BAD_REQUEST})
+                elif "department" not in data:
+                    department = ''
+
+            elif user_type == 1:  # doctor user
+                if department is None:  # doctor has no department
+                    return JsonResponse({'status': 'Error',
+                                         'message': 'Cannot create user. No department for doctora',
+                                         'code': status.HTTP_400_BAD_REQUEST})
+                elif "position" not in data:
+                    position = ''
+
+            if user_type == 0:
+                record = AdminInformationModel.objects.create(
+                    admin_id=random.randint(1001, 10000),
+                    name=name,
+                    email=email,
+                    position=position
+                )
+            elif user_type == 1:
+                record = DoctorInformationModel.objects.create(
+                    doctor_id=random.randint(1001, 10000),
+                    name=name,
+                    email=email,
+                    department=department
+                )
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Account type is invalid',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # save new record of the user created into appropriate database table
+            record.save()
+
+            # split name of user by space
+            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+            # username of user is first letter of first name plus all of last name
+            username = name[0] + name_str[2]
+
+            # full name of the user
+            first_name = name_str[0]
+            last_name = name_str[2]
+
+            # create temporary password for user, which should be changed immediately
+            # temp password for admin user is different from temp password for doctor
+            # also set value of if the user is an administrator in the table
+            if user_type == 0:
+                password = "AdminPassword2023!"
+                superuser_check = True
+            elif user_type == 1:
+                password = "Mentcare2023!"
+                superuser_check = False
+
+            new_account = User.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                date_joined=datetime.now(),
+                last_login=None,
+                is_active=True,
+                is_superuser=superuser_check,
+                is_staff=False
+            )
+
+            new_account.save()
+
+            return JsonResponse({'status': 'Success',
+                                 'message': 'New user created successfully',
+                                 'code': status.HTTP_201_CREATED})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid doctor information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
@@ -200,7 +311,7 @@ def retrieve_patient_records(request):
     @return: JSON response body of patient records
     """
 
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             data = request.body.decode('utf-8')
             data = json.loads(data)
