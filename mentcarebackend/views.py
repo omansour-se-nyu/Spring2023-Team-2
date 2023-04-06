@@ -150,14 +150,21 @@ def register_user(request):
             data = json.loads(data)
 
             name = data['name']
-            email = data['email']
             user_type = data['user_type']
 
-            if name is None or email is None or user_type is None:
+            # split name of user by space
+            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+            # username of user is first letter of first name plus all of last name
+            username = name[0] + name_str[2]
+
+            email = username + "@mentcare.org"
+
+            if name is None or user_type is None:
                 # need int representing account as admin or doctor is present
                 return JsonResponse({'status': 'Error',
                                      'message': 'Cannot create user. '
-                                                'Missing name, email address, or user type',
+                                                'Missing name  or user type',
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             department = data['department']
@@ -202,12 +209,6 @@ def register_user(request):
 
             # save new record of the user created into appropriate database table
             record.save()
-
-            # split name of user by space
-            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
-
-            # username of user is first letter of first name plus all of last name
-            username = name[0] + name_str[2]
 
             # full name of the user
             first_name = name_str[0]
