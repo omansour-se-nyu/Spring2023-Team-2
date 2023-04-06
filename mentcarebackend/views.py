@@ -474,9 +474,18 @@ def create_doctor_account(request):
             data = json.loads(data)
             name = data['name']
             department = data['department']
-            email = data['email']  # must be in format FirstnameLastname@mentcare.org
 
-            if name is None or department is None or email is None:
+            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+            # doctor's username is first letter of first name plus all of last name
+            doctor_username = name[0] + name_str[2]
+
+            doctor_first_name = name_str[0]
+            doctor_last_name = name_str[2]
+
+            email = doctor_first_name[0] + doctor_last_name + "@mentcare.org"
+
+            if name is None or department is None:
                 return JsonResponse({'status': 'Error',
                                      'message': 'Missing field. Cannot create doctor account',
                                      'code': status.HTTP_400_BAD_REQUEST})
@@ -491,14 +500,6 @@ def create_doctor_account(request):
                 )
 
                 record.save()
-
-                name_str = [i for j in name.split() for i in (j, ' ')][:-1]
-
-                # doctor's username is first letter of first name plus all of last name
-                doctor_username = name[0] + name_str[2]
-
-                doctor_first_name = name_str[0]
-                doctor_last_name = name_str[2]
 
                 # create a temporary password for the doctor, this password should be changed
                 doctor_password = "Mentcare2023!"
@@ -589,12 +590,12 @@ def modify_doctor_account(request):
                              'code': status.HTTP_400_BAD_REQUEST})
 
 
+@csrf_exempt
 def delete_doctor_account(request):
     """
     An administrator user will be able to delete doctor accounts using this
     @param request:
     @return:
-    @todo: allow admins to delete doctor accounts
     """
     if request.method == 'DELETE':
         # delete the doctor's whole account/row in database
@@ -604,18 +605,39 @@ def delete_doctor_account(request):
 
             doctor_id = data['doctor_id']
 
+            # Find doctor name from list of doctors in hospital table
+            doctor_name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
+
             # check that a valid doctor ID was given
             if doctor_id is None:
                 return JsonResponse({'status': 'Error',
                                      'message': 'Doctor ID not given',
                                      'code': status.HTTP_400_BAD_REQUEST})
             else:
-                doctor_record = DoctorInformationModel.objects.get(doctor_id=doctor_id)
-                doctor_record.delete()
+                try:
 
-                return JsonResponse({'status': 'Success',
-                                     'message': 'Doctor account successfully deleted',
-                                     'code': status.HTTP_200_OK})
+                    # comparing unique email addresses
+                    doctor_email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
+
+                    account_email = User.objects.get(email=doctor_email)
+                    doctor_email_stripped = doctor_email.rstrip("@mentcare.org")
+
+                    # If the two tables' doctor emails match, first delete doctor account
+                    if doctor_email_stripped == account_email:
+                        # if the two username part of unique emails match
+                        account_email.delete()
+
+                    # Now delete record of doctor
+                    DoctorInformationModel.objects.get(doctor_id=doctor_id).delete()
+
+                    return JsonResponse({'status': 'Success',
+                                         'message': 'Doctor account successfully deleted',
+                                         'code': status.HTTP_200_OK})
+
+                except doctor_name is None:
+                    return JsonResponse({'status': 'Error',
+                                         'message': 'Doctor does not exist',
+                                         'code': status.HTTP_400_BAD_REQUEST})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No doctor information given',
@@ -636,6 +658,7 @@ def daily_patient_summary(request):
     # @todo: create all mock data for database in order to do monthly reports/status summaries
     # @todo: create this function
     pass
+
 
 @csrf_exempt
 def monthly_reports(request):
