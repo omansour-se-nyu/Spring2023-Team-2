@@ -135,7 +135,6 @@ def change_password(request):
 
 
 @csrf_exempt
-# todo: add user registration functionality
 def register_user(request):
     """
     Any user can add themselves to the database of authorized users.
@@ -158,7 +157,7 @@ def register_user(request):
             # username of user is first letter of first name plus all of last name
             username = name[0] + name_str[2]
 
-            email = username + "@mentcare.org"
+            email = username.lower() + "@mentcare.org"
 
             if name is None or user_type is None:
                 # need int representing account as admin or doctor is present
@@ -167,26 +166,29 @@ def register_user(request):
                                                 'Missing name  or user type',
                                      'code': status.HTTP_400_BAD_REQUEST})
 
-            department = data['department']
-            position = data['position']
-
             # check combinations of account type, and inclusion of position/department
             # if user is an admin and there's no position given
-            if user_type == 0:  # administrator user
-                if "position" not in data:  # admin user has no position
-                    return JsonResponse({'status': 'Error',
-                                         'message': 'Cannot create user. No admin position given',
-                                         'code': status.HTTP_400_BAD_REQUEST})
-                elif "department" not in data:
-                    department = ''
+            match user_type:
+                case 0:
+                    # admin user
+                    position = data['position']
 
-            elif user_type == 1:  # doctor user
-                if department is None:  # doctor has no department
-                    return JsonResponse({'status': 'Error',
-                                         'message': 'Cannot create user. No department for doctora',
-                                         'code': status.HTTP_400_BAD_REQUEST})
-                elif "position" not in data:
-                    position = ''
+                    if "position" not in data:  # admin user has no position
+                        return JsonResponse({'status': 'Error',
+                                             'message': 'Cannot create user. No admin position given',
+                                             'code': status.HTTP_400_BAD_REQUEST})
+                    elif "department" not in data:
+                        department = ''
+                case 1:
+                    # doctor user
+                    department = data['department']
+
+                    if department is None:  # doctor has no department
+                        return JsonResponse({'status': 'Error',
+                                             'message': 'Cannot create user. No department for doctora',
+                                             'code': status.HTTP_400_BAD_REQUEST})
+                    elif "position" not in data:
+                        position = ''
 
             if user_type == 0:
                 record = AdminInformationModel.objects.create(
