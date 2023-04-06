@@ -3,6 +3,8 @@ import { AdminContext } from './context/AdminContext';
 import { Grid, GridItem } from '@chakra-ui/react';
 import Menu from './Menu';
 import Dashboard from './Dashboard';
+import { Routes, Route } from 'react-router-dom';
+import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
@@ -31,7 +33,10 @@ const AdminPage = () => {
           <Menu />
         </GridItem>
         <GridItem colSpan={9}>
-          <Dashboard />
+          <Routes>
+            <Route exact path='/' element={<Dashboard />} />
+            <Route path='/compliance' element={<HIPPACompliance />} />
+          </Routes>
         </GridItem>
       </Grid>
     </AdminContext.Provider>
