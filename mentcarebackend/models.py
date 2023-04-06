@@ -15,7 +15,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 class DoctorInformationModel(models.Model):
     doctor_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)  # unique ID for each doctor
     name = models.CharField(max_length=100)  # name of doctor
-    email = models.CharField(max_length=100)  # email of doctor
+    email = models.CharField(max_length=100, unique=True)  # email of doctor
     department = models.CharField(max_length=100)  # doctor's department
 
 
