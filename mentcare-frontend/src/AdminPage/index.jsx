@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminContext } from './context/AdminContext';
 import { Grid, GridItem } from '@chakra-ui/react';
 import Menu from './Menu';
 import Dashboard from './Dashboard';
+import { Routes, Route } from 'react-router-dom';
+import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
@@ -10,6 +12,41 @@ const AdminPage = () => {
   const [settingsPage, setSettingsPage] = useState(false);
   const [monthlyReportsPage, setMonthlyReportsPage] = useState(false);
   const [compliancePage, setCompliancePage] = useState(false);
+
+  useEffect(() => {
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [overviewPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [userManagementPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [settingsPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setCompliancePage(false);
+  }, [monthlyReportsPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+  }, [compliancePage]);
 
   return (
     <AdminContext.Provider
@@ -31,7 +68,10 @@ const AdminPage = () => {
           <Menu />
         </GridItem>
         <GridItem colSpan={9}>
-          <Dashboard />
+          <Routes>
+            <Route exact path='/' element={<Dashboard />} />
+            <Route path='/compliance' element={<HIPPACompliance />} />
+          </Routes>
         </GridItem>
       </Grid>
     </AdminContext.Provider>
