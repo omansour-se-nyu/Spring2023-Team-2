@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AdminContext } from './context/AdminContext';
 import { Grid, GridItem } from '@chakra-ui/react';
 import Menu from './Menu';
@@ -12,6 +12,41 @@ const AdminPage = () => {
   const [settingsPage, setSettingsPage] = useState(false);
   const [monthlyReportsPage, setMonthlyReportsPage] = useState(false);
   const [compliancePage, setCompliancePage] = useState(false);
+
+  useEffect(() => {
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [overviewPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [userManagementPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+  }, [settingsPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setCompliancePage(false);
+  }, [monthlyReportsPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setUserManagementPage(false);
+    setSettingsPage(false);
+    setMonthlyReportsPage(false);
+  }, [compliancePage]);
 
   return (
     <AdminContext.Provider

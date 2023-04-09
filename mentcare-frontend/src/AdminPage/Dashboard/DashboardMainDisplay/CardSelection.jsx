@@ -1,11 +1,12 @@
 import { Card, Text, Image } from '@chakra-ui/react';
 
-const CardSelection = ({ title, imageLink }) => {
+const CardSelection = ({ title, imageLink, handleOnClick }) => {
   return (
     <Card
       borderRadius='40px'
       backgroundColor='#F3EED9'
       display='flex'
+      onClick={handleOnClick}
       justifyContent='center'
       alignItems='center'
       gap='20%'
