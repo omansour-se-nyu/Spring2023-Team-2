@@ -4,6 +4,8 @@ import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './ErrorPage';
 import AdminPage from './AdminPage';
+import StaffPage from './StaffPage';
+import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
 import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter([
@@ -15,6 +17,16 @@ const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminPage />,
+    children: [
+      {
+        path: 'compliance',
+        element: <HIPPACompliance />,
+      },
+    ],
+  },
+  {
+    path: '/staff',
+    element: <StaffPage />,
   },
 ]);
 
