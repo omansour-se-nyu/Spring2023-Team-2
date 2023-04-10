@@ -200,7 +200,7 @@ def retrieve_patient_records(request):
     @return: JSON response body of patient records
     """
 
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             data = request.body.decode('utf-8')
             data = json.loads(data)

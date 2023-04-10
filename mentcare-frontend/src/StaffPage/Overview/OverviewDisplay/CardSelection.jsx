@@ -1,6 +1,6 @@
 import { Card, Text, Image } from '@chakra-ui/react';
 
-const CardSelection = ({ title, imageLink }) => {
+const CardSelection = ({ title, imageLink, handleOnClick  }) => {
   return (
     <Card
       borderRadius='40px'
@@ -20,6 +20,7 @@ const CardSelection = ({ title, imageLink }) => {
         opacity: '90%',
         transform: 'scale(0.97)',
       }}
+      onClick={handleOnClick}
     >
       <Image src={imageLink} alt='icon' height='45%' />
       <Text color='#FB5058' fontSize='xl' fontWeight='semibold'>

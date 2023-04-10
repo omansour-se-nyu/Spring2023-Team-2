@@ -3,6 +3,7 @@ import { StaffContext } from './context/StaffContext';
 import { Grid, GridItem } from '@chakra-ui/react';
 import Nav from './Nav';
 import Overview from './Overview';
+import PatientListView from './PatientListView';
 
 const StaffPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
