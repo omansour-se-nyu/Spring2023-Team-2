@@ -1,21 +1,15 @@
 import json
+import random
+from datetime import datetime
 from json import JSONDecodeError
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
-from datetime import datetime
-
-import random
-import pandas as pd
-import logging
-import re  # use to match string in Update
 
 
 # Create your views here.

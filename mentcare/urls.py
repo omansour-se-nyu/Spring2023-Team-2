@@ -31,8 +31,4 @@ urlpatterns = [
     path('admin/staff/create/', views.create_doctor_account, name="Create Doctor Accounts"),
     path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
     path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts")
-    # path("create/", views.CreateMentcareAPIView.as_view(), name="Mentcare_create"),
-    # path("update/<int:pk>/", views.UpdateMentcareAPIView.as_view(), name="update_Mentcare"),
-    # path("delete/<int:pk>/", views.DeleteMentcareAPIView.as_view(), name="delete_Mentcare"),
-    # path('docs/', include_docs_urls(title='Mentcare Api')),
 ]
