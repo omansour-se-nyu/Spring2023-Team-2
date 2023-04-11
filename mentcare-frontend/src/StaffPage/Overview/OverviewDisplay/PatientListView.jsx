@@ -13,7 +13,7 @@ import {
     Box,
     Center
 } from '@chakra-ui/react';
-import { SearchIcon } from "@chakra-ui/icons";
+import { SearchIcon , EditIcon , DeleteIcon } from "@chakra-ui/icons";
 
 // TODO: Display Patient Gender with text
 // TODO: Check if onblur or onchange is okay for search field
@@ -68,14 +68,14 @@ const PatientListView = () =>  {
 
 
      return (
-        <div style={{width: '100%'}}>
-            <Text color='#FB5058' fontWeight='bold' fontSize='5xl' m={5}>
+        <div>
+            <Text color='#FB5058' fontWeight='bold' fontSize='5xl' paddingLeft='30px'>
                 Patient Overview
             </Text>
-            <InputGroup m={5}>
+            <InputGroup paddingLeft='30px'>
                 <InputLeftElement
                     pointerEvents='none'
-                    children={<SearchIcon color='black' />}
+                    children={<SearchIcon color='black' ml={60}/>}
                 />
                 <Input
                     placeholder='Patient MRN'
@@ -88,16 +88,13 @@ const PatientListView = () =>  {
                 />
             </InputGroup>
             {outOfRange ? <Text marginLeft={7} fontSize='sm'>Invalid Patient MRN</Text> : null}
-
-            <Card>
-                <CardHeader>
+            <div>
                     <Center>
-                        <Heading size='md'>{userData.first_name} {userData.last_name}'s Summary</Heading>
+                        <Heading size='md' p={2}>{userData.first_name} {userData.last_name}'s Summary</Heading>
+                        <EditIcon boxSize={18} marginLeft={7}/>
+                        <DeleteIcon boxSize={18} marginLeft={7}/>
                     </Center>
-                </CardHeader>
-
-                <CardBody>
-                    <Stack divider={<StackDivider borderColor='white'/>} spacing='2'>
+                    <Stack divider={<StackDivider borderColor='white'/>} spacing='2' m={50} h='100%'>
                         <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
                             <Text as='b'>Patient D.O.B:</Text> {userData.dob}
                         </Box>
@@ -114,8 +111,7 @@ const PatientListView = () =>  {
                             <Text as='b'>Patient Allergies:</Text> {userData.allergies}
                         </Box>
                     </Stack>
-                </CardBody>
-            </Card>
+                </div>
         </div>
       );
 
