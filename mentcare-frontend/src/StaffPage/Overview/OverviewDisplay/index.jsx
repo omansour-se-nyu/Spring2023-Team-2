@@ -9,11 +9,13 @@ import { StaffContext } from '../../context/StaffContext';
 import { useContext } from 'react';
 
 const OverviewDisplay = () => {
-  const { setPatientPage } = useContext(StaffContext);
   const navigate = useNavigate();
+  const { setPatientManagementPage } = useContext(StaffContext);
 
   const handleOnClickPatientView = () => {
     console.log("Patient View");
+    setPatientManagementPage(true);
+    navigate('/staff/records');
   };
 
   const cardTitleImages = [

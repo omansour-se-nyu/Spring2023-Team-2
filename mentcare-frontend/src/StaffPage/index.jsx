@@ -1,18 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StaffContext } from './context/StaffContext';
 import { Grid, GridItem } from '@chakra-ui/react';
+import { Routes, Route } from 'react-router-dom';
 import Nav from './Nav';
 import Overview from './Overview';
-import PatientListView from './PatientListView';
+import PatientListView from './Overview/OverviewDisplay/PatientListView';
 
 const StaffPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
   const [patientManagementPage, setPatientManagementPage] = useState(false);
-  const [messagesPage, setMessagesPage] = useState(false);
-  const [medicationsPage, setMedicationsPage] = useState(false);
-  const [documentsPage, setDocumentsPage] = useState(false);
   const [databasePage, setDatabasePage] = useState(false);
   const [logoutPage, setLogoutPage] = useState(false);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setPatientManagementPage(false);
+    setDatabasePage(false);
+  }, [logoutPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setLogoutPage(false);
+    setDatabasePage(false);
+  }, [patientManagementPage]);
+
+  useEffect(() => {
+    setOverviewPage(false);
+    setPatientManagementPage(false);
+    setLogoutPage(false);
+  }, [databasePage]);
+
+  useEffect(() => {
+    setDatabasePage(false);
+    setPatientManagementPage(false);
+    setLogoutPage(false);
+  }, [overviewPage]);
+
 
   return (
     <StaffContext.Provider
@@ -32,7 +55,10 @@ const StaffPage = () => {
           <Nav />
         </GridItem>
         <GridItem colSpan={9}>
-          <Overview />
+          <Routes>
+            <Route exact path='/' element={<Overview />} />
+            <Route path='/records' element={<PatientListView />} />
+          </Routes>
         </GridItem>
       </Grid>
     </StaffContext.Provider>

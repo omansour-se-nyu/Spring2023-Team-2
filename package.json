@@ -4,6 +4,7 @@
     "@chakra-ui/react": "^2.5.5",
     "@tanstack/react-table": "^8.8.5",
     "axios": "^1.3.5",
-    "datatables": "^1.10.18"
+    "datatables": "^1.10.18",
+    "react-pdf": "^6.2.2"
   }
 }
