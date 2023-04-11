@@ -11,17 +11,53 @@ import {
     Stack,
     StackDivider,
     Box,
-    Center
+    Center,
+    IconButton,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton
 } from '@chakra-ui/react';
 import { SearchIcon , EditIcon , DeleteIcon } from "@chakra-ui/icons";
 
 // TODO: Display Patient Gender with text
 // TODO: Check if onblur or onchange is okay for search field
 
+function BasicUsage() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  return (
+    <>
+      <Button onClick={onOpen}>Open Modal</Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Lorem count={2} />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant='ghost'>Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  )
+}
+
 const PatientListView = () =>  {
       const [userData, setUserData] = useState({});
       const [patientID, setPatientID] = useState(1);
       const [outOfRange, setOutOfRange] = useState(false);
+      const [modal, setModal] = useState(false);
 
       let HEADER;
 
@@ -36,6 +72,12 @@ const PatientListView = () =>  {
           }else{
             setPatientID(event.target.value);
           }
+      };
+
+      // get patient id from search field
+      const editRecord = () => {
+          console.log("Edit Record");
+          setModal( true);
       };
 
       const fetchData = () => {
@@ -91,7 +133,7 @@ const PatientListView = () =>  {
             <div>
                     <Center>
                         <Heading size='md' p={2}>{userData.first_name} {userData.last_name}'s Summary</Heading>
-                        <EditIcon boxSize={18} marginLeft={7}/>
+                        <IconButton aria-label='Edit Record' variant='outline' onClick={editRecord} icon={<EditIcon boxSize={18} marginLeft={7}/>} />
                         <DeleteIcon boxSize={18} marginLeft={7}/>
                     </Center>
                     <Stack divider={<StackDivider borderColor='white'/>} spacing='2' m={50} h='100%'>
