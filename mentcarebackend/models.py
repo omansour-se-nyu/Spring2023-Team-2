@@ -67,9 +67,8 @@ class AppointmentInformationModel(models.Model):
 class MedicationModel(models.Model):
     medication_id = models.IntegerField(auto_created=True, primary_key=True)  # unique medication ID
     medication_name = models.CharField(max_length=255)  # name of medicine
-    brand = models.CharField(max_length=1000)  # brand of medicine
-    description = models.TextField()  # description of medicine
     cost = models.IntegerField()  # cost of medicine
+    application_method = models.CharField(max_length=255, default=None)  # how the medication will be taken/applied
 
 
 class PrescribeMedicationModel(models.Model):
@@ -108,11 +107,3 @@ class DepartmentInformationModel(models.Model):
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of the doctor that's head of the department
     # referencing column doctor_id of DoctorInformationModel
-
-
-class AffiliatedWithModel(models.Model):
-    doctor_id = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
-    # ID of doctor referenced in DoctorInformationModel
-    department_id = models.ForeignKey(DepartmentInformationModel, on_delete=models.CASCADE)
-    # Department ID referenced in DepartmentInformationModel
-    is_affiliated = models.BooleanField()  # indicating if department/doc are affiliated yet
