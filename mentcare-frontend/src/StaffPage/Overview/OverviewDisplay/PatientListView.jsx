@@ -68,7 +68,7 @@ const PatientListView = () =>  {
 
 
      return (
-        <div>
+        <div style={{width: '100%'}}>
             <Text color='#FB5058' fontWeight='bold' fontSize='5xl' m={5}>
                 Patient Overview
             </Text>
