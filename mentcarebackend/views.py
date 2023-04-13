@@ -315,12 +315,18 @@ def retrieve_patient_records(request):
 
             patient_id = data['patient_id']
 
-            # tests that patient_id was given and isn't NULL
-            if patient_id is None:
-                return JsonResponse({'status': 'Error',
-                                     'message': 'Patient ID not given',
-                                     'code': status.HTTP_400_BAD_REQUEST})
+            # checks if there is no request body
+            # this will return all patient records
+            if patient_id is 0:
+                patients_records_list = PatientInformationModel.objects.all()
+                records_json = serializers.serialize('json', patients_records_list)
 
+                return JsonResponse({'status': 'Success',
+                                     'message': 'All records successfully retrieved',
+                                     'patient_information': records_json,
+                                     'code': status.HTTP_200_OK})
+
+            # otherwise, info for a specific patient is wanted
             else:
                 record = PatientInformationModel.objects.filter(patient_id=patient_id)
                 json_records = serializers.serialize("json", record)
