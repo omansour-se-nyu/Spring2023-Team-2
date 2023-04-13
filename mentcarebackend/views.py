@@ -1,25 +1,19 @@
 import json
+import random
+from datetime import datetime
 from json import JSONDecodeError
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
 from mentcarebackend.models import *
-from datetime import datetime
-
-import random
-import pandas as pd
-import logging
-import re  # use to match string in Update
 
 
 # Create your views here.
-
+# @todo: add way for backend to cache state of database?
 @csrf_exempt
 def login_view(request):
     """
@@ -113,7 +107,7 @@ def change_password(request):
                                  'message': 'No username given',
                                  'code': status.HTTP_400_BAD_REQUEST})
 
-        password = data['new_password']
+        password = data['password']
 
         if password is None:
             return JsonResponse({'status': 'Error',
@@ -133,10 +127,124 @@ def change_password(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
 @csrf_exempt
-# todo: add user registration functionality
 def register_user(request):
-    pass
+    """
+    Any user can add themselves to the database of authorized users.
+    This can work to add either an admin user or a doctor user.
+    @param request:
+    @return: JSON body stating user registration was successful
+    """
+    if request.method == 'POST':
+        # create a user in the system
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            name = data['name']
+            user_type = data['user_type']
+
+            # split name of user by space
+            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+            # username of user is first letter of first name plus all of last name
+            username = name[0] + name_str[2]
+
+            email = username.lower() + "@mentcare.org"
+
+            if name is None or user_type is None:
+                # need int representing account as admin or doctor is present
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Cannot create user. '
+                                                'Missing name  or user type',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # check combinations of account type, and inclusion of position/department
+            # if user is an admin and there's no position given
+            match user_type:
+                case 0:
+                    # admin user
+                    position = data['position']
+
+                    if "position" not in data:  # admin user has no position
+                        return JsonResponse({'status': 'Error',
+                                             'message': 'Cannot create user. No admin position given',
+                                             'code': status.HTTP_400_BAD_REQUEST})
+                    elif "department" not in data:
+                        department = ''
+                case 1:
+                    # doctor user
+                    department = data['department']
+
+                    if department is None:  # doctor has no department
+                        return JsonResponse({'status': 'Error',
+                                             'message': 'Cannot create user. No department for doctora',
+                                             'code': status.HTTP_400_BAD_REQUEST})
+                    elif "position" not in data:
+                        position = ''
+
+            if user_type == 0:
+                record = AdminInformationModel.objects.create(
+                    admin_id=random.randint(1001, 10000),
+                    name=name,
+                    email=email,
+                    position=position
+                )
+            elif user_type == 1:
+                record = DoctorInformationModel.objects.create(
+                    doctor_id=random.randint(1001, 10000),
+                    name=name,
+                    email=email,
+                    department=department
+                )
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Account type is invalid',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # save new record of the user created into appropriate database table
+            record.save()
+
+            # full name of the user
+            first_name = name_str[0]
+            last_name = name_str[2]
+
+            # create temporary password for user, which should be changed immediately
+            # temp password for admin user is different from temp password for doctor
+            # also set value of if the user is an administrator in the table
+            if user_type == 0:
+                password = "AdminPassword2023!"
+                superuser_check = True
+            elif user_type == 1:
+                password = "Mentcare2023!"
+                superuser_check = False
+
+            new_account = User.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                date_joined=datetime.now(),
+                last_login=None,
+                is_active=True,
+                is_superuser=superuser_check,
+                is_staff=False
+            )
+
+            new_account.save()
+
+            return JsonResponse({'status': 'Success',
+                                 'message': 'New user created successfully',
+                                 'code': status.HTTP_201_CREATED})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid doctor information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
@@ -207,12 +315,18 @@ def retrieve_patient_records(request):
 
             patient_id = data['patient_id']
 
-            # tests that patient_id was given and isn't NULL
-            if patient_id is None:
-                return JsonResponse({'status': 'Error',
-                                     'message': 'Patient ID not given',
-                                     'code': status.HTTP_400_BAD_REQUEST})
+            # checks if there is no request body
+            # this will return all patient records
+            if patient_id is 0:
+                patients_records_list = PatientInformationModel.objects.all()
+                records_json = serializers.serialize('json', patients_records_list)
 
+                return JsonResponse({'status': 'Success',
+                                     'message': 'All records successfully retrieved',
+                                     'patient_information': records_json,
+                                     'code': status.HTTP_200_OK})
+
+            # otherwise, info for a specific patient is wanted
             else:
                 record = PatientInformationModel.objects.filter(patient_id=patient_id)
                 json_records = serializers.serialize("json", record)
@@ -360,9 +474,18 @@ def create_doctor_account(request):
             data = json.loads(data)
             name = data['name']
             department = data['department']
-            email = data['email']  # must be in format FirstnameLastname@mentcare.org
 
-            if name is None or department is None or email is None:
+            name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+            # doctor's username is first letter of first name plus all of last name
+            doctor_username = name[0] + name_str[2]
+
+            doctor_first_name = name_str[0]
+            doctor_last_name = name_str[2]
+
+            email = doctor_first_name[0] + doctor_last_name + "@mentcare.org"
+
+            if name is None or department is None:
                 return JsonResponse({'status': 'Error',
                                      'message': 'Missing field. Cannot create doctor account',
                                      'code': status.HTTP_400_BAD_REQUEST})
@@ -377,14 +500,6 @@ def create_doctor_account(request):
                 )
 
                 record.save()
-
-                name_str = [i for j in name.split() for i in (j, ' ')][:-1]
-
-                # doctor's username is first letter of first name plus all of last name
-                doctor_username = name[0] + name_str[2]
-
-                doctor_first_name = name_str[0]
-                doctor_last_name = name_str[2]
 
                 # create a temporary password for the doctor, this password should be changed
                 doctor_password = "Mentcare2023!"
@@ -475,12 +590,12 @@ def modify_doctor_account(request):
                              'code': status.HTTP_400_BAD_REQUEST})
 
 
+@csrf_exempt
 def delete_doctor_account(request):
     """
     An administrator user will be able to delete doctor accounts using this
     @param request:
     @return:
-    @todo: allow admins to delete doctor accounts
     """
     if request.method == 'DELETE':
         # delete the doctor's whole account/row in database
@@ -490,18 +605,39 @@ def delete_doctor_account(request):
 
             doctor_id = data['doctor_id']
 
+            # Find doctor name from list of doctors in hospital table
+            doctor_name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
+
             # check that a valid doctor ID was given
             if doctor_id is None:
                 return JsonResponse({'status': 'Error',
                                      'message': 'Doctor ID not given',
                                      'code': status.HTTP_400_BAD_REQUEST})
             else:
-                doctor_record = DoctorInformationModel.objects.get(doctor_id=doctor_id)
-                doctor_record.delete()
+                try:
 
-                return JsonResponse({'status': 'Success',
-                                     'message': 'Doctor account successfully deleted',
-                                     'code': status.HTTP_200_OK})
+                    # comparing unique email addresses
+                    doctor_email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
+
+                    account_email = User.objects.get(email=doctor_email)
+                    doctor_email_stripped = doctor_email.rstrip("@mentcare.org")
+
+                    # If the two tables' doctor emails match, first delete doctor account
+                    if doctor_email_stripped == account_email:
+                        # if the two username part of unique emails match
+                        account_email.delete()
+
+                    # Now delete record of doctor
+                    DoctorInformationModel.objects.get(doctor_id=doctor_id).delete()
+
+                    return JsonResponse({'status': 'Success',
+                                         'message': 'Doctor account successfully deleted',
+                                         'code': status.HTTP_200_OK})
+
+                except doctor_name is None:
+                    return JsonResponse({'status': 'Error',
+                                         'message': 'Doctor does not exist',
+                                         'code': status.HTTP_400_BAD_REQUEST})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No doctor information given',
@@ -522,6 +658,7 @@ def daily_patient_summary(request):
     # @todo: create all mock data for database in order to do monthly reports/status summaries
     # @todo: create this function
     pass
+
 
 @csrf_exempt
 def monthly_reports(request):
