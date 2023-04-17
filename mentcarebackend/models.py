@@ -80,7 +80,7 @@ class PrescribeMedicationModel(models.Model):
     # ID number of medication being prescribed, referenced in MedicationModel
     appointment_id = models.ForeignKey(AppointmentInformationModel, on_delete=models.CASCADE)
     # ID of appointment when doctor prescribed medication to patient
-    date = models.DateTimeField()  # date and time medication was prescribed
+    date = models.DateField()  # date medication was prescribed
     dosage = models.TextField()  # dose prescribed by the doctor
 
 
