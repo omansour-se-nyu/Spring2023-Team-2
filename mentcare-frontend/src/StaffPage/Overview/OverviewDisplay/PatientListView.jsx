@@ -26,10 +26,9 @@ import {
     FormControl,
     FormLabel
 } from '@chakra-ui/react';
-import { SearchIcon , EditIcon , DeleteIcon } from "@chakra-ui/icons";
+import { SearchIcon , EditIcon , DeleteIcon , ChatIcon } from "@chakra-ui/icons";
 
-// TODO: Display Patient Gender with text
-// TODO: Check if onblur or onchange is okay for search field
+// TODO: add notifications to patient list view
 
 function VerticallyCenter() {
   const [updatedAt, setUpdatedAt] = useState(false);
@@ -94,17 +93,11 @@ function VerticallyCenter() {
 }
 
 function deletePatient(){
-    var deleteID = global_patientID;
     console.log("Deleting...", global_patientID);
-    console.log('Delete: ', deleteID);
-    const requestOptions = {
-            method: 'DELETE',
-            body: {
-                'patient_id': deleteID
-            }
-        };
-        fetch('http://127.0.0.1:8000/staff/patients/records/delete/', requestOptions)
-            .then(() => console.log('Delete successful'));
+    /**
+    fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID, { method: 'DELETE' })
+    .then(() => console.log('Delete successful'));
+            **/
 }
 
 var global_patientID = 0;
@@ -174,7 +167,7 @@ const PatientListView = () =>  {
                     children={<SearchIcon color='black' ml={60}/>}
                 />
                 <Input
-                    placeholder='Patient MRN'
+                    placeholder='Enter Patient MRN'
                     size='md'
                     width='30%'
                     borderRadius='80px'
@@ -233,18 +226,27 @@ const PatientListView = () =>  {
                     </FormControl>
                   </ModalBody>
                   <ModalFooter>
-                    <Button onClick={onClose}>Close</Button>
+                    <Button backgroundColor='#F3EED9' marginRight={3}>Confirm Changes</Button>
+                    <Button backgroundColor='#F3EED9' onClick={onClose}>Close</Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
                 <IconButton
                     variant='outline'
                     colorScheme='black'
-                    aria-label='Call Sage'
+                    aria-label='Delete Patient Info'
                     fontSize='20px'
                     icon={<DeleteIcon />}
                     marginLeft={2}
                     onClick={() => deletePatient()}
+                />
+                <IconButton
+                    variant='outline'
+                    colorScheme='black'
+                    aria-label='Get Patient Update'
+                    fontSize='20px'
+                    icon={<ChatIcon />}
+                    marginLeft={2}
                 />
             </InputGroup>
 
