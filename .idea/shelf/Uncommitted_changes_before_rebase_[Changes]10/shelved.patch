@@ -1,0 +1,224 @@
+Index: mentcare/urls.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\"mentcare URL Configuration\n\nThe `urlpatterns` list routes URLs to views. For more information please see:\n    https://docs.djangoproject.com/en/4.1/topics/http/urls/\nExamples:\nFunction views\n    1. Add an import:  from my_app import views\n    2. Add a URL to urlpatterns:  path('', views.home, name='home')\nClass-based views\n    1. Add an import:  from other_app.views import Home\n    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')\nIncluding another URLconf\n    1. Import the include() function: from django.urls import include, path\n    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))\n\"\"\"\nfrom django.contrib import admin\nfrom django.urls import path\n\nfrom mentcarebackend import views\n\nurlpatterns = [\n    # path('admin/', admin.site.urls),\n    path('login/', views.login_view, name=\"Login Page\"),\n    path('logout/', views.logout, name=\"Logout\"),\n    path('account/register/', views.register_user, name=\"Registration Page\"),\n    path('account/change-password/', views.change_password, name=\"Change Password\"),\n    path('staff/patients/records/create/', views.create_patient_records, name=\"Create Patient Records\"),\n    path('staff/patients/records/retrieve/', views.retrieve_patient_records, name=\"Retrieve Patient Records\"),\n    path('staff/patients/records/update/', views.update_patient_records, name=\"Update Patient Records\"),\n    path('staff/patients/records/delete/', views.delete_patient_records, name=\"Delete Patient Records\"),\n    path('admin/staff/create/', views.create_doctor_account, name=\"Create Doctor Accounts\"),\n    path('admin/staff/edit/', views.modify_doctor_account, name=\"Edit Doctor Accounts\"),\n    path('admin/staff/delete/', views.delete_doctor_account, name=\"Delete Doctor Accounts\")\n]\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mentcare/urls.py b/mentcare/urls.py
+--- a/mentcare/urls.py	(revision 27672dab43660dde497661a22aad3e44a575eeae)
++++ b/mentcare/urls.py	(date 1681772701842)
+@@ -28,6 +28,7 @@
+     path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
+     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
+     path('staff/patients/records/delete/', views.delete_patient_records, name="Delete Patient Records"),
++    path('staff/download/', views.download_database, name="Cache Database"),
+     path('admin/staff/create/', views.create_doctor_account, name="Create Doctor Accounts"),
+     path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
+     path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts")
+Index: mentcarebackend/views.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import json\nimport random\nfrom datetime import datetime\nfrom json import JSONDecodeError\n\nfrom django.contrib.auth import authenticate, login, logout\nfrom django.core import serializers\nfrom django.http import JsonResponse\nfrom django.views.decorators.csrf import csrf_exempt\nfrom rest_framework import status\n\nfrom mentcarebackend.models import *\n\n\n# Create your views here.\n# @todo: add way for backend to cache state of database?\n@csrf_exempt\ndef login_view(request):\n    \"\"\"\n    An authorized user can log in, as log as the HTTP method is POST\n    @param request:\n    @return: JSON body stating login of user was successful\n    \"\"\"\n    if request.method == 'POST':\n        # print(data)\n\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n            username = data['username']\n            # print(username)\n            password = data['password']\n\n            if username is None or password is None:\n                return JsonResponse({'status': 'Error', 'message': 'No username or password given',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            # print(password)\n            user = authenticate(request, username=username, password=password)\n\n            if request.user.is_superuser:\n                # user logged in is admin, return int 0 indicating user is admin\n                user_id = 0\n            else:\n                # user logged in is staff, return int 1\n                user_id = 1\n\n            first_name = request.user.first_name\n            last_name = request.user.last_name\n\n            if user is not None:\n                login(request, user)\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Login successful',\n                                     'code': status.HTTP_200_OK,\n                                     'staff_username': username,\n                                     'user_id': user_id,\n                                     'first_name': first_name,\n                                     'last_name': last_name\n                                     })\n            else:\n                return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',\n                                     'code': status.HTTP_403_FORBIDDEN})\n\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error', 'message': 'No username or password given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef logout_user(request):\n    \"\"\"\n    Logs out a user who is logged in\n    @param request:\n    @return: JSON body stating log out of session was successful\n    \"\"\"\n    if request.method == 'POST':\n        logout(request)\n\n        return JsonResponse({'status': 'Error',\n                             'message': 'Sucessfully logged user out',\n                             'code': status.HTTP_200_OK})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef change_password(request):\n    \"\"\"\n    Any user that is logged in is able to change their own password.\n    Immediately after password change, they will be logged out\n    @param request:\n    @return: JSON body stating password change was a success\n    \"\"\"\n    if request.method == 'PUT':\n        data = request.body.decode('utf-8')\n        data = json.loads(data)\n\n        username = data['username']\n\n        if username is None:\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No username given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n\n        password = data['password']\n\n        if password is None:\n            return JsonResponse({'status': 'Error',\n                                 'message': 'New password for account is required',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n\n        account = User.objects.get(username=username)\n\n        account.set_password(password)\n\n        account.save()\n\n        return JsonResponse({'status': 'Success',\n                             'message': 'Successfully updated password',\n                             'code': status.HTTP_200_OK})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef register_user(request):\n    \"\"\"\n    Any user can add themselves to the database of authorized users.\n    This can work to add either an admin user or a doctor user.\n    @param request:\n    @return: JSON body stating user registration was successful\n    \"\"\"\n    if request.method == 'POST':\n        # create a user in the system\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n\n            name = data['name']\n            user_type = data['user_type']\n\n            # split name of user by space\n            name_str = [i for j in name.split() for i in (j, ' ')][:-1]\n\n            # username of user is first letter of first name plus all of last name\n            username = name[0] + name_str[2]\n\n            email = username.lower() + \"@mentcare.org\"\n\n            if name is None or user_type is None:\n                # need int representing account as admin or doctor is present\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Cannot create user. '\n                                                'Missing name  or user type',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            # check combinations of account type, and inclusion of position/department\n            # if user is an admin and there's no position given\n            match user_type:\n                case 0:\n                    # admin user\n                    position = data['position']\n\n                    if \"position\" not in data:  # admin user has no position\n                        return JsonResponse({'status': 'Error',\n                                             'message': 'Cannot create user. No admin position given',\n                                             'code': status.HTTP_400_BAD_REQUEST})\n                    elif \"department\" not in data:\n                        department = ''\n                case 1:\n                    # doctor user\n                    department = data['department']\n\n                    if department is None:  # doctor has no department\n                        return JsonResponse({'status': 'Error',\n                                             'message': 'Cannot create user. No department for doctora',\n                                             'code': status.HTTP_400_BAD_REQUEST})\n                    elif \"position\" not in data:\n                        position = ''\n\n            if user_type == 0:\n                record = AdminInformationModel.objects.create(\n                    admin_id=random.randint(1001, 10000),\n                    name=name,\n                    email=email,\n                    position=position\n                )\n            elif user_type == 1:\n                record = DoctorInformationModel.objects.create(\n                    doctor_id=random.randint(1001, 10000),\n                    name=name,\n                    email=email,\n                    department=department\n                )\n            else:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Account type is invalid',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            # save new record of the user created into appropriate database table\n            record.save()\n\n            # full name of the user\n            first_name = name_str[0]\n            last_name = name_str[2]\n\n            # create temporary password for user, which should be changed immediately\n            # temp password for admin user is different from temp password for doctor\n            # also set value of if the user is an administrator in the table\n            if user_type == 0:\n                password = \"AdminPassword2023!\"\n                superuser_check = True\n            elif user_type == 1:\n                password = \"Mentcare2023!\"\n                superuser_check = False\n\n            new_account = User.objects.create_user(\n                username=username,\n                password=password,\n                first_name=first_name,\n                last_name=last_name,\n                email=email,\n                date_joined=datetime.now(),\n                last_login=None,\n                is_active=True,\n                is_superuser=superuser_check,\n                is_staff=False\n            )\n\n            new_account.save()\n\n            return JsonResponse({'status': 'Success',\n                                 'message': 'New user created successfully',\n                                 'code': status.HTTP_201_CREATED})\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No valid doctor information given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef create_patient_records(request):\n    \"\"\"\n    Create a patient record, and add to the database. Patient ID number is randomly generated\n\n    @param JSON body: a patient's first name, last name, gender, date of birth, address, phone\n    @return: JSON response stating patient record was successfully created\n    \"\"\"\n    if request.method == 'POST':\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n            first_name = data['first_name']\n            last_name = data['last_name']\n            gender = data['gender']\n            dob = data['dob']\n            address = data['address']\n            phone_num = data['phone_num']\n            allergies = data['allergies']\n\n            if (first_name is None or last_name is None or gender is None or dob is None\n                    or address is None or phone_num is None or allergies is None):\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Missing field. Cannot create patient record',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            else:\n                record = PatientInformationModel.objects.create(\n                    patient_id=random.randint(1001, 10000),\n                    first_name=first_name,\n                    last_name=last_name,\n                    gender=gender,\n                    dob=dob,\n                    address=address,\n                    phone_num=phone_num,\n                    allergies=allergies\n                )\n\n                record.save()\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Patient record created successfully',\n                                     'code': status.HTTP_201_CREATED})\n\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error', 'message': 'No patient information given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef retrieve_patient_records(request):\n    \"\"\"\n    Retrieve a patient's records from the database\n\n    @param patient_id in JSON body: ID number of the patient's to be retrieved\n    @return: JSON response body of patient records\n    \"\"\"\n\n    if request.method == 'POST':\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n\n            patient_id = data['patient_id']\n\n            # checks if there is no request body\n            # this will return all patient records\n            if patient_id == 0:\n                patients_records_list = PatientInformationModel.objects.all()\n                records_json = serializers.serialize('json', patients_records_list)\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'All records successfully retrieved',\n                                     'patient_information': records_json,\n                                     'code': status.HTTP_200_OK})\n\n            # otherwise, info for a specific patient is wanted\n            else:\n                record = PatientInformationModel.objects.filter(patient_id=patient_id)\n                json_records = serializers.serialize(\"json\", record)\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Patient record successfully retrieved',\n                                     'patient_information': json_records,\n                                     'code': status.HTTP_200_OK})\n\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error', 'message': 'Missing patient ID to retrieve',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef update_patient_records(request):\n    \"\"\"\n   Update some parameter in a patient record\n\n   @param JSON body of field to update:\n   @return: JSON response stating patient record was successfully updated\n   \"\"\"\n    if request.method == 'PUT':\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n\n            patient_id = data['patient_id']\n\n            # check that a patient ID is given\n            if patient_id is None:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Patient ID not given',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n            else:\n                # fills missing fields with pre-existing data from database, to ensure it doesn't\n                # accidentally get changed\n                if \"first_name\" not in data:\n                    first_name = PatientInformationModel.objects.get(patient_id=patient_id).first_name\n                else:\n                    first_name = data['first_name']\n                if \"last_name\" not in data:\n                    last_name = PatientInformationModel.objects.get(patient_id=patient_id).last_name\n                else:\n                    last_name = data['last_name']\n                if \"gender\" not in data:\n                    gender = PatientInformationModel.objects.get(patient_id=patient_id).gender\n                else:\n                    gender = data['gender']\n                if \"dob\" not in data:\n                    dob = PatientInformationModel.objects.get(patient_id=patient_id).dob\n                else:\n                    dob = data['dob']\n                if \"address\" not in data:\n                    address = PatientInformationModel.objects.get(patient_id=patient_id).address\n                else:\n                    address = data['address']\n                if \"phone_num\" not in data:\n                    phone_num = PatientInformationModel.objects.get(patient_id=patient_id).phone_num\n                else:\n                    phone_num = data['phone_num']\n                if \"allergies\" not in data:\n                    allergies = PatientInformationModel.objects.get(patient_id=patient_id).allergies\n                else:\n                    allergies = data['allergies']\n\n                PatientInformationModel.objects.filter(patient_id=patient_id).update(\n                    first_name=first_name,\n                    last_name=last_name,\n                    gender=gender,\n                    dob=dob,\n                    address=address,\n                    phone_num=phone_num,\n                    allergies=allergies\n                )\n\n                json_records = PatientInformationModel.objects.filter(patient_id=patient_id)\n                json_records = serializers.serialize(\"json\", json_records)\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Patient record successfully updated',\n                                     'patient_information': json_records,\n                                     'code': status.HTTP_200_OK})\n\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'Missing field to update',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef delete_patient_records(request):\n    \"\"\"\n    Delete a patient's records from the database\n\n    @param patient_id in JSON body: ID number of the patient's to be deleted\n    @return: JSON response stating patient record was successfully deleted\n    \"\"\"\n    if request.method == 'DELETE':\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n            patient_id = data['patient_id']\n\n            # tests that patient_id was given and isn't NULL\n            if patient_id is None:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Patient ID not given',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            else:\n                record = PatientInformationModel.objects.get(patient_id=patient_id)\n                record.delete()\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Patient record successfully deleted',\n                                     'code': status.HTTP_200_OK})\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No patient ID given, cannot delete patient record',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef create_doctor_account(request):\n    \"\"\"\n    An administrator user will create doctor accounts within the Mentcare database system.\n    @param request:\n    @return: JSON request body stating doctor account creation was successful\n    \"\"\"\n    if request.method == 'POST':\n        # create a new doctor account in system\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n            name = data['name']\n            department = data['department']\n\n            name_str = [i for j in name.split() for i in (j, ' ')][:-1]\n\n            # doctor's username is first letter of first name plus all of last name\n            doctor_username = name[0] + name_str[2]\n\n            doctor_first_name = name_str[0]\n            doctor_last_name = name_str[2]\n\n            email = doctor_first_name[0] + doctor_last_name + \"@mentcare.org\"\n\n            if name is None or department is None:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Missing field. Cannot create doctor account',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            else:\n                # Creates record of the new doctor in the Doctor Information table\n                record = DoctorInformationModel.objects.create(\n                    doctor_id=random.randint(1001, 10000),\n                    name=name,\n                    department=department,\n                    email=email\n                )\n\n                record.save()\n\n                # create a temporary password for the doctor, this password should be changed\n                doctor_password = \"Mentcare2023!\"\n\n                new_doctor_account = User.objects.create_user(\n                    username=doctor_username,\n                    first_name=doctor_first_name,\n                    last_name=doctor_last_name,\n                    email=email,\n                    date_joined=datetime.now(),\n                    last_login=None,\n                    is_active=True,\n                    is_superuser=False,  # user would have all permissions without explicit allow\n                    is_staff=False,  # user would have access to Django admin site, no need\n                    password=doctor_password\n                )\n\n                new_doctor_account.save()\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Doctor created successfully',\n                                     'code': status.HTTP_201_CREATED})\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No valid doctor information given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef modify_doctor_account(request):\n    \"\"\"\n    An administrator user be able to modify doctor accounts within the Mentcare database system.\n    @param request:\n    @return: JSON body response of successful doctor information edit\n    \"\"\"\n    if request.method == 'PUT':\n        # modify doctor information in the system\n        try:\n            data = request.body.decode(\"utf-8\")\n            data = json.loads(data)\n\n            # modifying specific doctor information in Doctor Information Model\n            doctor_id = data['doctor_id']\n\n            # check that a doctor ID was given\n            if doctor_id is None:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Doctor ID not given',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n\n            else:\n                # fill any missing data with pre-existing data to prevent data overwrite\n                if \"name\" not in data:\n                    name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name\n                else:\n                    name = data[\"name\"]\n                if \"email\" not in data:\n                    email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email\n                else:\n                    email = data[\"email\"]\n                if \"department\" not in data:\n                    department = DoctorInformationModel.objects.get(doctor_id=doctor_id).department\n                else:\n                    department = data['department']\n\n                DoctorInformationModel.objects.filter(doctor_id=doctor_id).update(\n                    name=name,\n                    email=email,\n                    department=department\n                )\n\n                json_records = DoctorInformationModel.objects.filter(doctor_id=doctor_id)\n                json_records = serializers.serialize(\"json\", json_records)\n\n                return JsonResponse({'status': 'Success',\n                                     'message': 'Doctor information successfully updated',\n                                     'patient_information': json_records,\n                                     'code': status.HTTP_200_OK})\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No doctor information given to modify',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef delete_doctor_account(request):\n    \"\"\"\n    An administrator user will be able to delete doctor accounts using this\n    @param request:\n    @return:\n    \"\"\"\n    if request.method == 'DELETE':\n        # delete the doctor's whole account/row in database\n        try:\n            data = request.body.decode('utf-8')\n            data = json.loads(data)\n\n            doctor_id = data['doctor_id']\n\n            # Find doctor name from list of doctors in hospital table\n            doctor_name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name\n\n            # check that a valid doctor ID was given\n            if doctor_id is None:\n                return JsonResponse({'status': 'Error',\n                                     'message': 'Doctor ID not given',\n                                     'code': status.HTTP_400_BAD_REQUEST})\n            else:\n                try:\n\n                    # comparing unique email addresses\n                    doctor_email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email\n\n                    account_email = User.objects.get(email=doctor_email)\n                    doctor_email_stripped = doctor_email.rstrip(\"@mentcare.org\")\n\n                    # If the two tables' doctor emails match, first delete doctor account\n                    if doctor_email_stripped == account_email:\n                        # if the two username part of unique emails match\n                        account_email.delete()\n\n                    # Now delete record of doctor\n                    DoctorInformationModel.objects.get(doctor_id=doctor_id).delete()\n\n                    return JsonResponse({'status': 'Success',\n                                         'message': 'Doctor account successfully deleted',\n                                         'code': status.HTTP_200_OK})\n\n                except doctor_name is None:\n                    return JsonResponse({'status': 'Error',\n                                         'message': 'Doctor does not exist',\n                                         'code': status.HTTP_400_BAD_REQUEST})\n        except (json.JSONDecodeError, JSONDecodeError):\n            return JsonResponse({'status': 'Error',\n                                 'message': 'No doctor information given',\n                                 'code': status.HTTP_400_BAD_REQUEST})\n    else:\n        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',\n                             'code': status.HTTP_400_BAD_REQUEST})\n\n\n@csrf_exempt\ndef daily_patient_summary(request):\n    \"\"\"\n    Create a summary of statuses of all patients assigned to the specific doctor.\n    @param request:\n    @param doctor_id: ID number of doctor from which to gather all relevant patient information\n    @return: JSON response of all patient statuses assigned to that particular doctor\n    \"\"\"\n    # @todo: create this function\n    pass\n\n\n@csrf_exempt\ndef monthly_reports(request):\n    \"\"\"\n    This function is a general function to deal with all aspects of monthly reports required by\n    doctors.\n    @param request:\n    @return: JSON response body of relevant information\n    @todo: for story \"receive monthly reports on the number of patients treated\" use stay\n    information model\n    @todo: same todo as below, edit stay information model to include actual dates/times of patient\n    stays\n    @todo: for story \"receive monthly reports on number of patients who have entered/left system\"\n    use stay\n    @todo: for story \"receive monthly reports on drugs prescribed to each patient\" use\n    prescribe medication\n    model, and sort by patient ID (use for individual doctor, their patients)\n    @todo: for story \"receive monthly reports on cost of drugs prescribed\" sum the\n    cost of drugs per patient ID\n    \"\"\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mentcarebackend/views.py b/mentcarebackend/views.py
+--- a/mentcarebackend/views.py	(revision 27672dab43660dde497661a22aad3e44a575eeae)
++++ b/mentcarebackend/views.py	(date 1681772686395)
+@@ -647,6 +647,10 @@
+                              'code': status.HTTP_400_BAD_REQUEST})
+ 
+ 
++@csrf_exempt
++def download_database(request):
++    pass
++
+ @csrf_exempt
+ def daily_patient_summary(request):
+     """
+Index: mentcarebackend/migrations/0001_initial.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mentcarebackend/migrations/0001_initial.py b/mentcarebackend/migrations/0001_initial.py
+new file mode 100644
+--- /dev/null	(date 1681772113644)
++++ b/mentcarebackend/migrations/0001_initial.py	(date 1681772113644)
+@@ -0,0 +1,112 @@
++# Generated by Django 4.1.7 on 2023-04-17 01:18
++
++from django.db import migrations, models
++import django.db.models.deletion
++import phonenumber_field.modelfields
++
++
++class Migration(migrations.Migration):
++
++    initial = True
++
++    dependencies = [
++    ]
++
++    operations = [
++        migrations.CreateModel(
++            name='AdminInformationModel',
++            fields=[
++                ('admin_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('name', models.CharField(max_length=100)),
++                ('email', models.CharField(max_length=100)),
++                ('position', models.CharField(max_length=100)),
++            ],
++        ),
++        migrations.CreateModel(
++            name='AppointmentInformationModel',
++            fields=[
++                ('appointment_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('appointment_start_time', models.CharField(max_length=100)),
++                ('appointment_end_time', models.CharField(max_length=100)),
++                ('room_num', models.IntegerField()),
++            ],
++        ),
++        migrations.CreateModel(
++            name='DoctorInformationModel',
++            fields=[
++                ('doctor_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('name', models.CharField(max_length=100)),
++                ('email', models.CharField(max_length=100, unique=True)),
++                ('department', models.CharField(max_length=100)),
++            ],
++        ),
++        migrations.CreateModel(
++            name='MedicationModel',
++            fields=[
++                ('medication_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False)),
++                ('medication_name', models.CharField(max_length=255)),
++                ('cost', models.IntegerField()),
++                ('application_method', models.CharField(default=None, max_length=255)),
++            ],
++        ),
++        migrations.CreateModel(
++            name='PatientInformationModel',
++            fields=[
++                ('patient_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False)),
++                ('first_name', models.CharField(max_length=100)),
++                ('last_name', models.CharField(max_length=100)),
++                ('gender', models.PositiveSmallIntegerField(blank=True, choices=[(1, 'Male'), (2, 'Female'), (3, 'Genderfluid'), (4, 'Genderqueer'), (5, 'Bigender'), (6, 'Agender'), (7, 'Non-binary'), (8, 'Polygender'), (9, 'Unknown')], null=True, verbose_name='gender')),
++                ('dob', models.DateField()),
++                ('address', models.TextField()),
++                ('phone_num', phonenumber_field.modelfields.PhoneNumberField(blank=True, max_length=128, region=None)),
++                ('allergies', models.TextField(blank=True)),
++            ],
++        ),
++        migrations.CreateModel(
++            name='RoomInformationModel',
++            fields=[
++                ('room_number', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('is_available', models.BooleanField()),
++            ],
++        ),
++        migrations.CreateModel(
++            name='StayInformationModel',
++            fields=[
++                ('stay_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('start_time', models.TimeField()),
++                ('end_time', models.TimeField()),
++                ('patient_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.patientinformationmodel')),
++                ('room_num', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.roominformationmodel')),
++            ],
++        ),
++        migrations.CreateModel(
++            name='PrescribeMedicationModel',
++            fields=[
++                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
++                ('date', models.DateTimeField()),
++                ('dosage', models.TextField()),
++                ('appointment_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.appointmentinformationmodel')),
++                ('doctor_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.doctorinformationmodel')),
++                ('medication_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.medicationmodel')),
++                ('patient_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.patientinformationmodel')),
++            ],
++        ),
++        migrations.CreateModel(
++            name='DepartmentInformationModel',
++            fields=[
++                ('department_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, unique=True)),
++                ('department_name', models.CharField(max_length=255)),
++                ('department_head', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.doctorinformationmodel')),
++            ],
++        ),
++        migrations.AddField(
++            model_name='appointmentinformationmodel',
++            name='doctor_id',
++            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.doctorinformationmodel'),
++        ),
++        migrations.AddField(
++            model_name='appointmentinformationmodel',
++            name='patient_id',
++            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mentcarebackend.patientinformationmodel'),
++        ),
++    ]
+Index: mentcarebackend/migrations/0002_alter_prescribemedicationmodel_date.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mentcarebackend/migrations/0002_alter_prescribemedicationmodel_date.py b/mentcarebackend/migrations/0002_alter_prescribemedicationmodel_date.py
+new file mode 100644
+--- /dev/null	(date 1681772113645)
++++ b/mentcarebackend/migrations/0002_alter_prescribemedicationmodel_date.py	(date 1681772113645)
+@@ -0,0 +1,18 @@
++# Generated by Django 4.1.7 on 2023-04-17 22:54
++
++from django.db import migrations, models
++
++
++class Migration(migrations.Migration):
++
++    dependencies = [
++        ('mentcarebackend', '0001_initial'),
++    ]
++
++    operations = [
++        migrations.AlterField(
++            model_name='prescribemedicationmodel',
++            name='date',
++            field=models.DateField(),
++        ),
++    ]
+Index: .idea/Spring2023-Team-2.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/Spring2023-Team-2.iml b/.idea/Spring2023-Team-2.iml
+new file mode 100644
+--- /dev/null	(date 1681772113637)
++++ b/.idea/Spring2023-Team-2.iml	(date 1681772113637)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module version="4">
++  <component name="PyDocumentationSettings">
++    <option name="format" value="EPYTEXT" />
++    <option name="myDocStringFormat" value="Epytext" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+new file mode 100644
+--- /dev/null	(date 1681772113638)
++++ b/.idea/inspectionProfiles/profiles_settings.xml	(date 1681772113638)
+@@ -0,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
