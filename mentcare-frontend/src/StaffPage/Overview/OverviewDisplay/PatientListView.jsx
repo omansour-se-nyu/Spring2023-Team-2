@@ -4,14 +4,15 @@ import {
     InputLeftElement,
     Text,
     Input,
-    Card,
-    CardBody,
-    CardHeader,
-    Heading,
-    Stack,
-    StackDivider,
-    Box,
-    Center,
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
     IconButton,
     Modal,
     ModalOverlay,
@@ -55,45 +56,47 @@ function BasicUsage() {
 
 const PatientListView = () =>  {
       const [userData, setUserData] = useState({});
-      const [patientID, setPatientID] = useState(1);
+      const [patientID, setPatientID] = useState();
+      const [patient, setPatient] = useState({});
       const [outOfRange, setOutOfRange] = useState(false);
       const [modal, setModal] = useState(false);
 
       let HEADER;
 
-      // get patient id from search field
+      // get patient id from search field and edit that record
       const handleChange = (event) => {
           //console.log(event.target.value);
           // TODO: add cannot find patient
           if(event.target.value > 1000 || event.target.value < 1){
             console.log("MRN out of range");
             setOutOfRange(true);
+            setPatientID(0);
             setTimeout(() => setOutOfRange(false), 2000);
           }else{
             setPatientID(event.target.value);
+
           }
       };
 
       // get patient id from search field
       const editRecord = () => {
-          console.log("Edit Record");
-          setModal( true);
+        console.log("Edit Record: ", patientID);
       };
 
       const fetchData = () => {
         fetch("http://127.0.0.1:8000/staff/patients/records/retrieve/", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({ "patient_id": parseInt(patientID) }),
+            body: JSON.stringify({ "patient_id": 0 }),
         })
           .then((response) => response.json())
           .then((actualData) => {
             //console.log(patientID);
             const split_json = JSON.parse(actualData.patient_information);
+            //console.log(split_json[0].fields); // index needs to be a loop to add on to frontend
 
             // all info
-            HEADER = split_json[0].fields;
-            //console.log(HEADER);
+            HEADER = split_json;
             setUserData(HEADER);
             //console.log(HEADER.first_name);
             //console.log(HEADER.last_name);
@@ -106,7 +109,7 @@ const PatientListView = () =>  {
 
      useEffect(() => {
         fetchData();
-      }, [patientID]);
+      }, []);
 
 
      return (
@@ -128,32 +131,43 @@ const PatientListView = () =>  {
                     focusBorderColor='#F3EED9'
                     onBlur={handleChange}
                 />
+                <IconButton
+                variant='outline'
+                colorScheme='black'
+                aria-label='Edit patient information'
+                icon={<EditIcon />}
+                onClick={editRecord()}
+                mL={6}
+                />
             </InputGroup>
+
             {outOfRange ? <Text marginLeft={7} fontSize='sm'>Invalid Patient MRN</Text> : null}
             <div>
-                    <Center>
-                        <Heading size='md' p={2}>{userData.first_name} {userData.last_name}'s Summary</Heading>
-                        <IconButton aria-label='Edit Record' variant='outline' onClick={editRecord} icon={<EditIcon boxSize={18} marginLeft={7}/>} />
-                        <DeleteIcon boxSize={18} marginLeft={7}/>
-                    </Center>
-                    <Stack divider={<StackDivider borderColor='white'/>} spacing='2' m={50} h='100%'>
-                        <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
-                            <Text as='b'>Patient D.O.B:</Text> {userData.dob}
-                        </Box>
-                        <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
-                            <Text as='b'>Patient Gender:</Text> {userData.gender}
-                        </Box>
-                        <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
-                            <Text as='b'>Patient Address:</Text> {userData.address}
-                        </Box>
-                        <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
-                            <Text as='b'>Patient Phone Number:</Text> {userData.phone_num}
-                        </Box>
-                        <Box bg='#F3EED9' w='100%' p={4} color='black' borderRadius='80px'  >
-                            <Text as='b'>Patient Allergies:</Text> {userData.allergies}
-                        </Box>
-                    </Stack>
-                </div>
+                <Table>
+                <TableContainer>
+                    <Thead>
+                      <Tr>
+                        <Th>Patient MRN</Th>
+                        <Th>Patient First Name</Th>
+                        <Th>Patient Last Name</Th>
+                        <Th>Patient D.O.B</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                        {userData.length > 0 && userData.map(userData => {
+                            return (
+                                <Tr>
+                                    <Td>{userData.pk}</Td>
+                                    <Td>{userData.fields.first_name}</Td>
+                                    <Td>{userData.fields.last_name}</Td>
+                                    <Td>{userData.fields.dob}</Td>
+                                </Tr>
+                            );
+                        })}
+                    </Tbody>
+                </TableContainer>
+                </Table>
+            </div>
         </div>
       );
 
