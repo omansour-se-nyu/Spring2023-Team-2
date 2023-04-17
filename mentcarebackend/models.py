@@ -59,8 +59,8 @@ class AppointmentInformationModel(models.Model):
     # ID number of patient
     doctor_id = models.ForeignKey(DoctorInformationModel, null=True, on_delete=models.CASCADE)
     # ID number of each doctor
-    appointment_start_time = models.DateTimeField()  # scheduled start time to meet doctor
-    appointment_end_time = models.DateTimeField()  # scheduled end time of doctor's appointment
+    appointment_start_time = models.CharField(max_length=100)  # scheduled start time to meet doctor
+    appointment_end_time = models.CharField(max_length=100)  # scheduled end time of doctor's appointment
     room_num = models.IntegerField()  # room number where patient and doctor meet
 
 
