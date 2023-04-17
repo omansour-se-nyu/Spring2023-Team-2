@@ -655,7 +655,6 @@ def daily_patient_summary(request):
     @param doctor_id: ID number of doctor from which to gather all relevant patient information
     @return: JSON response of all patient statuses assigned to that particular doctor
     """
-    # @todo: create all mock data for database in order to do monthly reports/status summaries
     # @todo: create this function
     pass
 
