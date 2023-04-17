@@ -1,4 +1,5 @@
 import React, { useState , useEffect } from 'react';
+import axios from 'axios';
 import {
     InputGroup,
     InputLeftElement,
@@ -32,75 +33,85 @@ import { SearchIcon , EditIcon , DeleteIcon } from "@chakra-ui/icons";
 // TODO: Check if onblur or onchange is okay for search field
 
 function VerticallyCenter() {
+  const [updatedAt, setUpdatedAt] = useState(false);
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const initialRef = React.useRef(null)
   const finalRef = React.useRef(null)
 
-  return (
-    <>
-      <IconButton
-                variant='outline'
-                colorScheme='black'
-                aria-label='Edit patient information'
-                icon={<EditIcon />}
-                onClick={onOpen}
-                mL={6}
-                />
+  // variables to change info
+  let firstName = '';
+  let lastName = '';
+  let dob = '';
+  let gender = 0;
+  let num = '';
+  let addr = '';
+  let aller = ''
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered initialFocusRef={initialRef} finalFocusRef={finalRef}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Edit MRN Record: {global_patientID}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>First name</FormLabel>
-              <Input ref={initialRef} placeholder='First name' />
-            </FormControl>
+  const updatePatientFName = (event) => {
+    console.log(event.target.value);
+    firstName = event.target.value;
 
-            <FormControl mt={4}>
-              <FormLabel>Last name</FormLabel>
-              <Input placeholder='Last name' />
-            </FormControl>
+  }
+  const updatePatientLName = (event) => {
+    console.log(event.target.value);
+    lastName = event.target.value;
+  }
+  const updatePatientdob = (event) => {
+    console.log(event.target.value);
+    dob = event.target.value;
+  }
+  const updatePatientGender = (event) => {
+    console.log(event.target.value);
+    gender = event.target.value;
+  }
+  const updatePatientNum = (event) => {
+    console.log(event.target.value);
+    num = event.target.value;
+  }
+  const updatePatientAddr = (event) => {
+    console.log(event.target.value);
+    addr = event.target.value;
+  }
+  const updatePatientAllergies = (event) => {
+    console.log(event.target.value);
+    aller = event.target.value;
+  }
 
-            <FormControl mt={4}>
-              <FormLabel>Patient D.O.B</FormLabel>
-              <Input type='date' placeholder='Last name' />
-            </FormControl>
+  const putData = () => {
+    // PUT request using axios inside useEffect React hook
+    const editPatient = { "patient_id":global_patientID };
+    axios.put('http://127.0.0.1:8000/staff/patients/records/update/', editPatient)
+        .then(response =>  setUpdatedAt(response.data.updatedAt))
+        .catch(error => {
+            console.error('There was an error!', error);
+        });
+  };
+    /**
+  useEffect(() => {
+    putData();
+  }, [global_patientID]);**/
 
-            <FormControl mt={4}>
-              <FormLabel>Gender</FormLabel>
-              <Input type='number' placeholder='Gender' />
-            </FormControl>
+}
 
-            <FormControl mt={4}>
-              <FormLabel>Address</FormLabel>
-              <Input placeholder='Address' />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Phone Number</FormLabel>
-              <Input type='tel' placeholder='Phone Number' />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Allergies</FormLabel>
-              <Input placeholder='Allergies' />
-            </FormControl>
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
-  )
+function deletePatient(){
+    var deleteID = global_patientID;
+    console.log("Deleting...", global_patientID);
+    console.log('Delete: ', deleteID);
+    const requestOptions = {
+            method: 'DELETE',
+            body: {
+                'patient_id': deleteID
+            }
+        };
+        fetch('http://127.0.0.1:8000/staff/patients/records/delete/', requestOptions)
+            .then(() => console.log('Delete successful'));
 }
 
 var global_patientID = 0;
 const PatientListView = () =>  {
       const [userData, setUserData] = useState({});
-      const [patientID, setPatientID] = useState();
+      const [patientID, setPatientID] = useState(0);
       const [patient, setPatient] = useState({});
       const [outOfRange, setOutOfRange] = useState(false);
       const [modal, setModal] = useState(false);
@@ -141,10 +152,8 @@ const PatientListView = () =>  {
 
             // all info
             HEADER = split_json;
+            HEADER.sort((a, b) => a.pk - b.pk);
             setUserData(HEADER);
-            //console.log(HEADER.first_name);
-            //console.log(HEADER.last_name);
-
           })
           .catch((err) => {
             console.log(err.message);
@@ -154,7 +163,6 @@ const PatientListView = () =>  {
      useEffect(() => {
         fetchData();
       }, []);
-
 
      return (
         <div>
@@ -176,13 +184,75 @@ const PatientListView = () =>  {
                     onBlur={handleChange}
                     marginRight={2}
                 />
-                {VerticallyCenter()}
+                <IconButton
+                variant='outline'
+                colorScheme='black'
+                aria-label='Edit patient information'
+                icon={<EditIcon />}
+                onClick={onOpen}
+                mL={6}
+                />
+              <Modal onClose={onClose} isOpen={isOpen} isCentered initialFocusRef={initialRef} finalFocusRef={finalRef}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Edit MRN Record: {global_patientID}</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody pb={6}>
+                    <FormControl>
+                      <FormLabel>First name</FormLabel>
+                      <Input ref={initialRef} placeholder='First name' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Last name</FormLabel>
+                      <Input placeholder='Last name' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Patient D.O.B</FormLabel>
+                      <Input type='date' placeholder='Last name' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Gender</FormLabel>
+                      <Input type='number' placeholder='Gender' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Address</FormLabel>
+                      <Input placeholder='Address' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Phone Number</FormLabel>
+                      <Input type='tel' placeholder='Phone Number' />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                      <FormLabel>Allergies</FormLabel>
+                      <Input placeholder='Allergies' />
+                    </FormControl>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button onClick={onClose}>Close</Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+                <IconButton
+                    variant='outline'
+                    colorScheme='black'
+                    aria-label='Call Sage'
+                    fontSize='20px'
+                    icon={<DeleteIcon />}
+                    marginLeft={2}
+                    onClick={() => deletePatient()}
+                />
             </InputGroup>
 
 
             {outOfRange ? <Text marginLeft={7} fontSize='sm'>Invalid Patient MRN</Text> : null}
             <div>
-                <Table marginLeft={7}>
+                <Table>
                 <TableContainer>
                     <Thead>
                       <Tr>
@@ -193,6 +263,7 @@ const PatientListView = () =>  {
                         <Th>Gender</Th>
                         <Th>Phone Number</Th>
                         <Th>Allergies</Th>
+                        <Th>Address</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -206,6 +277,7 @@ const PatientListView = () =>  {
                                     <Td>{userData.fields.gender}</Td>
                                     <Td>{userData.fields.phone_num}</Td>
                                     <Td>{userData.fields.allergies}</Td>
+                                    <Td>{userData.fields.address}</Td>
                                 </Tr>
                             );
                         })}
