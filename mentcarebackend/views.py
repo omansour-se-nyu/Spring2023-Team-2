@@ -317,7 +317,7 @@ def retrieve_patient_records(request):
 
             # checks if there is no request body
             # this will return all patient records
-            if patient_id is 0:
+            if patient_id == 0:
                 patients_records_list = PatientInformationModel.objects.all()
                 records_json = serializers.serialize('json', patients_records_list)
 
