@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 
 from mentcarebackend.models import *
@@ -248,6 +249,7 @@ def register_user(request):
 
 
 @csrf_exempt
+@cache_page(60 * 15)
 def create_patient_records(request):
     """
     Create a patient record, and add to the database. Patient ID number is randomly generated
