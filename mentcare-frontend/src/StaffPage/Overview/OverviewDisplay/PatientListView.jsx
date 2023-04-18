@@ -54,17 +54,14 @@ const PatientListView = () =>  {
 
       // get patient id from search field and edit that record
       const handleChange = (event) => {
-          //console.log(event.target.value);
           // TODO: add cannot find patient
           if(event.target.value > 1000 || event.target.value < 1){
-            console.log("MRN out of range");
             setOutOfRange(true);
             setPatientID(0);
             setTimeout(() => setOutOfRange(false), 2000);
           }else{
             setPatientID(event.target.value);
             global_patientID = event.target.value;
-            console.log("Edit Record: ", global_patientID);
           }
       };
 
@@ -77,9 +74,7 @@ const PatientListView = () =>  {
         })
           .then((response) => response.json())
           .then((actualData) => {
-            //console.log(patientID);
             const split_json = JSON.parse(actualData.patient_information);
-            //console.log(split_json[0].fields); // index needs to be a loop to add on to frontend
 
             // all info
             HEADER = split_json;
@@ -96,7 +91,6 @@ const PatientListView = () =>  {
     // variables to create patient
     let cFN;
     const createFName = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cFN = event.target.value;
         }
@@ -104,7 +98,6 @@ const PatientListView = () =>  {
 
     let cLN;
     const createLName = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cLN = event.target.value;
         }
@@ -112,7 +105,6 @@ const PatientListView = () =>  {
 
     let cG;
     const createGender = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cG = event.target.value;
         }
@@ -120,7 +112,6 @@ const PatientListView = () =>  {
 
     let cdob;
     const createDOB = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cdob = event.target.value;
         }
@@ -128,7 +119,6 @@ const PatientListView = () =>  {
 
     let cAddr;
     const createAddr = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cAddr = event.target.value;
         }
@@ -136,7 +126,6 @@ const PatientListView = () =>  {
 
     let cPhone;
     const createPhone = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cPhone = event.target.value;
         }
@@ -144,7 +133,6 @@ const PatientListView = () =>  {
 
     let cAller;
     const createAller = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             cAller = event.target.value;
         }
@@ -155,7 +143,6 @@ const PatientListView = () =>  {
     const finalRef1 = React.useRef(null);
 
     function createPatient(){
-        console.log("Create Patient");
             fetch("http://127.0.0.1:8000/staff/patients/records/create/", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
@@ -171,7 +158,6 @@ const PatientListView = () =>  {
             })
               .then((response) => response.json())
               .then((result) => {
-                console.log(result.status);
                 fetchData();
               })
               .catch((err) => {
@@ -194,43 +180,36 @@ const PatientListView = () =>  {
 
   //let body_options = JSON.stringify(setOptions)
     const updatePatientFName = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             firstName = event.target.value;
         }
     }
     const updatePatientLName = (event) => {
-        console.log('Last Name: {', event.target.value, "]");
         if(event.target.value !== null){
             lastName = event.target.value;
         }
     }
     const updatePatientdob = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             dob = event.target.value;
         }
     }
     const updatePatientGender = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             gender = event.target.value;
         }
     }
     const updatePatientNum = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             num = event.target.value;
         }
     }
     const updatePatientAddr = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             addr = event.target.value;
         }
     }
     const updatePatientAllergies = (event) => {
-        console.log(event.target.value);
         if(event.target.value !== ''){
             aller_ = event.target.value;
         }
@@ -238,7 +217,6 @@ const PatientListView = () =>  {
 
     function putData(){
         // PUT request
-        console.log("changing info: ", firstName, ' ', global_patientID);
         if(global_patientID !== 0){
             const requestOptions = {
             method: 'PUT',
