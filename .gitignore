@@ -13,3 +13,6 @@
 *.iml
 *.idea
 .idea
+__pycache__
+/mentcare/__psycache__/
+/mentcarebackend/__psycache__/
