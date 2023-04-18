@@ -47,6 +47,9 @@ const PatientListView = () =>  {
       const [modal, setModal] = useState(false);
       const [created, setCreated] = useState(false);
 
+      // notifications here
+      const [notif, setNotif] = useState(false);
+
       const { isOpen, onOpen, onClose } = useDisclosure();
       const initialRef = React.useRef(null);
       const finalRef = React.useRef(null);
@@ -236,6 +239,8 @@ const PatientListView = () =>  {
         .then(response => response.json())
         .then((result) => {
             console.log(result);
+            setNotif(true);
+            console.log(notif);
             fetchData();
           });
         }
@@ -382,7 +387,7 @@ const PatientListView = () =>  {
                     </FormControl>
                   </ModalBody>
                   <ModalFooter>
-                    <Button backgroundColor='#F3EED9' marginRight={3} onClick={() => createPatient()}>Confirm Changes</Button>
+                    <Button backgroundColor='#F3EED9' marginRight={3} onClick={() => putData()}>Confirm Changes</Button>
                     <Button backgroundColor='#F3EED9' onClick={onClose}>Close</Button>
                   </ModalFooter>
                 </ModalContent>
@@ -396,14 +401,22 @@ const PatientListView = () =>  {
                     marginLeft={2}
                     onClick={() => deletePatient()}
                 />
-                <IconButton
+
+                {notif ? <IconButton
+                    variant='outline'
+                    colorScheme='red'
+                    aria-label='Get Patient Update'
+                    fontSize='20px'
+                    icon={<ChatIcon />}
+                    marginLeft={2}
+                /> : <IconButton
                     variant='outline'
                     colorScheme='black'
                     aria-label='Get Patient Update'
                     fontSize='20px'
                     icon={<ChatIcon />}
                     marginLeft={2}
-                />
+                />}
             </InputGroup>
 
 
