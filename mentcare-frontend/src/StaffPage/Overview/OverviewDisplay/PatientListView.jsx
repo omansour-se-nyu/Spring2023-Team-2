@@ -30,8 +30,6 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
 
-// TODO: add notifications to patient list view
-
 function deletePatient(){
     console.log("Deleting...", global_patientID);
     fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID, { method: 'DELETE' })
@@ -39,6 +37,8 @@ function deletePatient(){
 }
 
 var global_patientID = 0;
+let editingString = '';
+
 const PatientListView = () =>  {
       const [userData, setUserData] = useState({});
       const [patientID, setPatientID] = useState(0);
@@ -218,6 +218,14 @@ const PatientListView = () =>  {
             aller_ = event.target.value;
         }
     }
+    const { isOpen: isOpen2 , onOpen: onOpen2, onClose: onClose2 } = useDisclosure();
+    const initialRef2 = React.useRef(null);
+    const finalRef2 = React.useRef(null);
+
+    function clearNotif(){
+        editingString = '';
+        setNotif(false);
+    }
 
     function putData(){
         // PUT request
@@ -240,7 +248,7 @@ const PatientListView = () =>  {
         .then((result) => {
             console.log(result);
             setNotif(true);
-            console.log(notif);
+            editingString = editingString + 'Edited ' + global_patientID + '\'s Patient Record.\n';
             fetchData();
           });
         }
@@ -402,21 +410,29 @@ const PatientListView = () =>  {
                     onClick={() => deletePatient()}
                 />
 
-                {notif ? <IconButton
+                <IconButton
                     variant='outline'
-                    colorScheme='red'
+                    colorScheme={notif ? 'red' : 'black'}
                     aria-label='Get Patient Update'
                     fontSize='20px'
                     icon={<ChatIcon />}
+                    onClick={onOpen2}
                     marginLeft={2}
-                /> : <IconButton
-                    variant='outline'
-                    colorScheme='black'
-                    aria-label='Get Patient Update'
-                    fontSize='20px'
-                    icon={<ChatIcon />}
-                    marginLeft={2}
-                />}
+                />
+                <Modal onClose={onClose2} isOpen={isOpen2} isCentered initialFocusRef={initialRef2} finalFocusRef={finalRef2}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Notifications</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody pb={6}>
+                   {editingString.split('\n').map(str => <p>{str}</p>)}
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button backgroundColor='#F3EED9' onClick={() => clearNotif()} marginRight={3}>Clear</Button>
+                    <Button backgroundColor='#F3EED9' onClick={onClose2}>Close</Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
             </InputGroup>
 
 
