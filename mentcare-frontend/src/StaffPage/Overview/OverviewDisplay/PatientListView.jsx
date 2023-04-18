@@ -28,7 +28,7 @@ import {
     FormLabel,
     ChakraProvider
 } from '@chakra-ui/react';
-import { SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
+import { ViewIcon , SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
 
 function deletePatient(){
     console.log("Deleting...", global_patientID);
@@ -66,8 +66,13 @@ const PatientListView = () =>  {
           }else{
             setPatientID(event.target.value);
             global_patientID = event.target.value;
+
           }
       };
+
+      const { isOpen: isOpen3 , onOpen: onOpen3, onClose: onClose3 } = useDisclosure();
+      const initialRef3 = React.useRef(null);
+      const finalRef3 = React.useRef(null);
 
       // List out Patients =====================
       const fetchData = () => {
@@ -433,6 +438,39 @@ const PatientListView = () =>  {
                   </ModalFooter>
                 </ModalContent>
               </Modal>
+              <IconButton
+                    variant='outline'
+                    colorScheme='black'
+                    aria-label='View Patient Info'
+                    fontSize='20px'
+                    icon={<ViewIcon />}
+                    marginLeft={2}
+                    onClick={onOpen3}
+                />
+                <Modal onClose={onClose3} isOpen={isOpen3} isCentered initialFocusRef={initialRef3} finalFocusRef={finalRef3}>
+                  <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Expanded Patient View</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody pb={6}>
+                            <br></br>
+                            {global_patientID!==0 ? 'Name: ' +userData[global_patientID-1].fields.first_name + " " + userData[global_patientID-1].fields.last_name : 'Name: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Gender: ' + JSON.stringify(userData[global_patientID-1].fields.gender) : 'Gender: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'D.O.B: ' + JSON.stringify(userData[global_patientID-1].fields.dob) : 'D.O.B: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Address: ' + JSON.stringify(userData[global_patientID-1].fields.address) : 'Address: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Phone Number: ' + JSON.stringify(userData[global_patientID-1].fields.phone_num) : 'Phone Number: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Allergies: ' + JSON.stringify(userData[global_patientID-1].fields.allergies) : 'Allergies: '}
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button backgroundColor='#F3EED9' onClick={onClose3}>Close</Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
             </InputGroup>
 
 
@@ -447,9 +485,6 @@ const PatientListView = () =>  {
                         <Th>Last Name</Th>
                         <Th>D.O.B</Th>
                         <Th>Gender</Th>
-                        <Th>Phone Number</Th>
-                        <Th>Allergies</Th>
-                        <Th>Address</Th>
                         <Th>Download</Th>
                       </Tr>
                     </Thead>
@@ -462,9 +497,6 @@ const PatientListView = () =>  {
                                     <Td>{userData.fields.last_name}</Td>
                                     <Td>{userData.fields.dob}</Td>
                                     <Td>{userData.fields.gender}</Td>
-                                    <Td>{userData.fields.phone_num}</Td>
-                                    <Td>{userData.fields.allergies}</Td>
-                                    <Td>{userData.fields.address}</Td>
                                     <Td> <IconButton
                                         variant='outline'
                                         colorScheme='black'
