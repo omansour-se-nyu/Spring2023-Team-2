@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from 'react';
-import download from './PatientListHelper';
+import download from './download';
 import {
     InputGroup,
     InputLeftElement,
@@ -28,9 +28,7 @@ import {
     FormLabel,
     ChakraProvider
 } from '@chakra-ui/react';
-import { SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
-
-// TODO: add notifications to patient list view
+import { ViewIcon , SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
 
 function deletePatient(){
     console.log("Deleting...", global_patientID);
@@ -39,6 +37,8 @@ function deletePatient(){
 }
 
 var global_patientID = 0;
+let editingString = '';
+
 const PatientListView = () =>  {
       const [userData, setUserData] = useState({});
       const [patientID, setPatientID] = useState(0);
@@ -46,6 +46,9 @@ const PatientListView = () =>  {
       const [outOfRange, setOutOfRange] = useState(false);
       const [modal, setModal] = useState(false);
       const [created, setCreated] = useState(false);
+
+      // notifications here
+      const [notif, setNotif] = useState(false);
 
       const { isOpen, onOpen, onClose } = useDisclosure();
       const initialRef = React.useRef(null);
@@ -63,8 +66,13 @@ const PatientListView = () =>  {
           }else{
             setPatientID(event.target.value);
             global_patientID = event.target.value;
+
           }
       };
+
+      const { isOpen: isOpen3 , onOpen: onOpen3, onClose: onClose3 } = useDisclosure();
+      const initialRef3 = React.useRef(null);
+      const finalRef3 = React.useRef(null);
 
       // List out Patients =====================
       const fetchData = () => {
@@ -215,6 +223,14 @@ const PatientListView = () =>  {
             aller_ = event.target.value;
         }
     }
+    const { isOpen: isOpen2 , onOpen: onOpen2, onClose: onClose2 } = useDisclosure();
+    const initialRef2 = React.useRef(null);
+    const finalRef2 = React.useRef(null);
+
+    function clearNotif(){
+        editingString = '';
+        setNotif(false);
+    }
 
     function putData(){
         // PUT request
@@ -236,6 +252,8 @@ const PatientListView = () =>  {
         .then(response => response.json())
         .then((result) => {
             console.log(result);
+            setNotif(true);
+            editingString = editingString + 'Edited ' + global_patientID + '\'s Patient Record.\n';
             fetchData();
           });
         }
@@ -382,7 +400,7 @@ const PatientListView = () =>  {
                     </FormControl>
                   </ModalBody>
                   <ModalFooter>
-                    <Button backgroundColor='#F3EED9' marginRight={3} onClick={() => createPatient()}>Confirm Changes</Button>
+                    <Button backgroundColor='#F3EED9' marginRight={3} onClick={() => putData()}>Confirm Changes</Button>
                     <Button backgroundColor='#F3EED9' onClick={onClose}>Close</Button>
                   </ModalFooter>
                 </ModalContent>
@@ -396,14 +414,63 @@ const PatientListView = () =>  {
                     marginLeft={2}
                     onClick={() => deletePatient()}
                 />
+
                 <IconButton
                     variant='outline'
-                    colorScheme='black'
+                    colorScheme={notif ? 'red' : 'black'}
                     aria-label='Get Patient Update'
                     fontSize='20px'
                     icon={<ChatIcon />}
+                    onClick={onOpen2}
                     marginLeft={2}
                 />
+                <Modal onClose={onClose2} isOpen={isOpen2} isCentered initialFocusRef={initialRef2} finalFocusRef={finalRef2}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Notifications</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody pb={6}>
+                   {editingString.split('\n').map(str => <p>{str}</p>)}
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button backgroundColor='#F3EED9' onClick={() => clearNotif()} marginRight={3}>Clear</Button>
+                    <Button backgroundColor='#F3EED9' onClick={onClose2}>Close</Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+              <IconButton
+                    variant='outline'
+                    colorScheme='black'
+                    aria-label='View Patient Info'
+                    fontSize='20px'
+                    icon={<ViewIcon />}
+                    marginLeft={2}
+                    onClick={onOpen3}
+                />
+                <Modal onClose={onClose3} isOpen={isOpen3} isCentered initialFocusRef={initialRef3} finalFocusRef={finalRef3}>
+                  <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>Expanded Patient View</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody pb={6}>
+                            <br></br>
+                            {global_patientID!==0 ? 'Name: ' +userData[global_patientID-1].fields.first_name + " " + userData[global_patientID-1].fields.last_name : 'Name: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Gender: ' + JSON.stringify(userData[global_patientID-1].fields.gender) : 'Gender: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'D.O.B: ' + JSON.stringify(userData[global_patientID-1].fields.dob) : 'D.O.B: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Address: ' + JSON.stringify(userData[global_patientID-1].fields.address) : 'Address: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Phone Number: ' + JSON.stringify(userData[global_patientID-1].fields.phone_num) : 'Phone Number: '}
+                            <br></br>
+                            {global_patientID!==0 ? 'Allergies: ' + JSON.stringify(userData[global_patientID-1].fields.allergies) : 'Allergies: '}
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button backgroundColor='#F3EED9' onClick={onClose3}>Close</Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
             </InputGroup>
 
 
@@ -418,9 +485,6 @@ const PatientListView = () =>  {
                         <Th>Last Name</Th>
                         <Th>D.O.B</Th>
                         <Th>Gender</Th>
-                        <Th>Phone Number</Th>
-                        <Th>Allergies</Th>
-                        <Th>Address</Th>
                         <Th>Download</Th>
                       </Tr>
                     </Thead>
@@ -433,9 +497,6 @@ const PatientListView = () =>  {
                                     <Td>{userData.fields.last_name}</Td>
                                     <Td>{userData.fields.dob}</Td>
                                     <Td>{userData.fields.gender}</Td>
-                                    <Td>{userData.fields.phone_num}</Td>
-                                    <Td>{userData.fields.allergies}</Td>
-                                    <Td>{userData.fields.address}</Td>
                                     <Td> <IconButton
                                         variant='outline'
                                         colorScheme='black'
