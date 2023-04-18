@@ -11,6 +11,7 @@ import { useContext } from 'react';
 const OverviewDisplay = () => {
   const navigate = useNavigate();
   const { setPatientManagementPage } = useContext(StaffContext);
+  const { setLogoutPage } = useContext(StaffContext);
 
   const handleOnClickPatientView = () => {
     console.log("Patient View");
@@ -18,15 +19,21 @@ const OverviewDisplay = () => {
     navigate('/staff/records');
   };
 
+  // logout if successful
+  const logoutOnClick = () => {
+    console.log("Logout");
+    setLogoutPage(true);
+    navigate('/');
+  };
+
   const cardTitleImages = [
     // import images link when it is imported later
     ['Patients', patientIcon, handleOnClickPatientView],
-    ['Database', database, () => {}],
-    ['Logout', logout, () => {}],
+    ['Logout', logout, logoutOnClick],
   ];
 
   return (
-    <Grid templateColumns='repeat(2, 1fr)' gap='5' padding='30px' height='100%'>
+    <Grid templateColumns='repeat(2, 1fr)' gap='5' padding='30px' height='50%'>
       {cardTitleImages.map(([title, imageLink, handleOnClick]) => (
         <GridItem colSpan={1} key={uuid()}>
           <CardSelection

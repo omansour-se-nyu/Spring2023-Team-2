@@ -44,8 +44,6 @@ const StaffPage = () => {
         setOverviewPage,
         patientManagementPage,
         setPatientManagementPage,
-        databasePage,
-        setDatabasePage,
         logoutPage,
         setLogoutPage,
       }}

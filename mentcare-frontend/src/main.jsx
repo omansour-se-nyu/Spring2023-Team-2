@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './ErrorPage';
 import AdminPage from './AdminPage';
 import StaffPage from './StaffPage';
-import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListView'
+import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListView';
 import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
 import { ChakraProvider } from '@chakra-ui/react';
 
