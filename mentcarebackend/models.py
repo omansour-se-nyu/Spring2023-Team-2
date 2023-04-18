@@ -59,8 +59,8 @@ class AppointmentInformationModel(models.Model):
     # ID number of patient
     doctor_id = models.ForeignKey(DoctorInformationModel, null=True, on_delete=models.CASCADE)
     # ID number of each doctor
-    appointment_start_time = models.DateTimeField()  # scheduled start time to meet doctor
-    appointment_end_time = models.DateTimeField()  # scheduled end time of doctor's appointment
+    appointment_start_time = models.CharField(max_length=100)  # scheduled start time to meet doctor
+    appointment_end_time = models.CharField(max_length=100)  # scheduled end time of doctor's appointment
     room_num = models.IntegerField()  # room number where patient and doctor meet
 
 
@@ -80,7 +80,7 @@ class PrescribeMedicationModel(models.Model):
     # ID number of medication being prescribed, referenced in MedicationModel
     appointment_id = models.ForeignKey(AppointmentInformationModel, on_delete=models.CASCADE)
     # ID of appointment when doctor prescribed medication to patient
-    date = models.DateTimeField()  # date and time medication was prescribed
+    date = models.DateField()  # date medication was prescribed
     dosage = models.TextField()  # dose prescribed by the doctor
 
 
@@ -107,3 +107,11 @@ class DepartmentInformationModel(models.Model):
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of the doctor that's head of the department
     # referencing column doctor_id of DoctorInformationModel
+
+
+class PatientBehaviorModel(models.Model):
+    behavior_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # ID num for the patient's behavior
+    patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
+    # ID num of the corresponding patient
+    behavior = models.CharField(max_length=100)
