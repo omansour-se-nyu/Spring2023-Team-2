@@ -427,7 +427,7 @@ def update_patient_records(request):
 
 
 @csrf_exempt
-def delete_patient_records(request):
+def delete_patient_records(request, patient_id=None):
     """
     Delete a patient's records from the database
 
@@ -436,10 +436,6 @@ def delete_patient_records(request):
     """
     if request.method == 'DELETE':
         try:
-            data = request.body.decode('utf-8')
-            data = json.loads(data)
-            patient_id = data['patient_id']
-
             # tests that patient_id was given and isn't NULL
             if patient_id is None:
                 return JsonResponse({'status': 'Error',
@@ -447,8 +443,11 @@ def delete_patient_records(request):
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             else:
+                print(patient_id)
                 record = PatientInformationModel.objects.get(patient_id=patient_id)
+                behavior = PatientInformationModel.objects.get(patient_id=patient_id)
                 record.delete()
+                behavior.delete()
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Patient record successfully deleted',
@@ -650,6 +649,11 @@ def delete_doctor_account(request):
 
 
 @csrf_exempt
+def download_database(request):
+    pass
+
+
+@csrf_exempt
 def daily_patient_summary(request):
     """
     Create a summary of statuses of all patients assigned to the specific doctor.
@@ -657,8 +661,28 @@ def daily_patient_summary(request):
     @param doctor_id: ID number of doctor from which to gather all relevant patient information
     @return: JSON response of all patient statuses assigned to that particular doctor
     """
-    # @todo: create this function
-    pass
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            doctor_id = data['doctor_id']
+
+            # get doctor ID from prescribe table, and find all patient IDs for that doctor
+
+
+
+            return JsonResponse({'status': 'Success',
+                                 'message': 'Patient summaries return successfully',
+                                 'code': status.HTTP_200_OK})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No doctor ID given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
