@@ -1,4 +1,5 @@
 import React, { useState , useEffect } from 'react';
+import download from './PatientListHelper';
 import {
     InputGroup,
     InputLeftElement,
@@ -420,6 +421,7 @@ const PatientListView = () =>  {
                         <Th>Phone Number</Th>
                         <Th>Allergies</Th>
                         <Th>Address</Th>
+                        <Th>Download</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -434,6 +436,16 @@ const PatientListView = () =>  {
                                     <Td>{userData.fields.phone_num}</Td>
                                     <Td>{userData.fields.allergies}</Td>
                                     <Td>{userData.fields.address}</Td>
+                                    <Td> <IconButton
+                                        variant='outline'
+                                        colorScheme='black'
+                                        aria-label='Download Patient Info'
+                                        fontSize='20px'
+                                        icon={<DownloadIcon />}
+                                        marginLeft={2}
+                                        onClick={() => download(userData)}
+                                    />
+                                    </Td>
                                 </Tr>
                             );
                         })}
