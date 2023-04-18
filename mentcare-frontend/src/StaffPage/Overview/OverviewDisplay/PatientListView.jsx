@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from 'react';
-import download from './PatientListHelper';
+import download from './download';
 import {
     InputGroup,
     InputLeftElement,
