@@ -107,3 +107,11 @@ class DepartmentInformationModel(models.Model):
     department_head = models.ForeignKey(DoctorInformationModel, on_delete=models.CASCADE)
     # ID number of the doctor that's head of the department
     # referencing column doctor_id of DoctorInformationModel
+
+
+class PatientBehaviorModel(models.Model):
+    behavior_id = models.IntegerField(auto_created=True, primary_key=True, unique=True)
+    # ID num for the patient's behavior
+    patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
+    # ID num of the corresponding patient
+    behavior = models.CharField(max_length=100)
