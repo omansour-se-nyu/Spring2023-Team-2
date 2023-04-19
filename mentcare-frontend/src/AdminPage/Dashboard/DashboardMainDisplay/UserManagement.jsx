@@ -23,6 +23,8 @@ import {
   ModalCloseButton,
   FormLabel,
   Select,
+  SkeletonText,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { BellIcon, SearchIcon } from '@chakra-ui/icons';
 
@@ -41,8 +43,8 @@ const departmentNames = [
 ];
 
 const UserManagement = () => {
-  const [openModal, setOpenModal] = useState(false);
   const [staffData, setStaffData] = useState(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const getStaffData = async () => {
     const url = `http://127.0.0.1:8000/admin/staff/retrieve/`;
@@ -81,10 +83,30 @@ const UserManagement = () => {
     </Select>
   );
 
-  const renderTableBody = () => (
-    <Tbody>
-      {staffData &&
-        staffData.map(({ fields }) => {
+  const renderTableBody = () => {
+    if (!staffData)
+      return (
+        <Tbody>
+          <Tr>
+            <Td>
+              <SkeletonText noOfLines={1} />
+            </Td>
+            <Td>
+              <SkeletonText noOfLines={1} />
+            </Td>
+            <Td>
+              <SkeletonText noOfLines={1} />
+            </Td>
+            <Td>
+              <SkeletonText noOfLines={1} />
+            </Td>
+          </Tr>
+        </Tbody>
+      );
+
+    return (
+      <Tbody>
+        {staffData.map(({ fields }) => {
           const { name, email, department } = fields;
           const [firstName, lastName] = name.split(' ');
           return (
@@ -96,18 +118,25 @@ const UserManagement = () => {
             </Tr>
           );
         })}
-    </Tbody>
-  );
+      </Tbody>
+    );
+  };
 
   return (
-    <VStack height='100%' width='100%'>
-      <HStack padding='5px' width='100%' align='center' justify='end'>
+    <VStack height='100vh' width='100%'>
+      <HStack
+        padding='5px'
+        height='5vh'
+        width='100%'
+        align='center'
+        justify='end'
+      >
         <Button variant='ghost'>
           <BellIcon />
         </Button>
       </HStack>
-      <VStack width='100%' align='start'>
-        <VStack align='start' paddingLeft='10px'>
+      <VStack width='100%' height='95vh' align='start'>
+        <VStack align='start' paddingLeft='10px' height='25vh'>
           <Text color='#FB5058' fontWeight='bold' fontSize='4xl'>
             Staff
           </Text>
@@ -123,12 +152,11 @@ const UserManagement = () => {
                 </Button>
               </InputRightElement>
             </InputGroup>
-            <Button>Create</Button>
+            <Button onClick={onOpen}>Create</Button>
           </HStack>
         </VStack>
-
-        <TableContainer width='100%' style={{ border: '1px solid red' }}>
-          <Table>
+        <TableContainer width='100%' height='67.5vh' overflowY='auto'>
+          <Table variant='striped'>
             <Thead>
               <Tr>
                 <Th>First Name</Th>
@@ -141,14 +169,11 @@ const UserManagement = () => {
           </Table>
         </TableContainer>
       </VStack>
-      <Modal isCentered isOpen={openModal}>
-        <ModalOverlay
-          bg='blackAlpha.200'
-          backdropFilter='blur(10px) hue-rotate(10deg)'
-        />
+      <Modal isCentered isOpen={isOpen}>
+        <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
         <ModalContent>
           <ModalHeader>Create Staff Account</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton onClick={onClose} />
           <ModalBody>
             <form>
               <FormLabel htmlFor='first-name'>First Name</FormLabel>
@@ -160,7 +185,7 @@ const UserManagement = () => {
             </form>
           </ModalBody>
           <ModalFooter gap='10px'>
-            <Button>Close</Button>
+            <Button onClick={onClose}>Close</Button>
             <Button>Submit</Button>
           </ModalFooter>
         </ModalContent>
