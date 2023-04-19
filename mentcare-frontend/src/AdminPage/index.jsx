@@ -5,6 +5,7 @@ import Menu from './Menu';
 import Dashboard from './Dashboard';
 import { Routes, Route } from 'react-router-dom';
 import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
+import UserManagement from './Dashboard/DashboardMainDisplay/UserManagement';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
@@ -71,6 +72,7 @@ const AdminPage = () => {
           <Routes>
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
+            <Route path='/user-management' element={<UserManagement />} />
           </Routes>
         </GridItem>
       </Grid>
