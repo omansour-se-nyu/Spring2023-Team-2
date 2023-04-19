@@ -14,7 +14,6 @@ from mentcarebackend.models import *
 
 
 # Create your views here.
-# @todo: add way for backend to cache state of database?
 @csrf_exempt
 def login_view(request):
     """
@@ -443,7 +442,6 @@ def delete_patient_records(request, patient_id=None):
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             else:
-                print(patient_id)
                 record = PatientInformationModel.objects.get(patient_id=patient_id)
                 behavior = PatientInformationModel.objects.get(patient_id=patient_id)
                 record.delete()
@@ -531,6 +529,51 @@ def create_doctor_account(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
+@csrf_exempt
+def retrieve_doctor_accounts(request):
+    """
+    Retrieve a doctor's records from the database
+
+    @param doctor_id in JSON body: ID number of the doctor's to be retrieved
+    @return: JSON response body of doctor accounts
+    """
+
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            doctor_id = data['doctor_id']
+
+            # checks if there is no request body for a specific doctor
+            # this will return info on all doctors
+            if doctor_id == 0:
+                doctor_records_list = DoctorInformationModel.objects.all()
+                records_json = serializers.serialize('json', doctor_records_list)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'All records successfully retrieved',
+                                     'doctor_information': records_json,
+                                     'code': status.HTTP_200_OK})
+
+            # otherwise, info for a specific doctor is wanted
+            else:
+                record = DoctorInformationModel.objects.filter(doctor_id=doctor_id)
+                json_records = serializers.serialize("json", record)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Doctor record successfully retrieved',
+                                     'patient_information': json_records,
+                                     'code': status.HTTP_200_OK})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error', 'message': 'Missing doctor ID to retrieve',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 @csrf_exempt
 def modify_doctor_account(request):
@@ -649,11 +692,6 @@ def delete_doctor_account(request):
 
 
 @csrf_exempt
-def download_database(request):
-    pass
-
-
-@csrf_exempt
 def daily_patient_summary(request):
     """
     Create a summary of statuses of all patients assigned to the specific doctor.
@@ -661,6 +699,7 @@ def daily_patient_summary(request):
     @param doctor_id: ID number of doctor from which to gather all relevant patient information
     @return: JSON response of all patient statuses assigned to that particular doctor
     """
+    # @todo: finish daily patient summary
     # using POST method, as frontend doesn't like GET request body
     if request.method == 'POST':
         try:
@@ -668,10 +707,16 @@ def daily_patient_summary(request):
             data = json.loads(data)
 
             doctor_id = data['doctor_id']
+            patient_records = []
 
             # get doctor ID from prescribe table, and find all patient IDs for that doctor
+            for doctor in PrescribeMedicationModel.objects.all():
+                patient_records.append(doctor)
 
+            # patient_records = PrescribeMedicationModel.objects.filter(doctor_id=doctor_id)
+            # patient_records = serializers.serialize("json", patient_records)
 
+            print(patient_records)
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
