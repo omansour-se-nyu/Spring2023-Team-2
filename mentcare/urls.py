@@ -29,8 +29,8 @@ urlpatterns = [
     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
     path('staff/patients/records/delete/<int:patient_id>/', views.delete_patient_records, name="Delete Patient Records"),
     path('staff/patients/daily-summary/', views.daily_patient_summary, name="Daily Patient Summary"),
-    path('staff/download/', views.download_database, name="Cache Database"),
     path('admin/staff/create/', views.create_doctor_account, name="Create Doctor Accounts"),
+    path('admin/staff/retrieve/', views.retrieve_doctor_accounts, name="Retrieve Doctor Records"),
     path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
     path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts")
 ]
