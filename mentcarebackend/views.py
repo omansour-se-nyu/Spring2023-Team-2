@@ -535,7 +535,7 @@ def retrieve_doctor_accounts(request):
     """
     Retrieve a doctor's records from the database
 
-    @param patient_id in JSON body: ID number of the doctor's to be retrieved
+    @param doctor_id in JSON body: ID number of the doctor's to be retrieved
     @return: JSON response body of doctor accounts
     """
 
