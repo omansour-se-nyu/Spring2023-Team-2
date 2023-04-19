@@ -9,6 +9,7 @@ import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListVie
 import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
 import UserManagement from './AdminPage/Dashboard/DashboardMainDisplay/UserManagement';
 import { ChakraProvider } from '@chakra-ui/react';
+import './index.css';
 
 const router = createBrowserRouter([
   {

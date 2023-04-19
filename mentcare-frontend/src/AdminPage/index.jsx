@@ -68,7 +68,7 @@ const AdminPage = () => {
         <GridItem colSpan={3} backgroundColor='#F488C4'>
           <Menu />
         </GridItem>
-        <GridItem colSpan={9}>
+        <GridItem colSpan={9} height='100%'>
           <Routes>
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
