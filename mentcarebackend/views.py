@@ -744,14 +744,57 @@ def daily_patient_summary(request):
 
 
 @csrf_exempt
+def number_of_patients_treated(request):
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures both month and year are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            elif isinstance(month, str) and isinstance(year, str):
+                month_of_interest = PrescribeMedicationModel.objects.filter(
+                    date__month=month,
+                    date__year=year
+                )
+
+                # get count of number of patients treated that month
+                patients_count = month_of_interest.count()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved number of patients treated this month'
+                                                'successfully',
+                                     'count of patients treated this month': patients_count,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year is not string',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
 def monthly_reports(request):
     """
     This function is a general function to deal with all aspects of monthly reports required by
     doctors.
     @param request:
     @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on the number of patients treated" use stay
-    information model
     @todo: same todo as below, edit stay information model to include actual dates/times of patient
     stays
     @todo: for story "receive monthly reports on number of patients who have entered/left system"
