@@ -237,6 +237,8 @@ def register_user(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
+                                 'email is': new_account.email,
+                                 'temporary password is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -852,6 +854,65 @@ def patients_in_system(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
+@csrf_exempt
+def patients_drugs(request):
+    """
+    For a patient, receive the drugs that were prescribed to each
+    :param request:
+    :param month:
+    :param year:
+    :return: information about dosage of drug and patient_id
+    """
+
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures all params are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # checks all params are in format str
+            elif isinstance(month, str) and isinstance(year, str):
+                prescription_info = PrescribeMedicationModel.objects.filter(
+                    date__year=year,
+                    date__month=month,
+                )
+
+                prescription_info = serializers.serialize("json", prescription_info)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved patient drug info successfully for '
+                                                'the month',
+                                     'medication info': prescription_info,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Parameters are not in format str',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given, ',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def drugs_cost(request):
+    pass
+
+
 @csrf_exempt
 def monthly_reports(request):
     """
@@ -859,11 +920,6 @@ def monthly_reports(request):
     doctors.
     @param request:
     @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on number of patients who have entered/left system"
-    use stay
-    @todo: for story "receive monthly reports on drugs prescribed to each patient" use
-    prescribe medication
-    model, and sort by patient ID (use for individual doctor, their patients)
     @todo: for story "receive monthly reports on cost of drugs prescribed" sum the
     cost of drugs per patient ID
     """
