@@ -37,7 +37,7 @@ const Login = () => {
         }
         console.log('repsonse received', loginResponse);
       } catch (err) {
-        console.log('error is', err);
+        console.log('error from logging in:', err);
       }
       setLoggingIn(false);
     }
