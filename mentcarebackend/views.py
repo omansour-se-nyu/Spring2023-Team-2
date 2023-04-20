@@ -6,8 +6,8 @@ from json import JSONDecodeError
 from django.contrib.auth import authenticate, login, logout
 from django.core import serializers
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from mentcarebackend.models import *
@@ -240,7 +240,7 @@ def register_user(request):
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
-                                 'message': 'No valid doctor information given',
+                                 'message': 'No valid information given',
                                  'code': status.HTTP_400_BAD_REQUEST})
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
@@ -443,7 +443,7 @@ def delete_patient_records(request, patient_id=None):
 
             else:
                 record = PatientInformationModel.objects.get(patient_id=patient_id)
-                behavior = PatientInformationModel.objects.get(patient_id=patient_id)
+                behavior = PatientBehaviorModel.objects.get(patient_id=patient_id)
                 record.delete()
                 behavior.delete()
 
@@ -575,6 +575,7 @@ def retrieve_doctor_accounts(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
 @csrf_exempt
 def modify_doctor_account(request):
     """
@@ -699,27 +700,39 @@ def daily_patient_summary(request):
     @param doctor_id: ID number of doctor from which to gather all relevant patient information
     @return: JSON response of all patient statuses assigned to that particular doctor
     """
-    # @todo: finish daily patient summary
     # using POST method, as frontend doesn't like GET request body
     if request.method == 'POST':
         try:
             data = request.body.decode('utf-8')
             data = json.loads(data)
 
+            # first, get the doctor's ID number
             doctor_id = data['doctor_id']
-            patient_records = []
 
-            # get doctor ID from prescribe table, and find all patient IDs for that doctor
-            for doctor in PrescribeMedicationModel.objects.all():
-                patient_records.append(doctor)
+            # patient_dosages contains all patients under doctor with doctor_id, and their
+            # dosage
+            patient_dosages = PrescribeMedicationModel.objects.filter(doctor_id=doctor_id)
 
-            # patient_records = PrescribeMedicationModel.objects.filter(doctor_id=doctor_id)
-            # patient_records = serializers.serialize("json", patient_records)
+            # patient_information contains all patient's information
+            patient_information = PatientInformationModel.objects.filter(
+                patient_id=patient_dosages.get().patient_id_id
+            )
 
-            print(patient_records)
+            # patient_behaviors contains the patient's behavior "last night"
+            patient_behaviors = PatientBehaviorModel.objects.filter(
+                patient_id=patient_information.get().patient_id
+            )
+
+            # serialize all necessary information to send to frontend
+            patient_dosages = serializers.serialize("json", patient_dosages)
+            patient_information = serializers.serialize("json", patient_information)
+            patient_behaviors = serializers.serialize("json", patient_behaviors)
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
+                                 'all patients under this doctor': patient_dosages,
+                                 'all patients information': patient_information,
+                                 'behaviors since yesterday': patient_behaviors,
                                  'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
