@@ -37,5 +37,5 @@ urlpatterns = [
     path('admin/staff/retrieve/', views.retrieve_doctor_accounts, name="Retrieve Doctor Records"),
     path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
     path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts"),
-    path('admin/patients/drugs-cost', views.drugs_cost, name="Cost of Drugs Per Month")
+    path('admin/patients/drugs-cost/', views.drugs_cost, name="Cost of Drugs Per Month")
 ]

@@ -910,7 +910,56 @@ def patients_drugs(request):
 
 @csrf_exempt
 def drugs_cost(request):
-    pass
+    """
+    For an administrator, find the total cost of drugs that were prescribed that month
+    :param request:
+    :param month:
+    :param year:
+    :return: total cost
+    """
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures all params are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # checks all params are in format str
+            elif isinstance(month, str) and isinstance(year, str):
+                prescription_info = PrescribeMedicationModel.objects.filter(
+                    date__year=year,
+                    date__month=month,
+                )
+
+                prescription_info = prescription_info.select_related('medication_id')
+
+                prescription_info = serializers.serialize("json", prescription_info)
+                print(prescription_info)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved total cost for the month',
+                                     'medication info': prescription_info,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Parameters are not in format str',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given, ',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
 
 
 @csrf_exempt
