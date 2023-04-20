@@ -2,6 +2,7 @@ from importlib.resources import _
 
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
+from django.db.models import DO_NOTHING
 
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -84,20 +85,22 @@ class PrescribeMedicationModel(models.Model):
     dosage = models.TextField()  # dose prescribed by the doctor
 
 
+class RoomInformationModel(models.Model):
+    room_number = models.AutoField(auto_created=True, primary_key=True, unique=True)  # unique ID of each room
+    is_available = models.BooleanField()  # logical column, indicating if room is free or not
+
+
 class StayInformationModel(models.Model):
     stay_id = models.AutoField(auto_created=True, primary_key=True, unique=True)
     # unique ID for each patient admission
     patient_id = models.ForeignKey(PatientInformationModel, on_delete=models.CASCADE)
     # ID of patient referenced in PatientInformationModel
-    room_num = models.ForeignKey("RoomInformationModel", on_delete=models.CASCADE)
+    room_num = models.ForeignKey(RoomInformationModel, on_delete=models.CASCADE)
     # room number ID of where patient is staying, referenced in RoomInformationModel
-    start_time = models.TimeField()  # time when patient was admitted
-    end_time = models.TimeField()  # time when patient left
-
-
-class RoomInformationModel(models.Model):
-    room_number = models.AutoField(auto_created=True, primary_key=True, unique=True)  # unique ID of each room
-    is_available = models.BooleanField()  # logical column, indicating if room is free or not
+    start_time = models.CharField(max_length=100)  # time when patient was admitted
+    end_time = models.CharField(max_length=100)  # time when patient left
+    start_date = models.DateField()
+    end_date = models.DateField()
 
 
 class DepartmentInformationModel(models.Model):
