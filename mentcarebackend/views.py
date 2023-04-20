@@ -6,8 +6,8 @@ from json import JSONDecodeError
 from django.contrib.auth import authenticate, login, logout
 from django.core import serializers
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from mentcarebackend.models import *
@@ -237,10 +237,12 @@ def register_user(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
+                                 'email is': new_account.email,
+                                 'temporary password is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
-                                 'message': 'No valid doctor information given',
+                                 'message': 'No valid information given',
                                  'code': status.HTTP_400_BAD_REQUEST})
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
@@ -443,7 +445,7 @@ def delete_patient_records(request, patient_id=None):
 
             else:
                 record = PatientInformationModel.objects.get(patient_id=patient_id)
-                behavior = PatientInformationModel.objects.get(patient_id=patient_id)
+                behavior = PatientBehaviorModel.objects.get(patient_id=patient_id)
                 record.delete()
                 behavior.delete()
 
@@ -575,6 +577,7 @@ def retrieve_doctor_accounts(request):
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
 
+
 @csrf_exempt
 def modify_doctor_account(request):
     """
@@ -699,31 +702,260 @@ def daily_patient_summary(request):
     @param doctor_id: ID number of doctor from which to gather all relevant patient information
     @return: JSON response of all patient statuses assigned to that particular doctor
     """
-    # @todo: finish daily patient summary
     # using POST method, as frontend doesn't like GET request body
     if request.method == 'POST':
         try:
             data = request.body.decode('utf-8')
             data = json.loads(data)
 
+            # first, get the doctor's ID number
             doctor_id = data['doctor_id']
-            patient_records = []
 
-            # get doctor ID from prescribe table, and find all patient IDs for that doctor
-            for doctor in PrescribeMedicationModel.objects.all():
-                patient_records.append(doctor)
+            # patient_dosages contains all patients under doctor with doctor_id, and their
+            # dosage
+            patient_dosages = PrescribeMedicationModel.objects.filter(doctor_id=doctor_id)
 
-            # patient_records = PrescribeMedicationModel.objects.filter(doctor_id=doctor_id)
-            # patient_records = serializers.serialize("json", patient_records)
+            # patient_information contains all patient's information
+            patient_information = PatientInformationModel.objects.filter(
+                patient_id=patient_dosages.get().patient_id_id
+            )
 
-            print(patient_records)
+            # patient_behaviors contains the patient's behavior "last night"
+            patient_behaviors = PatientBehaviorModel.objects.filter(
+                patient_id=patient_information.get().patient_id
+            )
+
+            # serialize all necessary information to send to frontend
+            patient_dosages = serializers.serialize("json", patient_dosages)
+            patient_information = serializers.serialize("json", patient_information)
+            patient_behaviors = serializers.serialize("json", patient_behaviors)
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
+                                 'all patients under this doctor': patient_dosages,
+                                 'all patients information': patient_information,
+                                 'behaviors since yesterday': patient_behaviors,
                                  'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
                                  'message': 'No doctor ID given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def number_of_patients_treated(request):
+    """
+    Find the total number of patients who have been treated (prescribed medication) this month
+    :param request:
+    :param month:
+    :param year:
+    :return: total count of patients who have been treated in this month, year
+    """
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures both month and year are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            elif isinstance(month, str) and isinstance(year, str):
+                month_of_interest = PrescribeMedicationModel.objects.filter(
+                    date__month=month,
+                    date__year=year
+                )
+
+                # get count of number of patients treated that month
+                patients_count = month_of_interest.count()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved number of patients treated this month'
+                                                'successfully',
+                                     'count of patients treated this month': patients_count,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year is not string',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def patients_in_system(request):
+    """
+    Describes the number of patients who have entered this month, and left this month
+    :param request:
+    :param month:
+    :param: year:
+    :return: count of patients who have entered and exited this month
+    """
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures both month and year are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            elif isinstance(month, str) and isinstance(year, str):
+                patients_entered = StayInformationModel.objects.filter(
+                    start_date__month=month,
+                    start_date__year=year,
+                )
+
+                patients_exit = StayInformationModel.objects.filter(
+                    end_date__month=month,
+                    end_date__year=year
+                )
+
+                # # get count of number of patients who came in/out of system
+                in_patients = patients_entered.count()
+                out_patients = patients_exit.count()
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved number of patients who entered/exited '
+                                                'successfully',
+                                     'incoming patients': in_patients,
+                                     'outgoing patients': out_patients,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year is not string',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def patients_drugs(request):
+    """
+    For a patient, receive the drugs that were prescribed to each
+    :param request:
+    :param month:
+    :param year:
+    :return: information about dosage of drug and patient_id
+    """
+
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures all params are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # checks all params are in format str
+            elif isinstance(month, str) and isinstance(year, str):
+                prescription_info = PrescribeMedicationModel.objects.filter(
+                    date__year=year,
+                    date__month=month,
+                )
+
+                prescription_info = serializers.serialize("json", prescription_info)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved patient drug info successfully for '
+                                                'the month',
+                                     'medication info': prescription_info,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Parameters are not in format str',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given, ',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+    else:
+        return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
+                             'code': status.HTTP_400_BAD_REQUEST})
+
+
+@csrf_exempt
+def drugs_cost(request):
+    """
+    For an administrator, find the total cost of drugs that were prescribed that month
+    :param request:
+    :param month:
+    :param year:
+    :return: total cost
+    """
+    # using POST method, as frontend doesn't like GET request body
+    if request.method == 'POST':
+        try:
+            data = request.body.decode('utf-8')
+            data = json.loads(data)
+
+            month = data['month']
+            year = data['year']
+
+            # ensures all params are given
+            if month is None or year is None:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Month or year not given',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+            # checks all params are in format str
+            elif isinstance(month, str) and isinstance(year, str):
+                prescription_info = PrescribeMedicationModel.objects.filter(
+                    date__year=year,
+                    date__month=month,
+                )
+
+                prescription_info = prescription_info.select_related('medication_id')
+
+                prescription_info = serializers.serialize("json", prescription_info)
+                print(prescription_info)
+
+                return JsonResponse({'status': 'Success',
+                                     'message': 'Retrieved total cost for the month',
+                                     'medication info': prescription_info,
+                                     'code': status.HTTP_200_OK})
+            else:
+                return JsonResponse({'status': 'Error',
+                                     'message': 'Parameters are not in format str',
+                                     'code': status.HTTP_400_BAD_REQUEST})
+
+        except (json.JSONDecodeError, JSONDecodeError):
+            return JsonResponse({'status': 'Error',
+                                 'message': 'No valid date information given, ',
                                  'code': status.HTTP_400_BAD_REQUEST})
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
@@ -737,15 +969,6 @@ def monthly_reports(request):
     doctors.
     @param request:
     @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on the number of patients treated" use stay
-    information model
-    @todo: same todo as below, edit stay information model to include actual dates/times of patient
-    stays
-    @todo: for story "receive monthly reports on number of patients who have entered/left system"
-    use stay
-    @todo: for story "receive monthly reports on drugs prescribed to each patient" use
-    prescribe medication
-    model, and sort by patient ID (use for individual doctor, their patients)
     @todo: for story "receive monthly reports on cost of drugs prescribed" sum the
     cost of drugs per patient ID
     """
