@@ -27,10 +27,15 @@ urlpatterns = [
     path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
     path('staff/patients/records/retrieve/', views.retrieve_patient_records, name="Retrieve Patient Records"),
     path('staff/patients/records/update/', views.update_patient_records, name="Update Patient Records"),
-    path('staff/patients/records/delete/<int:patient_id>/', views.delete_patient_records, name="Delete Patient Records"),
+    path('staff/patients/records/delete/<int:patient_id>/', views.delete_patient_records,
+         name="Delete Patient Records"),
     path('staff/patients/daily-summary/', views.daily_patient_summary, name="Daily Patient Summary"),
+    path('staff/patients/numbers/', views.number_of_patients_treated, name="Number of Patients Treated"),
+    path('staff/patients/system-status/', views.patients_in_system, name="Number of Patients in System"),
+    path('staff/patients/drugs-prescribed/', views.patients_drugs, name="Drugs Prescribed Per Patient"),
     path('admin/staff/create/', views.create_doctor_account, name="Create Doctor Accounts"),
     path('admin/staff/retrieve/', views.retrieve_doctor_accounts, name="Retrieve Doctor Records"),
     path('admin/staff/edit/', views.modify_doctor_account, name="Edit Doctor Accounts"),
-    path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts")
+    path('admin/staff/delete/', views.delete_doctor_account, name="Delete Doctor Accounts"),
+    path('admin/patients/drugs-cost/', views.drugs_cost, name="Cost of Drugs Per Month")
 ]
