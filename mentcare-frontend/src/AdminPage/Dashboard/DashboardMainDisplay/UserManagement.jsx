@@ -45,6 +45,9 @@ const departmentNames = [
 const UserManagement = () => {
   const [staffData, setStaffData] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [department, setDepartment] = useState('');
 
   const getStaffData = async () => {
     const url = `http://127.0.0.1:8000/admin/staff/retrieve/`;
@@ -72,8 +75,22 @@ const UserManagement = () => {
     getStaffData();
   }, []);
 
+  const onChangeFirstName = (e) => {
+    setFirstName(e.target.value);
+  };
+
+  const onChangeLastName = (e) => {
+    setLastName(e.target.value);
+  };
+
+  const onChangeDepartment = (e) => {
+    setDepartment(e.target.value);
+  };
+
+  const handleCreateStaff = () => {};
+
   const renderDepartmentSelection = () => (
-    <Select>
+    <Select onChange={onChangeDepartment} value={department}>
       <option>--</option>
       {departmentNames.map((name) => (
         <option value={name} key={name}>
@@ -182,9 +199,21 @@ const UserManagement = () => {
           <ModalBody>
             <form>
               <FormLabel htmlFor='first-name'>First Name</FormLabel>
-              <Input type='text' id='first-name' placeholder='eg. John' />
+              <Input
+                onChange={onChangeFirstName}
+                value={firstName}
+                type='text'
+                id='first-name'
+                placeholder='eg. John'
+              />
               <FormLabel htmlFor='last-name'>Last Name</FormLabel>
-              <Input type='text' id='last-name' placeholder='eg. Doe' />
+              <Input
+                onChange={onChangeLastName}
+                value={lastName}
+                type='text'
+                id='last-name'
+                placeholder='eg. Doe'
+              />
               <FormLabel htmlFor='department'>Department</FormLabel>
               {renderDepartmentSelection()}
             </form>
