@@ -489,29 +489,19 @@ const StaffManagement = () => {
 
   return (
     <VStack height='100vh' width='100%'>
-      <HStack
-        padding='5px'
-        height='5vh'
-        width='100%'
-        align='center'
-        justify='end'
-      >
-        <Button variant='ghost'>
-          <BellIcon />
-        </Button>
-      </HStack>
-      <VStack width='100%' height='95vh' align='start'>
+      <VStack width='100%' height='100vh' align='start'>
         <VStack
           align='start'
+          paddingTop='10px'
           paddingLeft='10px'
           paddingRight='10px'
-          height='25vh'
+          height='30vh'
           width='100%'
         >
           <Text color='#FB5058' fontWeight='bold' fontSize='4xl'>
             Staff Management
           </Text>
-          <HStack width='100%' justify='center'>
+          <HStack width='100%' height='100%' justify='center'>
             <HStack
               justify='center'
               padding='8px'
@@ -537,9 +527,16 @@ const StaffManagement = () => {
             </HStack>
           </HStack>
         </VStack>
-        <TableContainer width='100%' height='67.5vh' overflowY='auto'>
+        <TableContainer width='100%' height='72vh' overflowY='auto'>
           <Table variant='striped'>
-            <Thead>
+            <Thead
+              style={{
+                position: 'sticky',
+                top: 0,
+                backgroundColor: 'white',
+                zIndex: 'sticky',
+              }}
+            >
               <Tr>
                 <Th>ID</Th>
                 <Th>First Name</Th>
