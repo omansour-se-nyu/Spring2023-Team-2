@@ -22,9 +22,7 @@ const DashboardMainDisplay = () => {
   };
 
   const cardTitleImages = [
-    // import images link when it is imported later
     ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
-    ['Settings', settingsIcon, () => {}],
     ['Monthly Reports', reportsIcon, () => {}],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
   ];

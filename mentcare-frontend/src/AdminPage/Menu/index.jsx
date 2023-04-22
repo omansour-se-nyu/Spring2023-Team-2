@@ -6,21 +6,11 @@ import { v4 as uuid } from 'uuid';
 import userPng from '../../assets/user.png';
 
 const Menu = () => {
-  const menuText = [
-    'Overview',
-    'Staff Management',
-    'Settings',
-    'Monthly Reports',
-    'HIPPA Compliance',
-  ];
-
   const {
     overviewPage,
     setOverviewPage,
     staffManagementPage,
     setStaffManagementPage,
-    settingsPage,
-    setSettingsPage,
     monthlyReportsPage,
     setMonthlyReportsPage,
     compliancePage,
@@ -33,7 +23,6 @@ const Menu = () => {
       text: 'Staff Management',
       handleOnClick: () => setStaffManagementPage(true),
     },
-    { text: 'Settings', handleOnClick: () => setSettingsPage(true) },
     {
       text: 'Monthly Reports',
       handleOnClick: () => setMonthlyReportsPage(true),
@@ -55,7 +44,6 @@ const Menu = () => {
           if (overviewPage && text === 'Overview') onPage = true;
           else if (staffManagementPage && text === 'Staff Management')
             onPage = true;
-          else if (settingsPage && text === 'Settings') onPage = true;
           else if (monthlyReportsPage && text === 'Monthly Reports')
             onPage = true;
           else if (compliancePage && text === 'HIPPA Compliance') onPage = true;

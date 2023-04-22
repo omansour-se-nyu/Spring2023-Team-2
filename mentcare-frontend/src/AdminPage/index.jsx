@@ -10,7 +10,6 @@ import StaffManagement from './Dashboard/DashboardMainDisplay/StaffManagement';
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
   const [staffManagementPage, setStaffManagementPage] = useState(false);
-  const [settingsPage, setSettingsPage] = useState(false);
   const [monthlyReportsPage, setMonthlyReportsPage] = useState(false);
   const [compliancePage, setCompliancePage] = useState(false);
 
@@ -19,7 +18,6 @@ const AdminPage = () => {
   useEffect(() => {
     if (!overviewPage) return;
     setStaffManagementPage(false);
-    setSettingsPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
     navigate('/admin/');
@@ -28,25 +26,15 @@ const AdminPage = () => {
   useEffect(() => {
     if (!staffManagementPage) return;
     setOverviewPage(false);
-    setSettingsPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
     navigate('/admin/user-management');
   }, [staffManagementPage]);
 
   useEffect(() => {
-    if (!settingsPage) return;
-    setOverviewPage(false);
-    setStaffManagementPage(false);
-    setMonthlyReportsPage(false);
-    setCompliancePage(false);
-  }, [settingsPage]);
-
-  useEffect(() => {
     if (!monthlyReportsPage) return;
     setOverviewPage(false);
     setStaffManagementPage(false);
-    setSettingsPage(false);
     setCompliancePage(false);
   }, [monthlyReportsPage]);
 
@@ -54,7 +42,6 @@ const AdminPage = () => {
     if (!compliancePage) return;
     setOverviewPage(false);
     setStaffManagementPage(false);
-    setSettingsPage(false);
     setMonthlyReportsPage(false);
     navigate('/admin/compliance');
   }, [compliancePage]);
@@ -66,8 +53,6 @@ const AdminPage = () => {
         setOverviewPage,
         staffManagementPage,
         setStaffManagementPage,
-        settingsPage,
-        setSettingsPage,
         monthlyReportsPage,
         setMonthlyReportsPage,
         compliancePage,
