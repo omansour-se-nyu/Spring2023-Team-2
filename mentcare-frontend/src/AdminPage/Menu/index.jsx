@@ -16,11 +16,30 @@ const Menu = () => {
 
   const {
     overviewPage,
-    StaffManagementPage,
+    setOverviewPage,
+    staffManagementPage,
+    setStaffManagementPage,
     settingsPage,
+    setSettingsPage,
     monthlyReportsPage,
+    setMonthlyReportsPage,
     compliancePage,
+    setCompliancePage,
   } = useContext(AdminContext);
+
+  const menuData = [
+    { text: 'Overview', handleOnClick: () => setOverviewPage(true) },
+    {
+      text: 'Staff Management',
+      handleOnClick: () => setStaffManagementPage(true),
+    },
+    { text: 'Settings', handleOnClick: () => setSettingsPage(true) },
+    {
+      text: 'Monthly Reports',
+      handleOnClick: () => setMonthlyReportsPage(true),
+    },
+    { text: 'HIPPA Compliance', handleOnClick: () => setCompliancePage(true) },
+  ];
 
   return (
     <>
@@ -31,16 +50,23 @@ const Menu = () => {
         </Text>
       </HStack>
       <VStack align='stretch' gap={5} padding='10px'>
-        {menuText.map((text) => {
+        {menuData.map(({ text, handleOnClick }) => {
           let onPage = false;
           if (overviewPage && text === 'Overview') onPage = true;
-          else if (StaffManagementPage && text === 'Staff Management')
+          else if (staffManagementPage && text === 'Staff Management')
             onPage = true;
           else if (settingsPage && text === 'Settings') onPage = true;
           else if (monthlyReportsPage && text === 'Monthly Reports')
             onPage = true;
           else if (compliancePage && text === 'HIPPA Compliance') onPage = true;
-          return <MenuText key={uuid()} text={text} onPage={onPage} />;
+          return (
+            <MenuText
+              key={uuid()}
+              text={text}
+              onPage={onPage}
+              handleOnClick={handleOnClick}
+            />
+          );
         })}
       </VStack>
     </>
