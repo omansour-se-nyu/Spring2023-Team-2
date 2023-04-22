@@ -36,7 +36,6 @@ const StaffPage = () => {
     setLogoutPage(false);
   }, [overviewPage]);
 
-
   return (
     <StaffContext.Provider
       value={{
@@ -51,10 +50,10 @@ const StaffPage = () => {
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%'>
-        <GridItem colSpan={3} backgroundColor='#F488C4'>
+        <GridItem colSpan={2} backgroundColor='#F488C4'>
           <Nav />
         </GridItem>
-        <GridItem colSpan={9}>
+        <GridItem colSpan={10}>
           <Routes>
             <Route exact path='/' element={<Overview />} />
             <Route path='/records' element={<PatientListView />} />
