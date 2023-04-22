@@ -3,6 +3,8 @@ import {
   VStack,
   HStack,
   Button,
+  InputGroup,
+  InputLeftAddon,
   Input,
   Text,
   Table,
@@ -509,15 +511,19 @@ const StaffManagement = () => {
               paddingRight='20px'
               borderRadius='5px'
             >
-              <Input
-                value={search}
-                width='200px'
-                onChange={onChangeSearch}
-                type='text'
-                placeholder='eg. 451'
-              />
+              <InputGroup width='250px'>
+                <InputLeftAddon children='Staff #' />
+                <Input
+                  value={search}
+                  onChange={onChangeSearch}
+                  type='text'
+                  placeholder='eg. 451'
+                />
+              </InputGroup>
               <Divider orientation='vertical' height='30px' />
               <Button
+                backgroundColor='#FB5058'
+                color='#FFFFFF'
                 onClick={onOpen}
                 _hover={{ transform: 'scale(0.98)', opacity: 0.9 }}
                 _active={{ transform: 'scale(0.96)', opacity: 1 }}
@@ -528,7 +534,7 @@ const StaffManagement = () => {
           </HStack>
         </VStack>
         <TableContainer width='100%' height='72vh' overflowY='auto'>
-          <Table size='sm' variant='striped' colorScheme='pink'>
+          <Table size='sm' variant='striped'>
             <Thead
               style={{
                 position: 'sticky',
