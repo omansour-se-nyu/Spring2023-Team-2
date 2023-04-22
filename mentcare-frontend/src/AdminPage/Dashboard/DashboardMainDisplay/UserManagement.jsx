@@ -44,10 +44,12 @@ const departmentNames = [
 ];
 
 const UserManagement = () => {
-  const [staffData, setStaffData] = useState(null);
+  const [staffData, setStaffData] = useState([]);
+  const [displayStaffData, setDisplayStaffData] = useState([]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [department, setDepartment] = useState('');
+  const [search, setSearch] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const displayToast = useToast();
@@ -78,6 +80,10 @@ const UserManagement = () => {
     getStaffData();
   }, []);
 
+  useEffect(() => {
+    setDisplayStaffData(staffData);
+  }, [staffData]);
+
   const onChangeFirstName = (e) => {
     setFirstName(e.target.value);
   };
@@ -88,6 +94,18 @@ const UserManagement = () => {
 
   const onChangeDepartment = (e) => {
     setDepartment(e.target.value);
+  };
+
+  const onChangeSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (!value) {
+      setDisplayStaffData(staffData);
+    }
+    const currentStaffData = staffData.filter(({ pk }) =>
+      JSON.stringify(pk).includes(value)
+    );
+    setDisplayStaffData(currentStaffData);
   };
 
   const handleCreateStaff = async () => {
@@ -145,7 +163,7 @@ const UserManagement = () => {
   );
 
   const renderTableBody = () => {
-    if (!staffData)
+    if (displayStaffData.length <= 0)
       return (
         <Tbody>
           <Tr>
@@ -170,7 +188,7 @@ const UserManagement = () => {
 
     return (
       <Tbody>
-        {staffData.map(({ fields, pk }) => {
+        {displayStaffData.map(({ fields, pk }) => {
           const { name, email, department } = fields;
           const [firstName, lastName] = name.split(' ');
           return (
@@ -210,7 +228,12 @@ const UserManagement = () => {
           </Text>
           <HStack>
             <InputGroup width='300px'>
-              <Input type='text' placeholder='Record Number' />
+              <Input
+                value={search}
+                onChange={onChangeSearch}
+                type='text'
+                placeholder='Record Number'
+              />
               <InputRightElement>
                 <Button>
                   <SearchIcon />
