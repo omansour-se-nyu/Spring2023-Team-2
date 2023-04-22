@@ -8,11 +8,9 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   IconButton,
   Modal,
@@ -26,7 +24,7 @@ import {
   Button,
   FormControl,
   FormLabel,
-  ChakraProvider,
+  VStack,
 } from '@chakra-ui/react';
 import {
   ViewIcon,
@@ -293,15 +291,18 @@ const PatientListView = () => {
   }, []);
 
   return (
-    <ChakraProvider>
-      <Text color='#FB5058' fontWeight='bold' fontSize='5xl' paddingLeft='30px'>
+    <VStack align='start' height='100vh' width='100%' border='1px'>
+      <VStack></VStack>
+      <Text
+        color='#FB5058'
+        border='1px'
+        fontWeight='bold'
+        align='center'
+        fontSize='4xl'
+      >
         Patient Overview
       </Text>
       <InputGroup paddingLeft='30px'>
-        <InputLeftElement
-          pointerEvents='none'
-          children={<SearchIcon color='black' ml={60} />}
-        />
         <Input
           placeholder='Enter Patient MRN'
           size='md'
@@ -319,72 +320,6 @@ const PatientListView = () => {
           onClick={onOpen1}
           marginLeft={2}
         />
-        <Modal
-          initialFocusRef={initialRef1}
-          finalFocusRef={finalRef1}
-          isOpen={isOpen1}
-          onClose={onClose1}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Create Patient Account</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <FormControl>
-                <FormLabel>First name</FormLabel>
-                <Input
-                  onBlur={createFName}
-                  ref={initialRef1}
-                  placeholder='First name'
-                />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Last name</FormLabel>
-                <Input onBlur={createLName} placeholder='Last name' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Gender</FormLabel>
-                <Input onBlur={createGender} placeholder='Gender' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>D.O.B</FormLabel>
-                <Input onBlur={createDOB} placeholder='D.O.B' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Address</FormLabel>
-                <Input onBlur={createAddr} placeholder='Address' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Phone number</FormLabel>
-                <Input onBlur={createPhone} placeholder='Phone Number' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Allergies</FormLabel>
-                <Input onBlur={createAller} placeholder='Allergies' />
-              </FormControl>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                backgroundColor='#F3EED9'
-                mr={3}
-                onClick={() => createPatient()}
-              >
-                Save
-              </Button>
-              <Button backgroundColor='#F3EED9' onClick={onClose1}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-
         <IconButton
           variant='outline'
           colorScheme='black'
@@ -393,80 +328,6 @@ const PatientListView = () => {
           onClick={onOpen}
           marginLeft={2}
         />
-        <Modal
-          onClose={onClose}
-          isOpen={isOpen}
-          isCentered
-          initialFocusRef={initialRef}
-          finalFocusRef={finalRef}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>
-              Fill out all fields for MRN: {global_patientID}
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <FormControl>
-                <FormLabel>First name</FormLabel>
-                <Input
-                  onBlur={updatePatientFName}
-                  ref={initialRef}
-                  placeholder='First name'
-                />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Last name</FormLabel>
-                <Input onBlur={updatePatientLName} placeholder='Last name' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Patient D.O.B</FormLabel>
-                <Input onBlur={updatePatientdob} placeholder='YYYY-MM-DD' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Gender</FormLabel>
-                <Input
-                  onBlur={updatePatientGender}
-                  type='number'
-                  placeholder='Gender'
-                />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Address</FormLabel>
-                <Input onBlur={updatePatientAddr} placeholder='Address' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Phone Number</FormLabel>
-                <Input onBlur={updatePatientNum} placeholder='XXX-XXX-XXXX' />
-              </FormControl>
-
-              <FormControl mt={4}>
-                <FormLabel>Allergies</FormLabel>
-                <Input
-                  onBlur={updatePatientAllergies}
-                  placeholder='Allergies'
-                />
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                backgroundColor='#F3EED9'
-                marginRight={3}
-                onClick={() => putData()}
-              >
-                Confirm Changes
-              </Button>
-              <Button backgroundColor='#F3EED9' onClick={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
         <IconButton
           variant='outline'
           colorScheme='black'
@@ -486,6 +347,7 @@ const PatientListView = () => {
           onClick={onOpen2}
           marginLeft={2}
         />
+
         <Modal
           onClose={onClose2}
           isOpen={isOpen2}
@@ -525,112 +387,239 @@ const PatientListView = () => {
           marginLeft={2}
           onClick={onOpen3}
         />
-        <Modal
-          onClose={onClose3}
-          isOpen={isOpen3}
-          isCentered
-          initialFocusRef={initialRef3}
-          finalFocusRef={finalRef3}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Expanded Patient View</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <br></br>
-              {global_patientID !== 0
-                ? 'Name: ' +
-                  userData[global_patientID - 1].fields.first_name +
-                  ' ' +
-                  userData[global_patientID - 1].fields.last_name
-                : 'Name: '}
-              <br></br>
-              {global_patientID !== 0
-                ? 'Gender: ' +
-                  JSON.stringify(userData[global_patientID - 1].fields.gender)
-                : 'Gender: '}
-              <br></br>
-              {global_patientID !== 0
-                ? 'D.O.B: ' +
-                  JSON.stringify(userData[global_patientID - 1].fields.dob)
-                : 'D.O.B: '}
-              <br></br>
-              {global_patientID !== 0
-                ? 'Address: ' +
-                  JSON.stringify(userData[global_patientID - 1].fields.address)
-                : 'Address: '}
-              <br></br>
-              {global_patientID !== 0
-                ? 'Phone Number: ' +
-                  JSON.stringify(
-                    userData[global_patientID - 1].fields.phone_num
-                  )
-                : 'Phone Number: '}
-              <br></br>
-              {global_patientID !== 0
-                ? 'Allergies: ' +
-                  JSON.stringify(
-                    userData[global_patientID - 1].fields.allergies
-                  )
-                : 'Allergies: '}
-            </ModalBody>
-            <ModalFooter>
-              <Button backgroundColor='#F3EED9' onClick={onClose3}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </InputGroup>
-
-      {outOfRange ? (
-        <Text marginLeft={7} fontSize='sm'>
-          Invalid Patient MRN
-        </Text>
-      ) : null}
-      <div>
-        <Table>
-          <TableContainer>
-            <Thead>
-              <Tr>
-                <Th>Patient MRN</Th>
-                <Th>First Name</Th>
-                <Th>Last Name</Th>
-                <Th>D.O.B</Th>
-                <Th>Gender</Th>
-                <Th>Download</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {userData.length > 0 &&
-                userData.map((userData) => {
-                  return (
-                    <Tr>
-                      <Td>{userData.pk}</Td>
-                      <Td>{userData.fields.first_name}</Td>
-                      <Td>{userData.fields.last_name}</Td>
-                      <Td>{userData.fields.dob}</Td>
-                      <Td>{userData.fields.gender}</Td>
-                      <Td>
-                        {' '}
-                        <IconButton
-                          variant='outline'
-                          colorScheme='black'
-                          aria-label='Download Patient Info'
-                          fontSize='20px'
-                          icon={<DownloadIcon />}
-                          marginLeft={2}
-                          onClick={() => download(userData)}
-                        />
-                      </Td>
-                    </Tr>
-                  );
-                })}
-            </Tbody>
-          </TableContainer>
+      <TableContainer width='100%' overflowY='auto'>
+        <Table size='sm' variant='striped'>
+          <Thead
+            style={{
+              position: 'sticky',
+              top: 0,
+              backgroundColor: '#FB5058',
+              zIndex: 'sticky',
+            }}
+          >
+            <Tr>
+              <Th>Patient MRN</Th>
+              <Th>First Name</Th>
+              <Th>Last Name</Th>
+              <Th>D.O.B</Th>
+              <Th>Gender</Th>
+              <Th>Download</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {userData.length > 0 &&
+              userData.map((userData) => {
+                return (
+                  <Tr>
+                    <Td>{userData.pk}</Td>
+                    <Td>{userData.fields.first_name}</Td>
+                    <Td>{userData.fields.last_name}</Td>
+                    <Td>{userData.fields.dob}</Td>
+                    <Td>{userData.fields.gender}</Td>
+                    <Td>
+                      <IconButton
+                        variant='ghost'
+                        colorScheme='black'
+                        aria-label='Download Patient Info'
+                        fontSize='20px'
+                        icon={<DownloadIcon />}
+                        marginLeft={2}
+                        onClick={() => download(userData)}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+          </Tbody>
         </Table>
-      </div>
-    </ChakraProvider>
+      </TableContainer>
+
+      <Modal
+        initialFocusRef={initialRef1}
+        finalFocusRef={finalRef1}
+        isOpen={isOpen1}
+        onClose={onClose1}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create Patient Account</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>First name</FormLabel>
+              <Input
+                onBlur={createFName}
+                ref={initialRef1}
+                placeholder='First name'
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Last name</FormLabel>
+              <Input onBlur={createLName} placeholder='Last name' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Gender</FormLabel>
+              <Input onBlur={createGender} placeholder='Gender' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>D.O.B</FormLabel>
+              <Input onBlur={createDOB} placeholder='D.O.B' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Address</FormLabel>
+              <Input onBlur={createAddr} placeholder='Address' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Phone number</FormLabel>
+              <Input onBlur={createPhone} placeholder='Phone Number' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Allergies</FormLabel>
+              <Input onBlur={createAller} placeholder='Allergies' />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              backgroundColor='#F3EED9'
+              mr={3}
+              onClick={() => createPatient()}
+            >
+              Save
+            </Button>
+            <Button backgroundColor='#F3EED9' onClick={onClose1}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        onClose={onClose3}
+        isOpen={isOpen3}
+        isCentered
+        initialFocusRef={initialRef3}
+        finalFocusRef={finalRef3}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Expanded Patient View</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {global_patientID !== 0
+              ? 'Name: ' +
+                userData[global_patientID - 1].fields.first_name +
+                ' ' +
+                userData[global_patientID - 1].fields.last_name
+              : 'Name: '}
+            {global_patientID !== 0
+              ? 'Gender: ' +
+                JSON.stringify(userData[global_patientID - 1].fields.gender)
+              : 'Gender: '}
+            {global_patientID !== 0
+              ? 'D.O.B: ' +
+                JSON.stringify(userData[global_patientID - 1].fields.dob)
+              : 'D.O.B: '}
+            {global_patientID !== 0
+              ? 'Address: ' +
+                JSON.stringify(userData[global_patientID - 1].fields.address)
+              : 'Address: '}
+            {global_patientID !== 0
+              ? 'Phone Number: ' +
+                JSON.stringify(userData[global_patientID - 1].fields.phone_num)
+              : 'Phone Number: '}
+            {global_patientID !== 0
+              ? 'Allergies: ' +
+                JSON.stringify(userData[global_patientID - 1].fields.allergies)
+              : 'Allergies: '}
+          </ModalBody>
+          <ModalFooter>
+            <Button backgroundColor='#F3EED9' onClick={onClose3}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        onClose={onClose}
+        isOpen={isOpen}
+        isCentered
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Fill out all fields for MRN: {global_patientID}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>First name</FormLabel>
+              <Input
+                onBlur={updatePatientFName}
+                ref={initialRef}
+                placeholder='First name'
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Last name</FormLabel>
+              <Input onBlur={updatePatientLName} placeholder='Last name' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Patient D.O.B</FormLabel>
+              <Input onBlur={updatePatientdob} placeholder='YYYY-MM-DD' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Gender</FormLabel>
+              <Input
+                onBlur={updatePatientGender}
+                type='number'
+                placeholder='Gender'
+              />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Address</FormLabel>
+              <Input onBlur={updatePatientAddr} placeholder='Address' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Phone Number</FormLabel>
+              <Input onBlur={updatePatientNum} placeholder='XXX-XXX-XXXX' />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Allergies</FormLabel>
+              <Input onBlur={updatePatientAllergies} placeholder='Allergies' />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              backgroundColor='#F3EED9'
+              marginRight={3}
+              onClick={() => putData()}
+            >
+              Confirm Changes
+            </Button>
+            <Button backgroundColor='#F3EED9' onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </VStack>
   );
 };
 
