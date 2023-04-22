@@ -27,7 +27,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { BellIcon } from '@chakra-ui/icons';
+import { BellIcon, CloseIcon } from '@chakra-ui/icons';
 
 const departmentNames = [
   'Psychiatry',
@@ -52,6 +52,8 @@ const StaffManagement = () => {
   const [search, setSearch] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState({});
   const displayToast = useToast();
 
   const getStaffData = async () => {
@@ -209,14 +211,142 @@ const StaffManagement = () => {
               <Td>{lastName}</Td>
               <Td>{email}</Td>
               <Td>{department}</Td>
-              <Td>Edit</Td>
-              <Td>Delete</Td>
+              <Td>
+                <HStack justify='center'>
+                  <Text _hover={{ color: '#2876dc', cursor: 'pointer' }}>
+                    Edit
+                  </Text>
+                </HStack>
+              </Td>
+              <Td>
+                <HStack justify='center'>
+                  <CloseIcon
+                    onClick={() =>
+                      handleShowDeleteModal(true, pk, firstName, lastName)
+                    }
+                    boxSize='0.7rem'
+                    _hover={{ color: '#DC2626', cursor: 'pointer' }}
+                  />
+                </HStack>
+              </Td>
             </Tr>
           );
         })}
       </Tbody>
     );
   };
+
+  const renderCreateModal = () => {
+    return (
+      <Modal isCentered isOpen={isOpen}>
+        <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
+        <ModalContent>
+          <ModalHeader>Create Staff Account</ModalHeader>
+          <ModalCloseButton onClick={onClose} />
+          <ModalBody>
+            <form>
+              <FormLabel htmlFor='first-name'>First Name</FormLabel>
+              <Input
+                onChange={onChangeFirstName}
+                value={firstName}
+                type='text'
+                id='first-name'
+                placeholder='eg. John'
+              />
+              <FormLabel htmlFor='last-name'>Last Name</FormLabel>
+              <Input
+                onChange={onChangeLastName}
+                value={lastName}
+                type='text'
+                id='last-name'
+                placeholder='eg. Doe'
+              />
+              <FormLabel htmlFor='department'>Department</FormLabel>
+              {renderDepartmentSelection()}
+            </form>
+          </ModalBody>
+          <ModalFooter gap='10px'>
+            <Button onClick={onClose}>Close</Button>
+            <Button onClick={handleCreateStaff}>Submit</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const handleDeleteAccount = async () => {
+    const { pk } = deleteInfo;
+    const url = `http://127.0.0.1:8000/admin/staff/delete/`;
+    const data = {
+      doctor_id: pk,
+    };
+    const config = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const response = await fetch(url, config).then((res) => res.json());
+      const { status } = response;
+      if (status === 'Success') {
+        displayToast({
+          title: 'Account Deletion Successful',
+          description: `Account #${pk} has been successfully deleted`,
+          status: 'success',
+          duration: 7000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      displayToast({
+        title: 'Account Deletion Failed',
+        description: `Account #${pk} failed to be deleted`,
+        status: 'error',
+        duration: 7000,
+        isClosable: true,
+      });
+      console.log('error from creating staff data', error);
+    } finally {
+      handleShowDeleteModal(false);
+      getStaffData();
+    }
+  };
+
+  const handleShowDeleteModal = (value, pk, firstName, lastName) => {
+    setDeleteInfo({});
+    if (value) {
+      setDeleteInfo({ pk, firstName, lastName });
+    }
+    setShowDeleteModal(value);
+  };
+
+  const renderDeleteModal = () => {
+    const { pk, firstName, lastName } = deleteInfo;
+
+    return (
+      <Modal isCentered isOpen={showDeleteModal}>
+        <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
+        <ModalContent>
+          <ModalHeader>Delete Staff Account</ModalHeader>
+          <ModalCloseButton onClick={() => handleShowDeleteModal(false)} />
+          <ModalBody>
+            <Text>
+              Are you sure you want to delete account #{pk}: {firstName}{' '}
+              {lastName}?
+            </Text>
+          </ModalBody>
+          <ModalFooter gap='10px'>
+            <Button onClick={() => handleShowDeleteModal(false)}>Close</Button>
+            <Button onClick={handleDeleteAccount}>Delete</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const renderEditModal = () => {};
 
   return (
     <VStack height='100vh' width='100%'>
@@ -285,39 +415,8 @@ const StaffManagement = () => {
           </Table>
         </TableContainer>
       </VStack>
-      <Modal isCentered isOpen={isOpen}>
-        <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
-        <ModalContent>
-          <ModalHeader>Create Staff Account</ModalHeader>
-          <ModalCloseButton onClick={onClose} />
-          <ModalBody>
-            <form>
-              <FormLabel htmlFor='first-name'>First Name</FormLabel>
-              <Input
-                onChange={onChangeFirstName}
-                value={firstName}
-                type='text'
-                id='first-name'
-                placeholder='eg. John'
-              />
-              <FormLabel htmlFor='last-name'>Last Name</FormLabel>
-              <Input
-                onChange={onChangeLastName}
-                value={lastName}
-                type='text'
-                id='last-name'
-                placeholder='eg. Doe'
-              />
-              <FormLabel htmlFor='department'>Department</FormLabel>
-              {renderDepartmentSelection()}
-            </form>
-          </ModalBody>
-          <ModalFooter gap='10px'>
-            <Button onClick={onClose}>Close</Button>
-            <Button onClick={handleCreateStaff}>Submit</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {renderCreateModal()}
+      {renderDeleteModal()}
     </VStack>
   );
 };

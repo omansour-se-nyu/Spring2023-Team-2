@@ -65,10 +65,10 @@ const AdminPage = () => {
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%' width='100%'>
-        <GridItem colSpan={3} backgroundColor='#F488C4'>
+        <GridItem colSpan={2} backgroundColor='#F488C4'>
           <Menu />
         </GridItem>
-        <GridItem colSpan={9} height='100%' width='100%'>
+        <GridItem colSpan={10} height='100%' width='100%'>
           <Routes>
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
