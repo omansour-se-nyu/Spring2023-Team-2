@@ -100,17 +100,21 @@ const UserManagement = () => {
             <Td>
               <SkeletonText noOfLines={1} />
             </Td>
+            <Td>
+              <SkeletonText noOfLines={1} />
+            </Td>
           </Tr>
         </Tbody>
       );
 
     return (
       <Tbody>
-        {staffData.map(({ fields }) => {
+        {staffData.map(({ fields, pk }) => {
           const { name, email, department } = fields;
           const [firstName, lastName] = name.split(' ');
           return (
             <Tr key={email}>
+              <Td>{pk}</Td>
               <Td>{firstName}</Td>
               <Td>{lastName}</Td>
               <Td>{email}</Td>
@@ -159,6 +163,7 @@ const UserManagement = () => {
           <Table variant='striped'>
             <Thead>
               <Tr>
+                <Th>ID</Th>
                 <Th>First Name</Th>
                 <Th>Last Name</Th>
                 <Th>Email</Th>
