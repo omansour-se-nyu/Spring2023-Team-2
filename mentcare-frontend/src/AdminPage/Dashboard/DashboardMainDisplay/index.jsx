@@ -4,17 +4,19 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import CardSelection from './CardSelection';
 import { v4 as uuid } from 'uuid';
 import usersIcon from '../../../assets/usersIcon.png';
-import settingsIcon from '../../../assets/settingsIcon.png';
 import reportsIcon from '../../../assets/reportsIcon.png';
 import hipaaIcon from '../../../assets/HIPAA_Icon.png';
-import { useNavigate } from 'react-router-dom';
 
 const DashboardMainDisplay = () => {
-  const { setCompliancePage, setStaffManagementPage } =
+  const { setCompliancePage, setStaffManagementPage, setMonthlyReportsPage } =
     useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
     setCompliancePage(true);
+  };
+
+  const handleOnClickMonthlyReports = () => {
+    setMonthlyReportsPage(true);
   };
 
   const handleOnClickStaffManagementPage = () => {
@@ -23,7 +25,7 @@ const DashboardMainDisplay = () => {
 
   const cardTitleImages = [
     ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
-    ['Monthly Reports', reportsIcon, () => {}],
+    ['Monthly Reports', reportsIcon, handleOnClickMonthlyReports],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
   ];
 

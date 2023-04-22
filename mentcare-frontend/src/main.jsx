@@ -10,6 +10,7 @@ import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACom
 import StaffManagement from './AdminPage/Dashboard/DashboardMainDisplay/StaffManagement';
 import { ChakraProvider } from '@chakra-ui/react';
 import './index.css';
+import MonthlyReport from './AdminPage/Dashboard/DashboardMainDisplay/MonthlyReport';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: 'user-management',
         element: <StaffManagement />,
+      },
+      {
+        path: 'monthly-reports',
+        element: <MonthlyReport />,
       },
     ],
   },
