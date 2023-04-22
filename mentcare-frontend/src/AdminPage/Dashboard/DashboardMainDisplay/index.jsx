@@ -11,21 +11,22 @@ import { useNavigate } from 'react-router-dom';
 
 const DashboardMainDisplay = () => {
   const navigate = useNavigate();
-  const { setCompliancePage, setUserManagementPage } = useContext(AdminContext);
+  const { setCompliancePage, setStaffManagementPage } =
+    useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
     setCompliancePage(true);
     navigate('/admin/compliance');
   };
 
-  const handleOnClickUserManagementPage = () => {
-    setUserManagementPage(true);
+  const handleOnClickStaffManagementPage = () => {
+    setStaffManagementPage(true);
     navigate('/admin/user-management');
   };
 
   const cardTitleImages = [
     // import images link when it is imported later
-    ['User Management', usersIcon, handleOnClickUserManagementPage],
+    ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
     ['Settings', settingsIcon, () => {}],
     ['Monthly Reports', reportsIcon, () => {}],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
