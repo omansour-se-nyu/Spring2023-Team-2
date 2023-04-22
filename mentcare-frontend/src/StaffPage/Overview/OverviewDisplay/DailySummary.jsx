@@ -35,18 +35,18 @@ import { ViewIcon , SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , Do
 const DailySummary = () => {
     // set patient summary information based on doctor
     const [information, setInformation] = useState({});
-    const [patientInformation, setPatientInformation] = useState('');
+    const [patientInformation, setPatientInformation] = useState('undefined');
     const [patientUnderDoctor, setPatientUnderDoctor] = useState('');
-    const [behaviorChanges, setBehaviorChanges] = useState('');
+    const [behaviorChanges, setBehaviorChanges] = useState('undefined');
     const [globalDoctorID, setGlobalDoctorID] = useState(0);
 
     // patient treatment
-    const [fullname, setFullname] = useState();
-    const [patientID, setPatientID] = useState();
-    const [allergies, setAllergies] = useState();
-    const [medicationID, setMedicationID] = useState();
-    const [appointmentId, setAppointmentId] = useState();
-    const [status, setStatus] = useState();
+    const [fullname, setFullname] = useState('undefined');
+    const [patientID, setPatientID] = useState('undefined');
+    const [allergies, setAllergies] = useState('undefined');
+    const [medicationID, setMedicationID] = useState('undefined');
+    const [appointmentId, setAppointmentId] = useState('undefined');
+    const [status, setStatus] = useState('undefined');
 
     function doctorIDChange(event){
         console.log(event.target.value);
@@ -60,29 +60,27 @@ const DailySummary = () => {
         .then((response) => response.json())
         .then((actualData) => {
             if(actualData.status === "Success"){
-            //console.log(globalDoctorID);
-            const data = JSON.parse(actualData.all_patients_under_this_doctor);
-            //console.log('All patients under this doctor: \n' + actualData.all_patients_under_this_doctor);
-            setPatientUnderDoctor(data[0].fields);
-            setMedicationID(data[0].fields.medication_id);
-            setAppointmentId(data[0].fields.appointment_id);
+                //console.log(globalDoctorID);
+                const data = JSON.parse(actualData.all_patients_under_this_doctor);
+                //console.log('All patients under this doctor: \n' + actualData.all_patients_under_this_doctor);
+                setPatientUnderDoctor(data[0].fields);
+                setMedicationID(data[0].fields.medication_id);
+                setAppointmentId(data[0].fields.appointment_id);
 
-            const data2 = JSON.parse(actualData.all_patients_information);
-            setPatientInformation(data2[0].fields);
-            //console.log(data2)
-            //console.log(data2[0].fields);
-            setFullname(data2[0].fields.first_name + ' ' + data2[0].fields.last_name);
-            setPatientID(data2[0].pk);
-            setAllergies(data2[0].fields.allergies);
+                const data2 = JSON.parse(actualData.all_patients_information);
+                //console.log(data2)
+                //console.log(data2[0].fields);
+                setFullname(data2[0].fields.first_name + ' ' + data2[0].fields.last_name);
+                setPatientID(data2[0].pk);
+                setAllergies(data2[0].fields.allergies);
 
-            const data3 = JSON.parse(actualData.behaviors_since_yesterday);
-            console.log(data3);
-            setPatientInformation(data3[0].fields.behavior);
+                const data3 = JSON.parse(actualData.behaviors_since_yesterday);
+                console.log(data3);
+                setPatientInformation(data3[0].fields.behavior);
 
 
-            setInformation(actualData);
+                setInformation(actualData);
             }
-
         })
         .catch((err) => {
             console.log(err.message);
