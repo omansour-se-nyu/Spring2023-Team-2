@@ -528,23 +528,37 @@ const StaffManagement = () => {
           </HStack>
         </VStack>
         <TableContainer width='100%' height='72vh' overflowY='auto'>
-          <Table variant='striped'>
+          <Table size='sm' variant='striped' colorScheme='pink'>
             <Thead
               style={{
                 position: 'sticky',
                 top: 0,
-                backgroundColor: 'white',
+                backgroundColor: '#FB5058',
                 zIndex: 'sticky',
               }}
             >
               <Tr>
-                <Th>ID</Th>
-                <Th>First Name</Th>
-                <Th>Last Name</Th>
-                <Th>Email</Th>
-                <Th>Department</Th>
-                <Th>Edit</Th>
-                <Th>Delete</Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text>Id</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text>First Name</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text>Last Name</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text>Email</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text>Department</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text align='center'>Edit</Text>
+                </Th>
+                <Th fontSize='0.8em' color='white'>
+                  <Text align='center'>Delete</Text>
+                </Th>
               </Tr>
             </Thead>
             {renderTableBody()}
