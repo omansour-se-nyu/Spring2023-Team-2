@@ -105,6 +105,10 @@ const UserManagement = () => {
     const currentStaffData = staffData.filter(({ pk }) =>
       JSON.stringify(pk).includes(value)
     );
+    if (currentStaffData.length === 0) {
+      setDisplayStaffData(null);
+      return;
+    }
     setDisplayStaffData(currentStaffData);
   };
 
@@ -163,7 +167,8 @@ const UserManagement = () => {
   );
 
   const renderTableBody = () => {
-    if (displayStaffData.length <= 0)
+    if (displayStaffData === null) return null;
+    if (displayStaffData.length === 0)
       return (
         <Tbody>
           <Tr>
