@@ -5,6 +5,7 @@ import Menu from './Menu';
 import Dashboard from './Dashboard';
 import { Routes, Route } from 'react-router-dom';
 import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
+import UserManagement from './Dashboard/DashboardMainDisplay/UserManagement';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
@@ -63,14 +64,15 @@ const AdminPage = () => {
         setCompliancePage,
       }}
     >
-      <Grid templateColumns='repeat(12, 1fr)' height='100%'>
+      <Grid templateColumns='repeat(12, 1fr)' height='100%' width='100%'>
         <GridItem colSpan={3} backgroundColor='#F488C4'>
           <Menu />
         </GridItem>
-        <GridItem colSpan={9}>
+        <GridItem colSpan={9} height='100%' width='100%'>
           <Routes>
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
+            <Route path='/user-management' element={<UserManagement />} />
           </Routes>
         </GridItem>
       </Grid>

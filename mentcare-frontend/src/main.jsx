@@ -5,8 +5,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './ErrorPage';
 import AdminPage from './AdminPage';
 import StaffPage from './StaffPage';
+import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListView';
 import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
+import UserManagement from './AdminPage/Dashboard/DashboardMainDisplay/UserManagement';
 import { ChakraProvider } from '@chakra-ui/react';
+import './index.css';
 
 const router = createBrowserRouter([
   {
@@ -15,18 +18,28 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: '/admin',
+    path: '/admin/*',
     element: <AdminPage />,
     children: [
       {
         path: 'compliance',
         element: <HIPPACompliance />,
       },
+      {
+        path: 'user-management',
+        element: <UserManagement />,
+      },
     ],
   },
   {
     path: '/staff',
     element: <StaffPage />,
+    children: [
+      {
+        path: 'records',
+        element: <PatientListView />,
+      },
+    ],
   },
 ]);
 
