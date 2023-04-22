@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { FormControl, Button, Input, Link, Text } from '@chakra-ui/react';
 
 const Login = () => {
+  const { isAdmin } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [invalidLogin, setInvalidLogin] = useState(false);
@@ -16,6 +18,7 @@ const Login = () => {
       const data = {
         username: username,
         password: password,
+        userType: isAdmin ? 0 : 1,
       };
       const config = {
         method: 'POST',
