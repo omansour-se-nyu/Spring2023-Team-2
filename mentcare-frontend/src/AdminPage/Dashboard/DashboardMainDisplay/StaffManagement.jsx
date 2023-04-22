@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   VStack,
   HStack,
-  Box,
   Button,
   Input,
   Text,
@@ -53,7 +52,10 @@ const StaffManagement = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState({});
+  const [editInfo, setEditInfo] = useState({});
+
   const displayToast = useToast();
 
   const getStaffData = async () => {
@@ -147,13 +149,10 @@ const StaffManagement = () => {
         duration: 7000,
         isClosable: true,
       });
-      console.log('error from creating staff data', error);
+      console.log('error from creating staff account', error);
     } finally {
-      onClose();
+      handleShowEditModal(false);
       getStaffData();
-      setFirstName('');
-      setLastName('');
-      setDepartment('');
     }
   };
 
@@ -213,7 +212,19 @@ const StaffManagement = () => {
               <Td>{department}</Td>
               <Td>
                 <HStack justify='center'>
-                  <Text _hover={{ color: '#2876dc', cursor: 'pointer' }}>
+                  <Text
+                    onClick={() =>
+                      handleShowEditModal(
+                        true,
+                        pk,
+                        firstName,
+                        lastName,
+                        email,
+                        department
+                      )
+                    }
+                    _hover={{ color: '#2876dc', cursor: 'pointer' }}
+                  >
                     Edit
                   </Text>
                 </HStack>
@@ -233,6 +244,78 @@ const StaffManagement = () => {
           );
         })}
       </Tbody>
+    );
+  };
+
+  const handleDeleteAccount = async () => {
+    const { pk } = deleteInfo;
+    const url = `http://127.0.0.1:8000/admin/staff/delete/`;
+    const data = {
+      doctor_id: pk,
+    };
+    const config = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const response = await fetch(url, config).then((res) => res.json());
+      const { status } = response;
+      if (status === 'Success') {
+        displayToast({
+          title: 'Account Deletion Successful',
+          description: `Account #${pk} has been successfully deleted`,
+          status: 'success',
+          duration: 7000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      displayToast({
+        title: 'Account Deletion Failed',
+        description: `Account #${pk} failed to be deleted`,
+        status: 'error',
+        duration: 7000,
+        isClosable: true,
+      });
+      console.log('error from deleting staff account', error);
+    } finally {
+      handleShowDeleteModal(false);
+      getStaffData();
+    }
+  };
+
+  const handleShowDeleteModal = (value, pk, firstName, lastName) => {
+    setDeleteInfo({});
+    if (value) {
+      setDeleteInfo({ pk, firstName, lastName });
+    }
+    setShowDeleteModal(value);
+  };
+
+  const renderDeleteModal = () => {
+    const { pk, firstName, lastName } = deleteInfo;
+
+    return (
+      <Modal isCentered isOpen={showDeleteModal}>
+        <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
+        <ModalContent>
+          <ModalHeader>Delete Staff Account</ModalHeader>
+          <ModalCloseButton onClick={() => handleShowDeleteModal(false)} />
+          <ModalBody>
+            <Text>
+              Are you sure you want to delete account #{pk}: {firstName}{' '}
+              {lastName}?
+            </Text>
+          </ModalBody>
+          <ModalFooter gap='10px'>
+            <Button onClick={() => handleShowDeleteModal(false)}>Close</Button>
+            <Button onClick={handleDeleteAccount}>Delete</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     );
   };
 
@@ -274,14 +357,32 @@ const StaffManagement = () => {
     );
   };
 
-  const handleDeleteAccount = async () => {
-    const { pk } = deleteInfo;
-    const url = `http://127.0.0.1:8000/admin/staff/delete/`;
+  const handleShowEditModal = (
+    value,
+    pk,
+    firstName,
+    lastName,
+    email,
+    department
+  ) => {
+    setEditInfo({});
+    if (value) {
+      setEditInfo({ pk, firstName, lastName, email, department });
+    }
+    setShowEditModal(value);
+  };
+
+  const handleEditAccount = async () => {
+    const { pk, firstName, lastName, email, department } = editInfo;
+    const url = `http://127.0.0.1:8000/admin/staff/edit/`;
     const data = {
       doctor_id: pk,
+      name: `${firstName} ${lastName}`,
+      email: email,
+      department: department,
     };
     const config = {
-      method: 'DELETE',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -292,8 +393,8 @@ const StaffManagement = () => {
       const { status } = response;
       if (status === 'Success') {
         displayToast({
-          title: 'Account Deletion Successful',
-          description: `Account #${pk} has been successfully deleted`,
+          title: `Account #${pk} Update Successful`,
+          description: `Account #${pk} has been successfully updated`,
           status: 'success',
           duration: 7000,
           isClosable: true,
@@ -301,52 +402,90 @@ const StaffManagement = () => {
       }
     } catch (error) {
       displayToast({
-        title: 'Account Deletion Failed',
-        description: `Account #${pk} failed to be deleted`,
+        title: 'Account Update Failed',
+        description: `Account #${pk} failed to be updated`,
         status: 'error',
         duration: 7000,
         isClosable: true,
       });
-      console.log('error from creating staff data', error);
+      console.log('error from updating staff data', error);
     } finally {
-      handleShowDeleteModal(false);
+      handleShowEditModal(false);
       getStaffData();
     }
   };
 
-  const handleShowDeleteModal = (value, pk, firstName, lastName) => {
-    setDeleteInfo({});
-    if (value) {
-      setDeleteInfo({ pk, firstName, lastName });
-    }
-    setShowDeleteModal(value);
+  const onChangeEditModal = ({ firstName, lastName, email, department }) => {
+    const updateInfo = { firstName, lastName, email, department };
+    setEditInfo((prevInfo) => ({ ...prevInfo, ...updateInfo }));
   };
 
-  const renderDeleteModal = () => {
-    const { pk, firstName, lastName } = deleteInfo;
-
+  const renderEditDepartmentSelection = (value) => {
     return (
-      <Modal isCentered isOpen={showDeleteModal}>
+      <Select
+        onChange={(e) => onChangeEditModal({ department: e.target.value })}
+        value={value}
+      >
+        <option>--</option>
+        {departmentNames.map((name) => (
+          <option value={name} key={name}>
+            {name}
+          </option>
+        ))}
+      </Select>
+    );
+  };
+
+  const renderEditModal = () => {
+    const { pk, firstName, lastName, email, department } = editInfo;
+    return (
+      <Modal isCentered isOpen={showEditModal}>
         <ModalOverlay bg='blackAlpha.200' backdropFilter='blur(10px)' />
         <ModalContent>
-          <ModalHeader>Delete Staff Account</ModalHeader>
-          <ModalCloseButton onClick={() => handleShowDeleteModal(false)} />
+          <ModalHeader>Update Account #{pk}</ModalHeader>
+          <ModalCloseButton onClick={() => handleShowEditModal(false)} />
           <ModalBody>
-            <Text>
-              Are you sure you want to delete account #{pk}: {firstName}{' '}
-              {lastName}?
-            </Text>
+            <form>
+              <FormLabel htmlFor='first-name'>First Name</FormLabel>
+              <Input
+                onChange={(e) =>
+                  onChangeEditModal({ firstName: e.target.value })
+                }
+                value={firstName}
+                type='text'
+                id='first-name'
+                placeholder='eg. John'
+              />
+              <FormLabel htmlFor='last-name'>Last Name</FormLabel>
+              <Input
+                onChange={(e) =>
+                  onChangeEditModal({ lastName: e.target.value })
+                }
+                value={lastName}
+                type='text'
+                id='last-name'
+                placeholder='eg. Doe'
+              />
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <Input
+                onChange={(e) => onChangeEditModal({ email: e.target.value })}
+                value={email}
+                type='text'
+                id='email'
+                placeholder='eg. JohnDoe@email.com'
+              />
+              <FormLabel htmlFor='department'>Department</FormLabel>
+              {renderEditDepartmentSelection(department)}
+            </form>
           </ModalBody>
           <ModalFooter gap='10px'>
-            <Button onClick={() => handleShowDeleteModal(false)}>Close</Button>
-            <Button onClick={handleDeleteAccount}>Delete</Button>
+            <Button onClick={() => handleShowEditModal(false)}>Close</Button>
+            <Button onClick={handleEditAccount}>Update</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     );
   };
-
-  const renderEditModal = () => {};
 
   return (
     <VStack height='100vh' width='100%'>
@@ -417,6 +556,7 @@ const StaffManagement = () => {
       </VStack>
       {renderCreateModal()}
       {renderDeleteModal()}
+      {renderEditModal()}
     </VStack>
   );
 };
