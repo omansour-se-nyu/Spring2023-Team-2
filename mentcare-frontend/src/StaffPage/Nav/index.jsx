@@ -9,12 +9,14 @@ const Nav = () => {
   const navText = [
     'Overview',
     'Patients',
+    'Daily Summary',
     'Logout',
   ];
 
   const {
     overviewPage,
     patientViewPage,
+    dailySummaryPage,
     logoutPage,
   } = useContext(StaffContext);
 
@@ -32,6 +34,8 @@ const Nav = () => {
           if (overviewPage && text === 'Overview')
             onPage = true;
           else if (patientViewPage && text === 'Patients')
+            onPage = true;
+          else if (dailySummaryPage && text === 'Daily Summary')
             onPage = true;
           else if (logoutPage && text === 'Logout')
             onPage = true;

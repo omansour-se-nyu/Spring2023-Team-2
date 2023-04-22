@@ -265,7 +265,7 @@ const PatientListView = () =>  {
     // Delete Patients ===========================
     function deletePatient(){
         console.log("Deleting...", global_patientID);
-        fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID, { method: 'DELETE' })
+        fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID+'/', { method: 'DELETE' })
         .then(() => console.log('Delete successful'));
         fetchData();
     }
