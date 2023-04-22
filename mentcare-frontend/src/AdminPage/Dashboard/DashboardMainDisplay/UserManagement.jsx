@@ -45,10 +45,12 @@ const departmentNames = [
 
 const UserManagement = () => {
   const [staffData, setStaffData] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [department, setDepartment] = useState('');
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const displayToast = useToast();
 
   const getStaffData = async () => {
     const url = `http://127.0.0.1:8000/admin/staff/retrieve/`;
@@ -103,12 +105,31 @@ const UserManagement = () => {
     };
     try {
       const response = await fetch(url, config).then((res) => res.json());
-      console.log('curr re123', response);
+      const { status } = response;
+      if (status === 'Success') {
+        displayToast({
+          title: 'Account Creation Successful',
+          description: `Account for ${firstName} ${lastName} has been successfully created`,
+          status: 'success',
+          duration: 7000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
+      displayToast({
+        title: 'Account Creation Failed',
+        description: `Account for ${firstName} ${lastName} was not able to be created`,
+        status: 'error',
+        duration: 7000,
+        isClosable: true,
+      });
       console.log('error from creating staff data', error);
     } finally {
       onClose();
       getStaffData();
+      setFirstName('');
+      setLastName('');
+      setDepartment('');
     }
   };
 
