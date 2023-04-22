@@ -25,6 +25,7 @@ import {
   Select,
   SkeletonText,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { BellIcon, SearchIcon } from '@chakra-ui/icons';
 
@@ -87,7 +88,29 @@ const UserManagement = () => {
     setDepartment(e.target.value);
   };
 
-  const handleCreateStaff = () => {};
+  const handleCreateStaff = async () => {
+    const url = `http://127.0.0.1:8000/admin/staff/create/`;
+    const data = {
+      name: `${firstName} ${lastName}`,
+      department: department,
+    };
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const response = await fetch(url, config).then((res) => res.json());
+      console.log('curr re123', response);
+    } catch (error) {
+      console.log('error from creating staff data', error);
+    } finally {
+      onClose();
+      getStaffData();
+    }
+  };
 
   const renderDepartmentSelection = () => (
     <Select onChange={onChangeDepartment} value={department}>
@@ -220,7 +243,7 @@ const UserManagement = () => {
           </ModalBody>
           <ModalFooter gap='10px'>
             <Button onClick={onClose}>Close</Button>
-            <Button>Submit</Button>
+            <Button onClick={handleCreateStaff}>Submit</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
