@@ -1,42 +1,48 @@
 import { useState, useEffect } from 'react';
 import { StaffContext } from './context/StaffContext';
 import { Grid, GridItem } from '@chakra-ui/react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Nav from './Nav';
 import Overview from './Overview';
 import PatientListView from './Overview/OverviewDisplay/PatientListView';
-import DailySummary from './Overview/OverviewDisplay/DailySummary';
 
 const StaffPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
   const [patientManagementPage, setPatientManagementPage] = useState(false);
-  const [dailySummaryPage, setDailySummaryPage] = useState(false);
+  const [databasePage, setDatabasePage] = useState(false);
   const [logoutPage, setLogoutPage] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setOverviewPage(false);
     setPatientManagementPage(false);
-    setDailySummaryPage(false);
+    setDatabasePage(false);
   }, [logoutPage]);
 
   useEffect(() => {
-    setOverviewPage(false);
-    setLogoutPage(false);
-    setDailySummaryPage(false);
+    if (patientManagementPage) {
+      setOverviewPage(false);
+      setLogoutPage(false);
+      setDatabasePage(false);
+      navigate('/staff/records');
+    }
   }, [patientManagementPage]);
 
   useEffect(() => {
-    setDailySummaryPage(false);
-    setPatientManagementPage(false);
-    setLogoutPage(false);
-  }, [overviewPage]);
-
-  useEffect(() => {
     setOverviewPage(false);
     setPatientManagementPage(false);
     setLogoutPage(false);
-  }, [dailySummaryPage]);
+  }, [databasePage]);
 
+  useEffect(() => {
+    if (overviewPage) {
+      setDatabasePage(false);
+      setPatientManagementPage(false);
+      setLogoutPage(false);
+      navigate('/staff');
+    }
+  }, [overviewPage]);
 
   return (
     <StaffContext.Provider
@@ -45,21 +51,20 @@ const StaffPage = () => {
         setOverviewPage,
         patientManagementPage,
         setPatientManagementPage,
-        dailySummaryPage,
-        setDailySummaryPage,
+        databasePage,
+        setDatabasePage,
         logoutPage,
         setLogoutPage,
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%'>
-        <GridItem colSpan={3} backgroundColor='#F488C4'>
+        <GridItem colSpan={2} backgroundColor='#F488C4'>
           <Nav />
         </GridItem>
-        <GridItem colSpan={9}>
+        <GridItem colSpan={10}>
           <Routes>
             <Route exact path='/' element={<Overview />} />
             <Route path='/records' element={<PatientListView />} />
-            <Route path='/daily-summary' element={<DailySummary />} />
           </Routes>
         </GridItem>
       </Grid>

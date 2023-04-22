@@ -11,12 +11,8 @@ import {
     Td,
     TableCaption,
     TableContainer,
+    ChakraProvider
 } from '@chakra-ui/react';
-
-
-const all_patient_information = "all patients information";
-const all_patients_under_this_doctor = "all patients under this doctor";
-const behaviors_since_yesterday = "behaviors since yesterday";
 
 const DailySummary = () => {
     // set patient summary information based on doctor
@@ -35,10 +31,20 @@ const DailySummary = () => {
         .then((response) => response.json())
         .then((actualData) => {
             console.log(actualData);
+            const data = JSON.parse(actualData.all_patients_under_this_doctor);
+            console.log(data[0].fields);
+            setPatientUnderDoctor(data[0].fields);
+
+            const data2 = JSON.parse(actualData.all_patients_information);
+            //console.log(data2);
+            setPatientInformation(data2[0].fields);
+
+            const data3 = JSON.parse(actualData.behaviors_since_yesterday);
+            //console.log(data3);
+            setPatientInformation(data3[0].fields);
+
             setInformation(actualData);
-            setPatientInformation(actualData[all_patient_information]);
-            setPatientUnderDoctor(actualData[all_patients_under_this_doctor]);
-            setBehaviorChanges(actualData[behaviors_since_yesterday]);
+
         })
         .catch((err) => {
             console.log(err.message);
@@ -51,6 +57,7 @@ const DailySummary = () => {
 
 
     return(
+        <ChakraProvider>
         <Table>
             <TableContainer>
                 <Thead>
@@ -60,17 +67,13 @@ const DailySummary = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                    {information.length > 0 && information.map(information => {
-                        return (
-                            <Tr>
-                                <Td>{information}</Td>
-                                <Td>{userData[all_patients_under_this_doctor]}</Td>
-                            </Tr>
-                        );
-                    })}
+                   <Tr>
+                       <Td></Td>
+                   </Tr>
                 </Tbody>
             </TableContainer>
         </Table>
+        </ChakraProvider>
     );
 
 }

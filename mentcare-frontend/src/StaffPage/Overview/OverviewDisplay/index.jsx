@@ -22,7 +22,7 @@ const OverviewDisplay = () => {
   };
 
   const handleOnClickPatientView = () => {
-    console.log("Patient View");
+    console.log('Patient View');
     setPatientManagementPage(true);
     navigate('/staff/records');
   };
