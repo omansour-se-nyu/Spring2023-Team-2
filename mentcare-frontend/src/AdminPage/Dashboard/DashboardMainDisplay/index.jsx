@@ -10,24 +10,19 @@ import hipaaIcon from '../../../assets/HIPAA_Icon.png';
 import { useNavigate } from 'react-router-dom';
 
 const DashboardMainDisplay = () => {
-  const navigate = useNavigate();
   const { setCompliancePage, setStaffManagementPage } =
     useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
     setCompliancePage(true);
-    navigate('/admin/compliance');
   };
 
   const handleOnClickStaffManagementPage = () => {
     setStaffManagementPage(true);
-    navigate('/admin/user-management');
   };
 
   const cardTitleImages = [
-    // import images link when it is imported later
     ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
-    ['Settings', settingsIcon, () => {}],
     ['Monthly Reports', reportsIcon, () => {}],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
   ];

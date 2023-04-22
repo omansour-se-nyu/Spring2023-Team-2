@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { StaffContext } from './context/StaffContext';
 import { Grid, GridItem } from '@chakra-ui/react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Nav from './Nav';
 import Overview from './Overview';
 import PatientListView from './Overview/OverviewDisplay/PatientListView';
@@ -12,6 +12,8 @@ const StaffPage = () => {
   const [databasePage, setDatabasePage] = useState(false);
   const [logoutPage, setLogoutPage] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     setOverviewPage(false);
     setPatientManagementPage(false);
@@ -19,9 +21,12 @@ const StaffPage = () => {
   }, [logoutPage]);
 
   useEffect(() => {
-    setOverviewPage(false);
-    setLogoutPage(false);
-    setDatabasePage(false);
+    if (patientManagementPage) {
+      setOverviewPage(false);
+      setLogoutPage(false);
+      setDatabasePage(false);
+      navigate('/staff/records');
+    }
   }, [patientManagementPage]);
 
   useEffect(() => {
@@ -31,11 +36,13 @@ const StaffPage = () => {
   }, [databasePage]);
 
   useEffect(() => {
-    setDatabasePage(false);
-    setPatientManagementPage(false);
-    setLogoutPage(false);
+    if (overviewPage) {
+      setDatabasePage(false);
+      setPatientManagementPage(false);
+      setLogoutPage(false);
+      navigate('/staff');
+    }
   }, [overviewPage]);
-
 
   return (
     <StaffContext.Provider
@@ -51,10 +58,10 @@ const StaffPage = () => {
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%'>
-        <GridItem colSpan={3} backgroundColor='#F488C4'>
+        <GridItem colSpan={2} backgroundColor='#F488C4'>
           <Nav />
         </GridItem>
-        <GridItem colSpan={9}>
+        <GridItem colSpan={10}>
           <Routes>
             <Route exact path='/' element={<Overview />} />
             <Route path='/records' element={<PatientListView />} />

@@ -1,6 +1,6 @@
 import { Text } from '@chakra-ui/react';
 
-const MenuText = ({ text, onPage }) => {
+const MenuText = ({ text, onPage, handleOnClick }) => {
   return (
     <Text
       fontWeight='semibold'
@@ -9,6 +9,7 @@ const MenuText = ({ text, onPage }) => {
         opacity: '90%',
       }}
       color='#FFFFFF'
+      onClick={handleOnClick}
       fontSize='xl'
       opacity={onPage ? '100%' : '70%'}
     >

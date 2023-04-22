@@ -13,7 +13,7 @@ const OverviewDisplay = () => {
   const { setPatientManagementPage } = useContext(StaffContext);
 
   const handleOnClickPatientView = () => {
-    console.log("Patient View");
+    console.log('Patient View');
     setPatientManagementPage(true);
     navigate('/staff/records');
   };
