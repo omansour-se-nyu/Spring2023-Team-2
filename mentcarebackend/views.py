@@ -732,9 +732,9 @@ def daily_patient_summary(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
-                                 'all patients under this doctor': patient_dosages,
-                                 'all patients information': patient_information,
-                                 'behaviors since yesterday': patient_behaviors,
+                                 'all_patients_under_this_doctor': patient_dosages,
+                                 'all_patients_information': patient_information,
+                                 'behaviors_since_yesterday': patient_behaviors,
                                  'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
