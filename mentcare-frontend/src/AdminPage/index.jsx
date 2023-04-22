@@ -5,17 +5,17 @@ import Menu from './Menu';
 import Dashboard from './Dashboard';
 import { Routes, Route } from 'react-router-dom';
 import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
-import UserManagement from './Dashboard/DashboardMainDisplay/UserManagement';
+import StaffManagement from './Dashboard/DashboardMainDisplay/StaffManagement';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
-  const [userManagementPage, setUserManagementPage] = useState(false);
+  const [StaffManagementPage, setStaffManagementPage] = useState(false);
   const [settingsPage, setSettingsPage] = useState(false);
   const [monthlyReportsPage, setMonthlyReportsPage] = useState(false);
   const [compliancePage, setCompliancePage] = useState(false);
 
   useEffect(() => {
-    setUserManagementPage(false);
+    setStaffManagementPage(false);
     setSettingsPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
@@ -26,25 +26,25 @@ const AdminPage = () => {
     setSettingsPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
-  }, [userManagementPage]);
+  }, [StaffManagementPage]);
 
   useEffect(() => {
     setOverviewPage(false);
-    setUserManagementPage(false);
+    setStaffManagementPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
   }, [settingsPage]);
 
   useEffect(() => {
     setOverviewPage(false);
-    setUserManagementPage(false);
+    setStaffManagementPage(false);
     setSettingsPage(false);
     setCompliancePage(false);
   }, [monthlyReportsPage]);
 
   useEffect(() => {
     setOverviewPage(false);
-    setUserManagementPage(false);
+    setStaffManagementPage(false);
     setSettingsPage(false);
     setMonthlyReportsPage(false);
   }, [compliancePage]);
@@ -54,8 +54,8 @@ const AdminPage = () => {
       value={{
         overviewPage,
         setOverviewPage,
-        userManagementPage,
-        setUserManagementPage,
+        StaffManagementPage,
+        setStaffManagementPage,
         settingsPage,
         setSettingsPage,
         monthlyReportsPage,
@@ -72,7 +72,7 @@ const AdminPage = () => {
           <Routes>
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
-            <Route path='/user-management' element={<UserManagement />} />
+            <Route path='/user-management' element={<StaffManagement />} />
           </Routes>
         </GridItem>
       </Grid>

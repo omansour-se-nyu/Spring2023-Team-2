@@ -8,7 +8,7 @@ import userPng from '../../assets/user.png';
 const Menu = () => {
   const menuText = [
     'Overview',
-    'User Management',
+    'Staff Management',
     'Settings',
     'Monthly Reports',
     'HIPPA Compliance',
@@ -16,7 +16,7 @@ const Menu = () => {
 
   const {
     overviewPage,
-    userManagementPage,
+    StaffManagementPage,
     settingsPage,
     monthlyReportsPage,
     compliancePage,
@@ -34,7 +34,7 @@ const Menu = () => {
         {menuText.map((text) => {
           let onPage = false;
           if (overviewPage && text === 'Overview') onPage = true;
-          else if (userManagementPage && text === 'User Management')
+          else if (StaffManagementPage && text === 'Staff Management')
             onPage = true;
           else if (settingsPage && text === 'Settings') onPage = true;
           else if (monthlyReportsPage && text === 'Monthly Reports')
