@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import download from './download';
 import {
-  InputGroup,
-  InputLeftElement,
   Text,
   Input,
   Table,
@@ -25,6 +23,7 @@ import {
   FormControl,
   FormLabel,
   VStack,
+  HStack,
 } from '@chakra-ui/react';
 import {
   ViewIcon,
@@ -291,104 +290,74 @@ const PatientListView = () => {
   }, []);
 
   return (
-    <VStack align='start' height='100vh' width='100%' border='1px'>
-      <VStack></VStack>
-      <Text
-        color='#FB5058'
-        border='1px'
-        fontWeight='bold'
-        align='center'
-        fontSize='4xl'
+    <VStack align='start' height='100vh' width='100%'>
+      <VStack
+        height='20vh'
+        width='100%'
+        align='start'
+        paddingLeft='5px'
+        paddingRight='5px'
       >
-        Patient Overview
-      </Text>
-      <InputGroup paddingLeft='30px'>
-        <Input
-          placeholder='Enter Patient MRN'
-          size='md'
-          width='30%'
-          borderRadius='80px'
-          backgroundColor='#F3EED9'
-          focusBorderColor='#F3EED9'
-          onBlur={handleChange}
-        />
-        <IconButton
-          variant='outline'
-          colorScheme='black'
-          aria-label='Create patient'
-          icon={<AddIcon />}
-          onClick={onOpen1}
-          marginLeft={2}
-        />
-        <IconButton
-          variant='outline'
-          colorScheme='black'
-          aria-label='Edit patient information'
-          icon={<EditIcon />}
-          onClick={onOpen}
-          marginLeft={2}
-        />
-        <IconButton
-          variant='outline'
-          colorScheme='black'
-          aria-label='Delete Patient Info'
-          fontSize='20px'
-          icon={<DeleteIcon />}
-          marginLeft={2}
-          onClick={() => deletePatient()}
-        />
+        <Text color='#FB5058' fontWeight='bold' align='center' fontSize='4xl'>
+          Patient Overview
+        </Text>
+        <HStack border='1px' width='100%' height='100%' justify='center'>
+          <Input
+            placeholder='Enter Patient MRN'
+            size='md'
+            width='30%'
+            borderRadius='80px'
+            backgroundColor='#F3EED9'
+            focusBorderColor='#F3EED9'
+            onBlur={handleChange}
+          />
+          <IconButton
+            variant='outline'
+            colorScheme='black'
+            aria-label='Create patient'
+            icon={<AddIcon />}
+            onClick={onOpen1}
+            marginLeft={2}
+          />
+          <IconButton
+            variant='outline'
+            colorScheme='black'
+            aria-label='Edit patient information'
+            icon={<EditIcon />}
+            onClick={onOpen}
+            marginLeft={2}
+          />
+          <IconButton
+            variant='outline'
+            colorScheme='black'
+            aria-label='Delete Patient Info'
+            fontSize='20px'
+            icon={<DeleteIcon />}
+            marginLeft={2}
+            onClick={() => deletePatient()}
+          />
 
-        <IconButton
-          variant='outline'
-          colorScheme={notif ? 'red' : 'black'}
-          aria-label='Get Patient Update'
-          fontSize='20px'
-          icon={<ChatIcon />}
-          onClick={onOpen2}
-          marginLeft={2}
-        />
-
-        <Modal
-          onClose={onClose2}
-          isOpen={isOpen2}
-          isCentered
-          initialFocusRef={initialRef2}
-          finalFocusRef={finalRef2}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Notifications</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              {editingString.split('\n').map((str) => (
-                <p>{str}</p>
-              ))}
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                backgroundColor='#F3EED9'
-                onClick={() => clearNotif()}
-                marginRight={3}
-              >
-                Clear
-              </Button>
-              <Button backgroundColor='#F3EED9' onClick={onClose2}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-        <IconButton
-          variant='outline'
-          colorScheme='black'
-          aria-label='View Patient Info'
-          fontSize='20px'
-          icon={<ViewIcon />}
-          marginLeft={2}
-          onClick={onOpen3}
-        />
-      </InputGroup>
-      <TableContainer width='100%' overflowY='auto'>
+          <IconButton
+            variant='outline'
+            colorScheme={notif ? 'red' : 'black'}
+            aria-label='Get Patient Update'
+            fontSize='20px'
+            icon={<ChatIcon />}
+            onClick={onOpen2}
+            marginLeft={2}
+          />
+          <IconButton
+            variant='outline'
+            colorScheme='black'
+            aria-label='View Patient Info'
+            fontSize='20px'
+            icon={<ViewIcon />}
+            marginLeft={2}
+            onClick={onOpen3}
+          />
+        </HStack>
+      </VStack>
+      <TableContainer height='80vh' width='100%' overflowY='auto'>
         <Table size='sm' variant='striped'>
           <Thead
             style={{
@@ -399,12 +368,24 @@ const PatientListView = () => {
             }}
           >
             <Tr>
-              <Th>Patient MRN</Th>
-              <Th>First Name</Th>
-              <Th>Last Name</Th>
-              <Th>D.O.B</Th>
-              <Th>Gender</Th>
-              <Th>Download</Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>Patient MRN</Text>
+              </Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>First Name</Text>
+              </Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>Last Name</Text>
+              </Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>D.O.B</Text>
+              </Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>Gender</Text>
+              </Th>
+              <Th fontSize='0.8em' color='white'>
+                <Text>Download</Text>
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -434,7 +415,6 @@ const PatientListView = () => {
           </Tbody>
         </Table>
       </TableContainer>
-
       <Modal
         initialFocusRef={initialRef1}
         finalFocusRef={finalRef1}
@@ -614,6 +594,37 @@ const PatientListView = () => {
               Confirm Changes
             </Button>
             <Button backgroundColor='#F3EED9' onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        onClose={onClose2}
+        isOpen={isOpen2}
+        isCentered
+        initialFocusRef={initialRef2}
+        finalFocusRef={finalRef2}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Notifications</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {editingString.split('\n').map((str) => (
+              <p>{str}</p>
+            ))}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              backgroundColor='#F3EED9'
+              onClick={() => clearNotif()}
+              marginRight={3}
+            >
+              Clear
+            </Button>
+            <Button backgroundColor='#F3EED9' onClick={onClose2}>
               Close
             </Button>
           </ModalFooter>
