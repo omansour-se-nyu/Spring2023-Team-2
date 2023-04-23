@@ -237,8 +237,8 @@ def register_user(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
-                                 'email is': new_account.email,
-                                 'temporary password is': new_account.password,
+                                 'email_is': new_account.email,
+                                 'temporary_password is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -781,7 +781,7 @@ def number_of_patients_treated(request):
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved number of patients treated this month'
                                                 'successfully',
-                                     'count of patients treated this month': patients_count,
+                                     'count_of_patients_treated_this_month': patients_count,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -839,8 +839,8 @@ def patients_in_system(request):
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved number of patients who entered/exited '
                                                 'successfully',
-                                     'incoming patients': in_patients,
-                                     'outgoing patients': out_patients,
+                                     'incoming_patients': in_patients,
+                                     'outgoing_patients': out_patients,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -900,7 +900,7 @@ def patients_drugs(request):
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved patient drug info successfully for '
                                                 'the month',
-                                     'medication info': prescription_info,
+                                     'medication_info': prescription_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -959,7 +959,7 @@ def drugs_cost(request):
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved total cost for the month',
-                                     'medication info': prescription_info,
+                                     'medication_info': prescription_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
