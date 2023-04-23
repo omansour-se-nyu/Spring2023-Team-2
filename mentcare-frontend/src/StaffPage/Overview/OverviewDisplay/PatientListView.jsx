@@ -45,7 +45,6 @@ const PatientListView = () => {
   const [userData, setUserData] = useState([]);
   const [displayUserData, setDisplayUserData] = useState([]);
   const [patientID, setPatientID] = useState(0);
-  const [outOfRange, setOutOfRange] = useState(false);
   const [userCt, setUserCt] = useState(0);
 
   // notifications here
@@ -67,9 +66,7 @@ const PatientListView = () => {
   const handleChange = (event) => {
     // TODO: add cannot find patient
     if (event.target.value > userCt || event.target.value < 1) {
-      setOutOfRange(true);
       setPatientID(0);
-      setTimeout(() => setOutOfRange(false), 2000);
     } else {
       setPatientID(event.target.value);
       global_patientID = event.target.value;
@@ -97,7 +94,7 @@ const PatientListView = () => {
         // all info
         data.sort((a, b) => a.pk - b.pk);
         setUserData(data);
-
+        setDisplayUserData(data);
         setUserCt(data.length);
       })
       .catch((err) => {
@@ -357,8 +354,8 @@ const PatientListView = () => {
   };
 
   const renderTableBodyRow = () => {
-    if (userData.length === 0) return null;
-    return userData.map(({ pk, fields }) => {
+    if (displayUserData.length === 0) return null;
+    return displayUserData.map(({ pk, fields }) => {
       const { first_name, last_name, dob, gender } = fields;
       return (
         <Tr key={pk}>
@@ -429,6 +426,7 @@ const PatientListView = () => {
                 onBlur={handleChange}
               />
             </InputGroup>
+            <Divider height='30px' orientation='vertical' />
             <IconButton
               variant='outline'
               colorScheme='black'
