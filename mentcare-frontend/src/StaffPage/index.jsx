@@ -6,11 +6,13 @@ import Nav from './Nav';
 import Overview from './Overview';
 import PatientListView from './Overview/OverviewDisplay/PatientListView';
 import DailySummary from './Overview/OverviewDisplay/DailySummary';
+import MonthlyReport from './Overview/OverviewDisplay/MonthlyReport';
 
 const StaffPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
   const [patientManagementPage, setPatientManagementPage] = useState(false);
   const [dailySummaryPage, setDailySummaryPage] = useState(false);
+  const [monthlyReportPage, setMonthlyReportPage] = useState(false);
   const [logoutPage, setLogoutPage] = useState(false);
 
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ const StaffPage = () => {
     setOverviewPage(false);
     setPatientManagementPage(false);
     setDailySummaryPage(false);
+    setMonthlyReportPage(false);
   }, [logoutPage]);
 
   useEffect(() => {
@@ -26,6 +29,7 @@ const StaffPage = () => {
       setOverviewPage(false);
       setLogoutPage(false);
       setDailySummaryPage(false);
+      setMonthlyReportPage(false);
       navigate('/staff/records');
     }
   }, [patientManagementPage]);
@@ -35,6 +39,7 @@ const StaffPage = () => {
       setPatientManagementPage(false);
       setDailySummaryPage(false);
       setLogoutPage(false);
+      setMonthlyReportPage(false);
       navigate('/staff');
     }
   }, [overviewPage]);
@@ -44,9 +49,20 @@ const StaffPage = () => {
         setOverviewPage(false);
         setPatientManagementPage(false);
         setLogoutPage(false);
+        setMonthlyReportPage(false);
         navigate('/staff/daily-summary');
     }
   }, [dailySummaryPage]);
+
+  useEffect(() => {
+    if (monthlyReportPage) {
+        setOverviewPage(false);
+        setPatientManagementPage(false);
+        setLogoutPage(false);
+        setDailySummaryPage(false);
+        navigate('/staff/monthly-report');
+    }
+  }, [monthlyReportPage]);
 
   return (
     <StaffContext.Provider
@@ -55,6 +71,8 @@ const StaffPage = () => {
         setOverviewPage,
         patientManagementPage,
         setPatientManagementPage,
+        monthlyReportPage,
+        setMonthlyReportPage,
         dailySummaryPage,
         setDailySummaryPage,
         logoutPage,
@@ -70,6 +88,7 @@ const StaffPage = () => {
             <Route exact path='/' element={<Overview />} />
             <Route path='/records' element={<PatientListView />} />
             <Route path='/daily-summary' element={<DailySummary />} />
+            <Route path='/monthly-report' element={<monthlyReport />} />
           </Routes>
         </GridItem>
       </Grid>

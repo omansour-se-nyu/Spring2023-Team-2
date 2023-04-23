@@ -13,23 +13,13 @@ import {
     Td,
     TableCaption,
     TableContainer,
-    IconButton,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    useDisclosure,
-    Button,
     FormControl,
     FormLabel,
     ChakraProvider,
     Card,
     CardBody
 } from '@chakra-ui/react';
-import { ViewIcon , SearchIcon , EditIcon , DeleteIcon , ChatIcon , AddIcon , DownloadIcon} from "@chakra-ui/icons";
+import { SearchIcon } from "@chakra-ui/icons";
 
 
 const DailySummary = () => {
