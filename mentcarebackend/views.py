@@ -250,10 +250,9 @@ def register_user(request):
 
 
 @csrf_exempt
-@cache_page(60 * 15)
 def create_patient_records(request):
     """
-    Create a patient record, and add to the database. Patient ID number is randomly generated
+    Create a patient record, and add to the database. Patient ID number auto-incremented
 
     @param JSON body: a patient's first name, last name, gender, date of birth, address, phone
     @return: JSON response stating patient record was successfully created
@@ -278,7 +277,7 @@ def create_patient_records(request):
 
             else:
                 record = PatientInformationModel.objects.create(
-                    patient_id=random.randint(1001, 10000),
+                    patient_id=PatientInformationModel.objects.last().patient_id + 1,
                     first_name=first_name,
                     last_name=last_name,
                     gender=gender,
