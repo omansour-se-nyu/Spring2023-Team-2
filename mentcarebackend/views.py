@@ -924,12 +924,11 @@ def patients_drugs(request):
 @csrf_exempt
 def drugs_cost(request):
     """
-    For an administrator, find the total cost of drugs that were prescribed that month
+    For an administrator, find the per drugs that were prescribed that month
     :param request:
     :param month:
     :param year:
     :return: total cost
-    @todo: add medication model
     """
     # using POST method, as frontend doesn't like GET request body
     if request.method == 'POST':
@@ -948,23 +947,21 @@ def drugs_cost(request):
 
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
-                medication_prescription = PrescribeMedicationModel.objects.select_related(
-                    'medication_id',
-                )
-                medication_prescription = medication_prescription.get().medication_id.medication_name
-                print(medication_prescription)
 
                 prescription_info = PrescribeMedicationModel.objects.filter(
                     date__year=year,
                     date__month=month,
                 )
 
-                prescription_info = serializers.serialize("json", prescription_info)
-                # print(prescription_info)
+                medication_info = MedicationModel.objects.filter(
+                    medication_id__in=prescription_info
+                ).select_related()
+
+                medication_info = serializers.serialize("json", medication_info)
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved total cost for the month',
-                                     'medication_info': prescription_info,
+                                     'drug_cost_this_month': medication_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
