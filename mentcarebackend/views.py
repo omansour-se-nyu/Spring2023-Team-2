@@ -233,7 +233,7 @@ def register_user(request):
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
                                  'email_is': new_account.email,
-                                 'temporary_password is': new_account.password,
+                                 'temporary_password_is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
