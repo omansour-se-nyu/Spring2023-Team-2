@@ -35,14 +35,6 @@ import {
   DownloadIcon,
 } from '@chakra-ui/icons';
 
-function deletePatient() {
-  console.log('Deleting...', global_patientID);
-  fetch(
-    'http://127.0.0.1:8000/staff/patients/records/delete/' + global_patientID,
-    { method: 'DELETE' }
-  ).then(() => console.log('Delete successful'));
-}
-
 var global_patientID = 0;
 let editingString = '';
 
@@ -53,9 +45,17 @@ const PatientListView = () => {
   const [outOfRange, setOutOfRange] = useState(false);
   const [modal, setModal] = useState(false);
   const [created, setCreated] = useState(false);
+  const [userCt, setUserCt] = useState(0);
+  const [expandedStr, setExpandedStr] = useState('');
 
   // notifications here
   const [notif, setNotif] = useState(false);
+
+  // expanded
+  const [fullname, setUserFullName] = useState('');
+  const [addressStr, setAddressStr] = useState('');
+  const [phoneNumStr, setPhoneNum] = useState('');
+  const [allergiesStr, setAllergies] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = React.useRef(null);
@@ -66,7 +66,7 @@ const PatientListView = () => {
   // get patient id from search field and edit that record
   const handleChange = (event) => {
     // TODO: add cannot find patient
-    if (event.target.value > 1000 || event.target.value < 1) {
+    if (event.target.value > userCt || event.target.value < 1) {
       setOutOfRange(true);
       setPatientID(0);
       setTimeout(() => setOutOfRange(false), 2000);
@@ -99,6 +99,7 @@ const PatientListView = () => {
         HEADER = split_json;
         HEADER.sort((a, b) => a.pk - b.pk);
         setUserData(HEADER);
+        setUserCt(HEADER.length);
       })
       .catch((err) => {
         console.log(err.message);
@@ -279,6 +280,42 @@ const PatientListView = () => {
           fetchData();
         });
     }
+  }
+
+  // Delete Patients ===========================
+  function deletePatient() {
+    console.log('Deleting...', global_patientID);
+    fetch(
+      'http://127.0.0.1:8000/staff/patients/records/delete/' +
+        global_patientID +
+        '/',
+      { method: 'DELETE' }
+    ).then(() => console.log('Delete successful'));
+    fetchData();
+  }
+
+  // Show expanded information =============================
+  function expandedView() {
+    console.log(global_patientID);
+    fetch('http://127.0.0.1:8000/staff/patients/records/retrieve/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_id: global_patientID }),
+    })
+      .then((response) => response.json())
+      .then((actualData) => {
+        const split_json = JSON.parse(actualData.patient_information);
+        console.log(split_json[0]);
+        setUserFullName(
+          split_json[0].fields.first_name + ' ' + split_json[0].fields.last_name
+        );
+        setAddressStr(split_json[0].fields.address);
+        setPhoneNum(split_json[0].fields.phone_num);
+        setAllergies(split_json[0].fields.allergies);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }
 
   useEffect(() => {

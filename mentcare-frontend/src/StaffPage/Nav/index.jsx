@@ -6,15 +6,15 @@ import { v4 as uuid } from 'uuid';
 import userPng from '../../assets/user.png';
 
 const Nav = () => {
-  const navText = ['Overview', 'Patients', 'Database', 'Logout'];
+  const navText = ['Overview', 'Patients', 'Daily Summary', 'Logout'];
 
   const {
     overviewPage,
     setOverviewPage,
     patientManagementPage,
     setPatientManagementPage,
-    databasePage,
-    setDatabasePage,
+    dailySummaryPage,
+    setDailySummaryPage,
     logoutPage,
   } = useContext(StaffContext);
 
@@ -25,8 +25,8 @@ const Nav = () => {
       handleOnClick: () => setPatientManagementPage(true),
     },
     {
-      text: 'Database',
-      handleOnClick: () => {},
+      text: 'Daily Summary',
+      handleOnClick: () => setDailySummaryPage(true),
     },
     { text: 'Logout', handleOnClick: () => {} },
   ];
@@ -44,7 +44,7 @@ const Nav = () => {
           let onPage = false;
           if (overviewPage && text === 'Overview') onPage = true;
           else if (patientManagementPage && text === 'Patients') onPage = true;
-          else if (databasePage && text === 'Database') onPage = true;
+          else if (dailySummaryPage && text === 'Daily Summary') onPage = true;
           else if (logoutPage && text === 'Logout') onPage = true;
           return (
             <MenuText
