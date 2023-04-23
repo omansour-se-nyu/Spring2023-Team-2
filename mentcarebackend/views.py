@@ -863,7 +863,6 @@ def patients_drugs(request):
     :param month:
     :param year:
     :return: information about dosage of drug and patient_id
-    @todo: add patient information and medication models
     """
 
     # using POST method, as frontend doesn't like GET request body
@@ -889,18 +888,24 @@ def patients_drugs(request):
                     date__month=month
                 )
 
-                #
-                # prescription_info = PrescribeMedicationModel.objects.filter(
-                #     date__year=year,
-                #     date__month=month,
-                # )
+                medication_info = MedicationModel.objects.filter(
+                    medication_id__in=prescription_info
+                ).select_related()
+
+                all_patient_info = PatientInformationModel.objects.filter(
+                    patient_id__in=prescription_info
+                ).select_related()
 
                 prescription_info = serializers.serialize("json", prescription_info)
+                medication_info = serializers.serialize("json", medication_info)
+                all_patient_info = serializers.serialize("json", all_patient_info)
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved patient drug info successfully for '
                                                 'the month',
-                                     'medication_info': prescription_info,
+                                     'medication_info': medication_info,
+                                     'prescription_info': prescription_info,
+                                     'all_patient_info': all_patient_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
