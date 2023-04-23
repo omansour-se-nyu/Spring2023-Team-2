@@ -18,13 +18,11 @@ const OverviewDisplay = () => {
   const { setMonthlyReportPage } = useContext(StaffContext);
 
   const summaryOnClick = () => {
-    console.log("Get Daily Summary");
     setDailySummaryPage(true);
     navigate('/staff/daily-summary');
   };
 
   const handleOnClickPatientView = () => {
-    console.log('Patient View');
     setPatientManagementPage(true);
     navigate('/staff/records');
   };
@@ -37,7 +35,7 @@ const OverviewDisplay = () => {
 
   // logout if successful
   const logoutOnClick = () => {
-    console.log("Logout");
+    console.log('Logout');
     setLogoutPage(true);
     navigate('/');
   };

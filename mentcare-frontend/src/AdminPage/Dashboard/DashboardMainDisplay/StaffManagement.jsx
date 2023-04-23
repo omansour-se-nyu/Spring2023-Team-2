@@ -497,7 +497,9 @@ const StaffManagement = () => {
           paddingTop='10px'
           paddingLeft='10px'
           paddingRight='10px'
-          height='30vh'
+          height='20vh'
+          minHeight='150px'
+          maxHeight='200px'
           width='100%'
         >
           <Text color='#FB5058' fontWeight='bold' fontSize='4xl'>
@@ -511,13 +513,21 @@ const StaffManagement = () => {
               paddingRight='20px'
               borderRadius='5px'
             >
-              <InputGroup width='250px'>
-                <InputLeftAddon children='Staff #' />
+              <InputGroup width='350px'>
+                <InputLeftAddon
+                  children='Staff #'
+                  fontWeight='bold'
+                  color='#faf9ef'
+                  backgroundColor='#d5c37b'
+                />
                 <Input
                   value={search}
                   onChange={onChangeSearch}
                   type='text'
                   placeholder='eg. 451'
+                  borderRadius='80px'
+                  backgroundColor='#F3EED9'
+                  focusBorderColor='#F3EED9'
                 />
               </InputGroup>
               <Divider orientation='vertical' height='30px' />
@@ -533,7 +543,7 @@ const StaffManagement = () => {
             </HStack>
           </HStack>
         </VStack>
-        <TableContainer width='100%' height='72vh' overflowY='auto'>
+        <TableContainer width='100%' height='80vh' overflowY='auto'>
           <Table size='sm' variant='striped'>
             <Thead
               style={{
@@ -545,7 +555,7 @@ const StaffManagement = () => {
             >
               <Tr>
                 <Th fontSize='0.8em' color='white'>
-                  <Text>Id</Text>
+                  <Text>Staff Id</Text>
                 </Th>
                 <Th fontSize='0.8em' color='white'>
                   <Text>First Name</Text>
