@@ -497,7 +497,9 @@ const StaffManagement = () => {
           paddingTop='10px'
           paddingLeft='10px'
           paddingRight='10px'
-          height='30vh'
+          height='20vh'
+          minHeight='150px'
+          maxHeight='200px'
           width='100%'
         >
           <Text color='#FB5058' fontWeight='bold' fontSize='4xl'>
@@ -533,7 +535,7 @@ const StaffManagement = () => {
             </HStack>
           </HStack>
         </VStack>
-        <TableContainer width='100%' height='72vh' overflowY='auto'>
+        <TableContainer width='100%' height='80vh' overflowY='auto'>
           <Table size='sm' variant='striped'>
             <Thead
               style={{

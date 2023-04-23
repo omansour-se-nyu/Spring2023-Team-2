@@ -24,29 +24,26 @@ import {
   FormLabel,
   VStack,
   HStack,
+  useToast,
 } from '@chakra-ui/react';
 import {
   ViewIcon,
-  SearchIcon,
   EditIcon,
-  DeleteIcon,
   ChatIcon,
   AddIcon,
   DownloadIcon,
+  CloseIcon,
 } from '@chakra-ui/icons';
 
 var global_patientID = 0;
 let editingString = '';
 
 const PatientListView = () => {
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState([]);
+  const [displayUserData, setDisplayUserData] = useState([]);
   const [patientID, setPatientID] = useState(0);
-  const [patient, setPatient] = useState({});
   const [outOfRange, setOutOfRange] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [created, setCreated] = useState(false);
   const [userCt, setUserCt] = useState(0);
-  const [expandedStr, setExpandedStr] = useState('');
 
   // notifications here
   const [notif, setNotif] = useState(false);
@@ -61,7 +58,7 @@ const PatientListView = () => {
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
 
-  let HEADER;
+  const displayToast = useToast();
 
   // get patient id from search field and edit that record
   const handleChange = (event) => {
@@ -84,7 +81,6 @@ const PatientListView = () => {
   const initialRef3 = React.useRef(null);
   const finalRef3 = React.useRef(null);
 
-  // List out Patients =====================
   const fetchData = () => {
     fetch('http://127.0.0.1:8000/staff/patients/records/retrieve/', {
       method: 'POST',
@@ -93,13 +89,13 @@ const PatientListView = () => {
     })
       .then((response) => response.json())
       .then((actualData) => {
-        const split_json = JSON.parse(actualData.patient_information);
+        const data = JSON.parse(actualData.patient_information);
 
         // all info
-        HEADER = split_json;
-        HEADER.sort((a, b) => a.pk - b.pk);
-        setUserData(HEADER);
-        setUserCt(HEADER.length);
+        data.sort((a, b) => a.pk - b.pk);
+        setUserData(data);
+
+        setUserCt(data.length);
       })
       .catch((err) => {
         console.log(err.message);
@@ -326,132 +322,158 @@ const PatientListView = () => {
     putData();
   }, []);
 
-  return (
-    <VStack align='start' height='100vh' width='100%'>
-      <VStack
-        height='20vh'
-        width='100%'
-        align='start'
-        paddingLeft='5px'
-        paddingRight='5px'
-      >
-        <Text color='#FB5058' fontWeight='bold' align='center' fontSize='4xl'>
-          Patient Overview
-        </Text>
-        <HStack border='1px' width='100%' height='100%' justify='center'>
-          <Input
-            placeholder='Enter Patient MRN'
-            size='md'
-            width='30%'
-            borderRadius='80px'
-            backgroundColor='#F3EED9'
-            focusBorderColor='#F3EED9'
-            onBlur={handleChange}
-          />
-          <IconButton
-            variant='outline'
-            colorScheme='black'
-            aria-label='Create patient'
-            icon={<AddIcon />}
-            onClick={onOpen1}
-            marginLeft={2}
-          />
-          <IconButton
-            variant='outline'
-            colorScheme='black'
-            aria-label='Edit patient information'
-            icon={<EditIcon />}
-            onClick={onOpen}
-            marginLeft={2}
-          />
-          <IconButton
-            variant='outline'
-            colorScheme='black'
-            aria-label='Delete Patient Info'
-            fontSize='20px'
-            icon={<DeleteIcon />}
-            marginLeft={2}
-            onClick={() => deletePatient()}
-          />
+  const renderTableHeadRow = () => {
+    return (
+      <Tr>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Patient MRN</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>First Name</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Last Name</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>D.O.B</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Gender</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Edit</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Download</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Delete</Text>
+        </Th>
+      </Tr>
+    );
+  };
 
-          <IconButton
-            variant='outline'
-            colorScheme={notif ? 'red' : 'black'}
-            aria-label='Get Patient Update'
-            fontSize='20px'
-            icon={<ChatIcon />}
-            onClick={onOpen2}
-            marginLeft={2}
-          />
-          <IconButton
-            variant='outline'
-            colorScheme='black'
-            aria-label='View Patient Info'
-            fontSize='20px'
-            icon={<ViewIcon />}
-            marginLeft={2}
-            onClick={onOpen3}
-          />
-        </HStack>
+  const renderTableBodyRow = () => {
+    if (userData.length === 0) return null;
+    return userData.map(({ pk, fields }) => {
+      const { first_name, last_name, dob, gender } = fields;
+      return (
+        <Tr key={pk}>
+          <Td>{pk}</Td>
+          <Td>{first_name}</Td>
+          <Td>{last_name}</Td>
+          <Td>{dob}</Td>
+          <Td>{gender}</Td>
+          <Td>
+            <Text>Edit</Text>
+          </Td>
+          <Td>
+            <IconButton
+              variant='ghost'
+              colorScheme='black'
+              aria-label='Download Patient Info'
+              fontSize='20px'
+              icon={<DownloadIcon />}
+              marginLeft={2}
+              onClick={() => download(userData)}
+            />
+          </Td>
+          <Td>
+            <HStack justify='center'>
+              <CloseIcon
+                onClick={() =>
+                  handleShowDeleteModal(true, pk, firstName, lastName)
+                }
+                boxSize='0.7rem'
+                _hover={{ color: '#DC2626', cursor: 'pointer' }}
+              />
+            </HStack>
+          </Td>
+        </Tr>
+      );
+    });
+  };
+
+  return (
+    <VStack height='100vh' width='100%'>
+      <VStack width='100%' height='100vh' align='start'>
+        <VStack
+          height='20vh'
+          minHeight='150px'
+          maxHeight='200px'
+          width='100%'
+          align='start'
+          paddingLeft='5px'
+          paddingRight='5px'
+        >
+          <Text color='#FB5058' fontWeight='bold' align='center' fontSize='4xl'>
+            Patient Overview
+          </Text>
+          <HStack width='100%' height='100%' justify='center'>
+            <Input
+              placeholder='Enter Patient MRN'
+              value={patientID}
+              size='md'
+              width='30%'
+              borderRadius='80px'
+              backgroundColor='#F3EED9'
+              focusBorderColor='#F3EED9'
+              onBlur={handleChange}
+            />
+            <IconButton
+              variant='outline'
+              colorScheme='black'
+              aria-label='Create patient'
+              icon={<AddIcon />}
+              onClick={onOpen1}
+              marginLeft={2}
+            />
+            <IconButton
+              variant='outline'
+              colorScheme='black'
+              aria-label='Edit patient information'
+              icon={<EditIcon />}
+              onClick={onOpen}
+              marginLeft={2}
+            />
+            <IconButton
+              variant='outline'
+              colorScheme={notif ? 'red' : 'black'}
+              aria-label='Get Patient Update'
+              fontSize='20px'
+              icon={<ChatIcon />}
+              onClick={onOpen2}
+              marginLeft={2}
+            />
+            <IconButton
+              variant='outline'
+              colorScheme='black'
+              aria-label='View Patient Info'
+              fontSize='20px'
+              icon={<ViewIcon />}
+              marginLeft={2}
+              onClick={onOpen3}
+            />
+          </HStack>
+        </VStack>
+        <TableContainer height='80vh' width='100%' overflowY='auto'>
+          <Table size='sm' variant='striped'>
+            <Thead
+              style={{
+                position: 'sticky',
+                top: 0,
+                backgroundColor: '#FB5058',
+                zIndex: 'sticky',
+              }}
+            >
+              {renderTableHeadRow()}
+            </Thead>
+            <Tbody>{renderTableBodyRow()}</Tbody>
+          </Table>
+        </TableContainer>
       </VStack>
-      <TableContainer height='80vh' width='100%' overflowY='auto'>
-        <Table size='sm' variant='striped'>
-          <Thead
-            style={{
-              position: 'sticky',
-              top: 0,
-              backgroundColor: '#FB5058',
-              zIndex: 'sticky',
-            }}
-          >
-            <Tr>
-              <Th fontSize='0.8em' color='white'>
-                <Text>Patient MRN</Text>
-              </Th>
-              <Th fontSize='0.8em' color='white'>
-                <Text>First Name</Text>
-              </Th>
-              <Th fontSize='0.8em' color='white'>
-                <Text>Last Name</Text>
-              </Th>
-              <Th fontSize='0.8em' color='white'>
-                <Text>D.O.B</Text>
-              </Th>
-              <Th fontSize='0.8em' color='white'>
-                <Text>Gender</Text>
-              </Th>
-              <Th fontSize='0.8em' color='white'>
-                <Text>Download</Text>
-              </Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {userData.length > 0 &&
-              userData.map((userData) => {
-                return (
-                  <Tr>
-                    <Td>{userData.pk}</Td>
-                    <Td>{userData.fields.first_name}</Td>
-                    <Td>{userData.fields.last_name}</Td>
-                    <Td>{userData.fields.dob}</Td>
-                    <Td>{userData.fields.gender}</Td>
-                    <Td>
-                      <IconButton
-                        variant='ghost'
-                        colorScheme='black'
-                        aria-label='Download Patient Info'
-                        fontSize='20px'
-                        icon={<DownloadIcon />}
-                        marginLeft={2}
-                        onClick={() => download(userData)}
-                      />
-                    </Td>
-                  </Tr>
-                );
-              })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+
+      {/* Modal display */}
       <Modal
         initialFocusRef={initialRef1}
         finalFocusRef={finalRef1}
