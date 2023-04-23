@@ -1,22 +1,35 @@
 import { useContext } from 'react';
 import { HStack, VStack, Text, Image } from '@chakra-ui/react';
 import { StaffContext } from '../context/StaffContext';
-import StaffNavText from './StaffNavText';
+import MenuText from '../../AdminPage/Menu/MenuText';
 import { v4 as uuid } from 'uuid';
 import userPng from '../../assets/user.png';
 
 const Nav = () => {
-  const navText = [
-    'Overview',
-    'Patients',
-    'Logout',
-  ];
+  const navText = ['Overview', 'Patients', 'Daily Summary', 'Logout'];
 
   const {
     overviewPage,
-    patientViewPage,
+    setOverviewPage,
+    patientManagementPage,
+    setPatientManagementPage,
+    dailySummaryPage,
+    setDailySummaryPage,
     logoutPage,
   } = useContext(StaffContext);
+
+  const navData = [
+    { text: 'Overview', handleOnClick: () => setOverviewPage(true) },
+    {
+      text: 'Patients',
+      handleOnClick: () => setPatientManagementPage(true),
+    },
+    {
+      text: 'Daily Summary',
+      handleOnClick: () => setDailySummaryPage(true),
+    },
+    { text: 'Logout', handleOnClick: () => {} },
+  ];
 
   return (
     <>
@@ -27,15 +40,20 @@ const Nav = () => {
         </Text>
       </HStack>
       <VStack align='stretch' gap={5} padding='10px'>
-        {navText.map((text) => {
+        {navData.map(({ text, handleOnClick }) => {
           let onPage = false;
-          if (overviewPage && text === 'Overview')
-            onPage = true;
-          else if (patientViewPage && text === 'Patients')
-            onPage = true;
-          else if (logoutPage && text === 'Logout')
-            onPage = true;
-          return <StaffNavText key={uuid()} text={text} onPage={onPage} />;
+          if (overviewPage && text === 'Overview') onPage = true;
+          else if (patientManagementPage && text === 'Patients') onPage = true;
+          else if (dailySummaryPage && text === 'Daily Summary') onPage = true;
+          else if (logoutPage && text === 'Logout') onPage = true;
+          return (
+            <MenuText
+              key={uuid()}
+              text={text}
+              onPage={onPage}
+              handleOnClick={handleOnClick}
+            />
+          );
         })}
       </VStack>
     </>

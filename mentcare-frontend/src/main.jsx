@@ -6,8 +6,9 @@ import ErrorPage from './ErrorPage';
 import AdminPage from './AdminPage';
 import StaffPage from './StaffPage';
 import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListView';
+import DailySummary from './StaffPage/Overview/OverviewDisplay/DailySummary';
 import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
-import UserManagement from './AdminPage/Dashboard/DashboardMainDisplay/UserManagement';
+import StaffManagement from './AdminPage/Dashboard/DashboardMainDisplay/StaffManagement';
 import { ChakraProvider } from '@chakra-ui/react';
 import './index.css';
 
@@ -27,7 +28,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'user-management',
-        element: <UserManagement />,
+        element: <StaffManagement />,
       },
     ],
   },
@@ -37,7 +38,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'records',
-        element: <PatientListView />,
+        element: <PatientListView />
+      },
+      {
+        path: 'daily-summary',
+        element: <DailySummary />
       },
     ],
   },

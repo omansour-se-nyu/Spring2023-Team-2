@@ -41,9 +41,17 @@ const PatientListView = () =>  {
       const [modal, setModal] = useState(false);
       const [created, setCreated] = useState(false);
       const [userCt, setUserCt] = useState(0);
+      const [expandedStr, setExpandedStr] = useState('');
+
 
       // notifications here
       const [notif, setNotif] = useState(false);
+
+      // expanded
+      const [fullname, setUserFullName] = useState('');
+      const [addressStr, setAddressStr] = useState('');
+      const [phoneNumStr, setPhoneNum] = useState('');
+      const [allergiesStr, setAllergies] = useState('');
 
       const { isOpen, onOpen, onClose } = useDisclosure();
       const initialRef = React.useRef(null);
@@ -257,9 +265,32 @@ const PatientListView = () =>  {
     // Delete Patients ===========================
     function deletePatient(){
         console.log("Deleting...", global_patientID);
-        fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID, { method: 'DELETE' })
+        fetch('http://127.0.0.1:8000/staff/patients/records/delete/'+global_patientID+'/', { method: 'DELETE' })
         .then(() => console.log('Delete successful'));
         fetchData();
+    }
+
+
+    // Show expanded information =============================
+    function expandedView(){
+        console.log(global_patientID);
+        fetch("http://127.0.0.1:8000/staff/patients/records/retrieve/", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ "patient_id": global_patientID }),
+        })
+          .then((response) => response.json())
+          .then((actualData) => {
+            const split_json = JSON.parse(actualData.patient_information);
+            console.log(split_json[0]);
+            setUserFullName(split_json[0].fields.first_name + ' ' + split_json[0].fields.last_name);
+            setAddressStr(split_json[0].fields.address);
+            setPhoneNum(split_json[0].fields.phone_num);
+            setAllergies(split_json[0].fields.allergies);
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
     }
 
      useEffect(() => {
@@ -448,7 +479,7 @@ const PatientListView = () =>  {
                     fontSize='20px'
                     icon={<ViewIcon />}
                     marginLeft={2}
-                    onClick={onOpen3}
+                    onClick={expandedView(), onOpen3}
                 />
                 <Modal onClose={onClose3} isOpen={isOpen3} isCentered initialFocusRef={initialRef3} finalFocusRef={finalRef3}>
                   <ModalOverlay />
@@ -456,18 +487,13 @@ const PatientListView = () =>  {
                       <ModalHeader>Expanded Patient View</ModalHeader>
                       <ModalCloseButton />
                       <ModalBody pb={6}>
-                            <br></br>
-                            {global_patientID!==0 ? 'Name: ' +userData[global_patientID-1].fields.first_name + " " + userData[global_patientID-1].fields.last_name : 'Name: '}
-                            <br></br>
-                            {global_patientID!==0 ? 'Gender: ' + JSON.stringify(userData[global_patientID-1].fields.gender) : 'Gender: '}
-                            <br></br>
-                            {global_patientID!==0 ? 'D.O.B: ' + JSON.stringify(userData[global_patientID-1].fields.dob) : 'D.O.B: '}
-                            <br></br>
-                            {global_patientID!==0 ? 'Address: ' + JSON.stringify(userData[global_patientID-1].fields.address) : 'Address: '}
-                            <br></br>
-                            {global_patientID!==0 ? 'Phone Number: ' + JSON.stringify(userData[global_patientID-1].fields.phone_num) : 'Phone Number: '}
-                            <br></br>
-                            {global_patientID!==0 ? 'Allergies: ' + JSON.stringify(userData[global_patientID-1].fields.allergies) : 'Allergies: '}
+                                {fullname !== undefined ? 'Name: ' + fullname : 'Name: '}
+                                <br></br>
+                                {addressStr !== undefined ? 'Address: ' + addressStr : 'Address: '}
+                                <br></br>
+                                {phoneNumStr !== undefined ? 'Phone Number: ' + phoneNumStr : 'Phone Number: '}
+                                <br></br>
+                                {allergiesStr !== undefined ? 'Allergies: ' + allergiesStr : 'Allergies: '}
                       </ModalBody>
                       <ModalFooter>
                         <Button backgroundColor='#F3EED9' onClick={onClose3}>Close</Button>
