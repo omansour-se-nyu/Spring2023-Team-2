@@ -32,7 +32,7 @@ const LeftPanel = () => {
           backgroundColor='#EC408B'
           color='#FFFFFF'
           opacity={isStaff ? '100%' : '50%'}
-          fontweight='medium'
+          fontWeight='medium'
           onClick={handleClickUser}
         >
           staff

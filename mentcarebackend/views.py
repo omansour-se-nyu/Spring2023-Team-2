@@ -237,8 +237,8 @@ def register_user(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
-                                 'email is': new_account.email,
-                                 'temporary password is': new_account.password,
+                                 'email_is': new_account.email,
+                                 'temporary_password is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -250,10 +250,9 @@ def register_user(request):
 
 
 @csrf_exempt
-@cache_page(60 * 15)
 def create_patient_records(request):
     """
-    Create a patient record, and add to the database. Patient ID number is randomly generated
+    Create a patient record, and add to the database. Patient ID number auto-incremented
 
     @param JSON body: a patient's first name, last name, gender, date of birth, address, phone
     @return: JSON response stating patient record was successfully created
@@ -278,7 +277,7 @@ def create_patient_records(request):
 
             else:
                 record = PatientInformationModel.objects.create(
-                    patient_id=random.randint(1001, 10000),
+                    patient_id=PatientInformationModel.objects.last().patient_id + 1,
                     first_name=first_name,
                     last_name=last_name,
                     gender=gender,
@@ -351,7 +350,7 @@ def retrieve_patient_records(request):
 @csrf_exempt
 def update_patient_records(request):
     """
-   Update some parameter in a patient record
+   Update some parameter in a patient record. Any mixture of the parameters are allowed to be updated.
 
    @param JSON body of field to update:
    @return: JSON response stating patient record was successfully updated
@@ -488,7 +487,8 @@ def create_doctor_account(request):
 
             if name is None or department is None:
                 return JsonResponse({'status': 'Error',
-                                     'message': 'Missing field. Cannot create doctor account',
+                                     'message': 'Missing name or department field. '
+                                                'Cannot create doctor account',
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             else:
@@ -606,6 +606,27 @@ def modify_doctor_account(request):
                     name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
                 else:
                     name = data["name"]
+                    name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+                    in_model_name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
+
+                    # comparing if only first name or only last name changed
+                    # then allowing for the relevant change to occur
+
+                    input_first_name = name_str[0]
+                    input_last_name = name_str[2]
+
+                    in_model_name = in_model_name.split()
+                    model_first_name = in_model_name[0]
+                    model_last_name = in_model_name[1]
+
+                    if input_first_name == model_first_name and input_last_name == model_last_name:
+                        # no part of the name has changed
+                        name = data['name']
+
+                    else:
+                        name = [input_first_name, input_last_name]
+
                 if "email" not in data:
                     email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
                 else:
@@ -732,9 +753,9 @@ def daily_patient_summary(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
-                                 'all patients under this doctor': patient_dosages,
-                                 'all patients information': patient_information,
-                                 'behaviors since yesterday': patient_behaviors,
+                                 'all_patients_under_this_doctor': patient_dosages,
+                                 'all_patients_information': patient_information,
+                                 'behaviors_since_yesterday': patient_behaviors,
                                  'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -781,7 +802,7 @@ def number_of_patients_treated(request):
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved number of patients treated this month'
                                                 'successfully',
-                                     'count of patients treated this month': patients_count,
+                                     'count_of_patients_treated_this_month': patients_count,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -832,15 +853,15 @@ def patients_in_system(request):
                     end_date__year=year
                 )
 
-                # # get count of number of patients who came in/out of system
+                # get count of number of patients who came in/out of system
                 in_patients = patients_entered.count()
                 out_patients = patients_exit.count()
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved number of patients who entered/exited '
                                                 'successfully',
-                                     'incoming patients': in_patients,
-                                     'outgoing patients': out_patients,
+                                     'incoming_patients': in_patients,
+                                     'outgoing_patients': out_patients,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -858,7 +879,7 @@ def patients_in_system(request):
 @csrf_exempt
 def patients_drugs(request):
     """
-    For a patient, receive the drugs that were prescribed to each
+    For the specified month/year, receive the drugs that were prescribed to each patient
     :param request:
     :param month:
     :param year:
@@ -882,17 +903,30 @@ def patients_drugs(request):
 
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
+
                 prescription_info = PrescribeMedicationModel.objects.filter(
                     date__year=year,
-                    date__month=month,
+                    date__month=month
                 )
 
+                medication_info = MedicationModel.objects.filter(
+                    medication_id__in=prescription_info
+                ).select_related()
+
+                all_patient_info = PatientInformationModel.objects.filter(
+                    patient_id__in=prescription_info
+                ).select_related()
+
                 prescription_info = serializers.serialize("json", prescription_info)
+                medication_info = serializers.serialize("json", medication_info)
+                all_patient_info = serializers.serialize("json", all_patient_info)
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved patient drug info successfully for '
                                                 'the month',
-                                     'medication info': prescription_info,
+                                     'medication_info': medication_info,
+                                     'prescription_info': prescription_info,
+                                     'all_patient_info': all_patient_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -911,7 +945,7 @@ def patients_drugs(request):
 @csrf_exempt
 def drugs_cost(request):
     """
-    For an administrator, find the total cost of drugs that were prescribed that month
+    For an administrator, find the per drugs that were prescribed that month
     :param request:
     :param month:
     :param year:
@@ -934,19 +968,21 @@ def drugs_cost(request):
 
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
+
                 prescription_info = PrescribeMedicationModel.objects.filter(
                     date__year=year,
                     date__month=month,
                 )
 
-                prescription_info = prescription_info.select_related('medication_id')
+                medication_info = MedicationModel.objects.filter(
+                    medication_id__in=prescription_info
+                ).select_related()
 
-                prescription_info = serializers.serialize("json", prescription_info)
-                print(prescription_info)
+                medication_info = serializers.serialize("json", medication_info)
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved total cost for the month',
-                                     'medication info': prescription_info,
+                                     'drug_cost_this_month': medication_info,
                                      'code': status.HTTP_200_OK})
             else:
                 return JsonResponse({'status': 'Error',
@@ -960,15 +996,3 @@ def drugs_cost(request):
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
-
-
-@csrf_exempt
-def monthly_reports(request):
-    """
-    This function is a general function to deal with all aspects of monthly reports required by
-    doctors.
-    @param request:
-    @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on cost of drugs prescribed" sum the
-    cost of drugs per patient ID
-    """
