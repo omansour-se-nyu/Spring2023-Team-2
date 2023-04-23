@@ -732,9 +732,9 @@ def daily_patient_summary(request):
 
             return JsonResponse({'status': 'Success',
                                  'message': 'Patient summaries return successfully',
-                                 'all patients under this doctor': patient_dosages,
-                                 'all patients information': patient_information,
-                                 'behaviors since yesterday': patient_behaviors,
+                                 'all_patients_under_this_doctor': patient_dosages,
+                                 'all_patients_information': patient_information,
+                                 'behaviors_since_yesterday': patient_behaviors,
                                  'code': status.HTTP_200_OK})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -832,7 +832,7 @@ def patients_in_system(request):
                     end_date__year=year
                 )
 
-                # # get count of number of patients who came in/out of system
+                # get count of number of patients who came in/out of system
                 in_patients = patients_entered.count()
                 out_patients = patients_exit.count()
 
@@ -858,11 +858,12 @@ def patients_in_system(request):
 @csrf_exempt
 def patients_drugs(request):
     """
-    For a patient, receive the drugs that were prescribed to each
+    For the specified month/year, receive the drugs that were prescribed to each patient
     :param request:
     :param month:
     :param year:
     :return: information about dosage of drug and patient_id
+    @todo: add patient information and medication models
     """
 
     # using POST method, as frontend doesn't like GET request body
@@ -882,10 +883,17 @@ def patients_drugs(request):
 
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
+
                 prescription_info = PrescribeMedicationModel.objects.filter(
                     date__year=year,
-                    date__month=month,
+                    date__month=month
                 )
+
+                #
+                # prescription_info = PrescribeMedicationModel.objects.filter(
+                #     date__year=year,
+                #     date__month=month,
+                # )
 
                 prescription_info = serializers.serialize("json", prescription_info)
 
@@ -916,6 +924,7 @@ def drugs_cost(request):
     :param month:
     :param year:
     :return: total cost
+    @todo: add medication model
     """
     # using POST method, as frontend doesn't like GET request body
     if request.method == 'POST':
@@ -934,15 +943,19 @@ def drugs_cost(request):
 
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
+                medication_prescription = PrescribeMedicationModel.objects.select_related(
+                    'medication_id',
+                )
+                medication_prescription = medication_prescription.get().medication_id.medication_name
+                print(medication_prescription)
+
                 prescription_info = PrescribeMedicationModel.objects.filter(
                     date__year=year,
                     date__month=month,
                 )
 
-                prescription_info = prescription_info.select_related('medication_id')
-
                 prescription_info = serializers.serialize("json", prescription_info)
-                print(prescription_info)
+                # print(prescription_info)
 
                 return JsonResponse({'status': 'Success',
                                      'message': 'Retrieved total cost for the month',
@@ -960,15 +973,3 @@ def drugs_cost(request):
     else:
         return JsonResponse({'status': 'Error', 'message': 'Invalid request method',
                              'code': status.HTTP_400_BAD_REQUEST})
-
-
-@csrf_exempt
-def monthly_reports(request):
-    """
-    This function is a general function to deal with all aspects of monthly reports required by
-    doctors.
-    @param request:
-    @return: JSON response body of relevant information
-    @todo: for story "receive monthly reports on cost of drugs prescribed" sum the
-    cost of drugs per patient ID
-    """
