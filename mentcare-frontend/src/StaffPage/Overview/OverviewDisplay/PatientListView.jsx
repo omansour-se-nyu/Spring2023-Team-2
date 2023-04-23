@@ -559,32 +559,52 @@ const PatientListView = () => {
           <ModalHeader>Expanded Patient View</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            {global_patientID !== 0
-              ? 'Name: ' +
-                userData[global_patientID - 1].fields.first_name +
-                ' ' +
-                userData[global_patientID - 1].fields.last_name
-              : 'Name: '}
-            {global_patientID !== 0
-              ? 'Gender: ' +
-                JSON.stringify(userData[global_patientID - 1].fields.gender)
-              : 'Gender: '}
-            {global_patientID !== 0
-              ? 'D.O.B: ' +
-                JSON.stringify(userData[global_patientID - 1].fields.dob)
-              : 'D.O.B: '}
-            {global_patientID !== 0
-              ? 'Address: ' +
-                JSON.stringify(userData[global_patientID - 1].fields.address)
-              : 'Address: '}
-            {global_patientID !== 0
-              ? 'Phone Number: ' +
-                JSON.stringify(userData[global_patientID - 1].fields.phone_num)
-              : 'Phone Number: '}
-            {global_patientID !== 0
-              ? 'Allergies: ' +
-                JSON.stringify(userData[global_patientID - 1].fields.allergies)
-              : 'Allergies: '}
+            <VStack align='start'>
+              <Text>
+                {global_patientID !== 0
+                  ? 'Name: ' +
+                    userData[global_patientID - 1].fields.first_name +
+                    ' ' +
+                    userData[global_patientID - 1].fields.last_name
+                  : 'Name: '}
+              </Text>
+              <Text>
+                {global_patientID !== 0
+                  ? 'Gender: ' +
+                    JSON.stringify(userData[global_patientID - 1].fields.gender)
+                  : 'Gender: '}
+              </Text>
+              <Text>
+                {global_patientID !== 0
+                  ? 'D.O.B: ' +
+                    JSON.stringify(userData[global_patientID - 1].fields.dob)
+                  : 'D.O.B: '}
+              </Text>
+              <Text>
+                {global_patientID !== 0
+                  ? 'Address: ' +
+                    JSON.stringify(
+                      userData[global_patientID - 1].fields.address
+                    )
+                  : 'Address: '}
+              </Text>
+              <Text>
+                {global_patientID !== 0
+                  ? 'Phone Number: ' +
+                    JSON.stringify(
+                      userData[global_patientID - 1].fields.phone_num
+                    )
+                  : 'Phone Number: '}
+              </Text>
+              <Text>
+                {global_patientID !== 0
+                  ? 'Allergies: ' +
+                    JSON.stringify(
+                      userData[global_patientID - 1].fields.allergies
+                    )
+                  : 'Allergies: '}
+              </Text>
+            </VStack>
           </ModalBody>
           <ModalFooter>
             <Button backgroundColor='#F3EED9' onClick={onClose3}>
