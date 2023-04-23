@@ -34,6 +34,7 @@ import {
   EditIcon,
   ChatIcon,
   AddIcon,
+  DeleteIcon,
   DownloadIcon,
   CloseIcon,
 } from '@chakra-ui/icons';
@@ -66,6 +67,7 @@ const PatientListView = () => {
   const onChangeSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
+    global_patientID = value || 0;
     if (!value) {
       setDisplayUserData(userData);
     }
@@ -347,13 +349,7 @@ const PatientListView = () => {
           <Text>Gender</Text>
         </Th>
         <Th fontSize='0.8em' color='white'>
-          <Text>Edit</Text>
-        </Th>
-        <Th fontSize='0.8em' color='white'>
-          <Text>Download</Text>
-        </Th>
-        <Th fontSize='0.8em' color='white'>
-          <Text>Delete</Text>
+          <Text align='center'>Download</Text>
         </Th>
       </Tr>
     );
@@ -362,7 +358,7 @@ const PatientListView = () => {
   const renderTableBodyRow = () => {
     if (displayUserData.length === 0) return null;
     return displayUserData.map(({ pk, fields }) => {
-      const { first_name, last_name, dob, gender } = fields;
+      const { first_name, last_name, dob, gender } = fields || {};
       return (
         <Tr key={pk}>
           <Td>{pk}</Td>
@@ -371,27 +367,15 @@ const PatientListView = () => {
           <Td>{dob}</Td>
           <Td>{gender}</Td>
           <Td>
-            <Text>Edit</Text>
-          </Td>
-          <Td>
-            <DownloadIcon
-              variant='ghost'
-              _hover={{ cursor: 'pointer' }}
-              colorScheme='black'
-              aria-label='Download Patient Info'
-              fontSize='0.8em'
-              marginLeft={2}
-              onClick={() => download(userData)}
-            />
-          </Td>
-          <Td>
-            <HStack justify='center'>
-              <CloseIcon
-                onClick={() =>
-                  handleShowDeleteModal(true, pk, firstName, lastName)
-                }
-                boxSize='0.7rem'
-                _hover={{ color: '#DC2626', cursor: 'pointer' }}
+            <HStack align='center' justify='center'>
+              <DownloadIcon
+                variant='ghost'
+                _hover={{ cursor: 'pointer', color: '#FB5058' }}
+                colorScheme='black'
+                aria-label='Download Patient Info'
+                fontSize='0.8em'
+                marginLeft={2}
+                onClick={() => download(userData)}
               />
             </HStack>
           </Td>
@@ -441,6 +425,15 @@ const PatientListView = () => {
               icon={<AddIcon />}
               onClick={onOpen1}
               marginLeft={2}
+            />
+            <IconButton
+              variant='outline'
+              colorScheme='black'
+              aria-label='Delete Patient Info'
+              fontSize='20px'
+              icon={<DeleteIcon />}
+              marginLeft={2}
+              onClick={() => deletePatient()}
             />
             <IconButton
               variant='outline'
