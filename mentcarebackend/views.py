@@ -45,18 +45,13 @@ def login_view(request):
                 # user logged in is staff, return int 1
                 user_id = 1
 
-            first_name = request.user.first_name
-            last_name = request.user.last_name
-
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
                                      'staff_username': username,
-                                     'user_id': user_id,
-                                     'first_name': first_name,
-                                     'last_name': last_name
+                                     'user_id': user_id
                                      })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
@@ -238,7 +233,7 @@ def register_user(request):
             return JsonResponse({'status': 'Success',
                                  'message': 'New user created successfully',
                                  'email_is': new_account.email,
-                                 'temporary_password is': new_account.password,
+                                 'temporary_password_is': new_account.password,
                                  'code': status.HTTP_201_CREATED})
         except (json.JSONDecodeError, JSONDecodeError):
             return JsonResponse({'status': 'Error',
@@ -625,7 +620,7 @@ def modify_doctor_account(request):
                         name = data['name']
 
                     else:
-                        name = [input_first_name, input_last_name]
+                        name = input_first_name + ' ' + input_last_name
 
                 if "email" not in data:
                     email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
