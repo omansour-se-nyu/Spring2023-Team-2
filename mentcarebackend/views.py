@@ -45,18 +45,13 @@ def login_view(request):
                 # user logged in is staff, return int 1
                 user_id = 1
 
-            first_name = request.user.first_name
-            last_name = request.user.last_name
-
             if user is not None:
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
                                      'staff_username': username,
-                                     'user_id': user_id,
-                                     'first_name': first_name,
-                                     'last_name': last_name
+                                     'user_id': user_id
                                      })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
