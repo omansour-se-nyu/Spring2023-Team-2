@@ -43,8 +43,8 @@ let editingString = '';
 
 const PatientListView = () => {
   const [userData, setUserData] = useState([]);
+  const [search, setSearch] = useState('');
   const [displayUserData, setDisplayUserData] = useState([]);
-  const [patientID, setPatientID] = useState(0);
   const [userCt, setUserCt] = useState(0);
 
   // notifications here
@@ -63,14 +63,20 @@ const PatientListView = () => {
   const displayToast = useToast();
 
   // get patient id from search field and edit that record
-  const handleChange = (event) => {
-    // TODO: add cannot find patient
-    if (event.target.value > userCt || event.target.value < 1) {
-      setPatientID(0);
-    } else {
-      setPatientID(event.target.value);
-      global_patientID = event.target.value;
+  const onChangeSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (!value) {
+      setDisplayUserData(userData);
     }
+    const currentUserData = userData.filter(({ pk }) =>
+      JSON.stringify(pk).includes(value)
+    );
+    if (currentUserData.length === 0) {
+      setDisplayUserData(null);
+      return;
+    }
+    setDisplayUserData(currentUserData);
   };
 
   const {
@@ -419,11 +425,12 @@ const PatientListView = () => {
               />
               <Input
                 type='text'
+                value={search}
                 placeholder='eg. 123'
                 borderRadius='80px'
                 backgroundColor='#F3EED9'
                 focusBorderColor='#F3EED9'
-                onBlur={handleChange}
+                onChange={onChangeSearch}
               />
             </InputGroup>
             <Divider height='30px' orientation='vertical' />
