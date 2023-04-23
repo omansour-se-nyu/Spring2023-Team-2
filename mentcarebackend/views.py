@@ -350,7 +350,7 @@ def retrieve_patient_records(request):
 @csrf_exempt
 def update_patient_records(request):
     """
-   Update some parameter in a patient record
+   Update some parameter in a patient record. Any mixture of the parameters are allowed to be updated.
 
    @param JSON body of field to update:
    @return: JSON response stating patient record was successfully updated
