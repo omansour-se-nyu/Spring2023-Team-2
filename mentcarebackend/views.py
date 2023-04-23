@@ -487,7 +487,8 @@ def create_doctor_account(request):
 
             if name is None or department is None:
                 return JsonResponse({'status': 'Error',
-                                     'message': 'Missing field. Cannot create doctor account',
+                                     'message': 'Missing name or department field. '
+                                                'Cannot create doctor account',
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             else:
@@ -605,6 +606,27 @@ def modify_doctor_account(request):
                     name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
                 else:
                     name = data["name"]
+                    name_str = [i for j in name.split() for i in (j, ' ')][:-1]
+
+                    in_model_name = DoctorInformationModel.objects.get(doctor_id=doctor_id).name
+
+                    # comparing if only first name or only last name changed
+                    # then allowing for the relevant change to occur
+
+                    input_first_name = name_str[0]
+                    input_last_name = name_str[2]
+
+                    in_model_name = in_model_name.split()
+                    model_first_name = in_model_name[0]
+                    model_last_name = in_model_name[1]
+
+                    if input_first_name == model_first_name and input_last_name == model_last_name:
+                        # no part of the name has changed
+                        name = data['name']
+
+                    else:
+                        name = input_first_name + ' ' + input_last_name
+
                 if "email" not in data:
                     email = DoctorInformationModel.objects.get(doctor_id=doctor_id).email
                 else:
