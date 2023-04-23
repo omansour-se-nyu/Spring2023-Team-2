@@ -3,6 +3,8 @@ import download from './download';
 import {
   Text,
   Input,
+  InputLeftAddon,
+  InputGroup,
   Table,
   Thead,
   Tbody,
@@ -22,6 +24,7 @@ import {
   Button,
   FormControl,
   FormLabel,
+  Divider,
   VStack,
   HStack,
   useToast,
@@ -368,12 +371,12 @@ const PatientListView = () => {
             <Text>Edit</Text>
           </Td>
           <Td>
-            <IconButton
+            <DownloadIcon
               variant='ghost'
+              _hover={{ cursor: 'pointer' }}
               colorScheme='black'
               aria-label='Download Patient Info'
-              fontSize='20px'
-              icon={<DownloadIcon />}
+              fontSize='0.8em'
               marginLeft={2}
               onClick={() => download(userData)}
             />
@@ -410,16 +413,22 @@ const PatientListView = () => {
             Patient Overview
           </Text>
           <HStack width='100%' height='100%' justify='center'>
-            <Input
-              placeholder='Enter Patient MRN'
-              value={patientID}
-              size='md'
-              width='30%'
-              borderRadius='80px'
-              backgroundColor='#F3EED9'
-              focusBorderColor='#F3EED9'
-              onBlur={handleChange}
-            />
+            <InputGroup width='350px'>
+              <InputLeftAddon
+                children='Patient MRN'
+                fontWeight='bold'
+                backgroundColor='#d5c37b'
+                color='#faf9ef'
+              />
+              <Input
+                type='text'
+                placeholder='eg. 123'
+                borderRadius='80px'
+                backgroundColor='#F3EED9'
+                focusBorderColor='#F3EED9'
+                onBlur={handleChange}
+              />
+            </InputGroup>
             <IconButton
               variant='outline'
               colorScheme='black'
@@ -531,7 +540,7 @@ const PatientListView = () => {
               mr={3}
               onClick={() => createPatient()}
             >
-              Save
+              Create
             </Button>
             <Button backgroundColor='#F3EED9' onClick={onClose1}>
               Close

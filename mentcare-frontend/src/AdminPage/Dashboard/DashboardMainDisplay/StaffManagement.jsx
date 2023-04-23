@@ -513,13 +513,21 @@ const StaffManagement = () => {
               paddingRight='20px'
               borderRadius='5px'
             >
-              <InputGroup width='250px'>
-                <InputLeftAddon children='Staff #' />
+              <InputGroup width='350px'>
+                <InputLeftAddon
+                  children='Staff #'
+                  fontWeight='bold'
+                  color='#faf9ef'
+                  backgroundColor='#d5c37b'
+                />
                 <Input
                   value={search}
                   onChange={onChangeSearch}
                   type='text'
                   placeholder='eg. 451'
+                  borderRadius='80px'
+                  backgroundColor='#F3EED9'
+                  focusBorderColor='#F3EED9'
                 />
               </InputGroup>
               <Divider orientation='vertical' height='30px' />
@@ -547,7 +555,7 @@ const StaffManagement = () => {
             >
               <Tr>
                 <Th fontSize='0.8em' color='white'>
-                  <Text>Id</Text>
+                  <Text>Staff Id</Text>
                 </Th>
                 <Th fontSize='0.8em' color='white'>
                   <Text>First Name</Text>
