@@ -133,12 +133,11 @@ const MonthlyReport = () => {
 
         if (medication.length === 0) return null;
         return medication.map(({ pk, fields }) => {
-          const { medication_name, cost, application_method } = fields || {};
+          const { medication_name, application_method } = fields || {};
           return (
             <Tr key={pk}>
               <Td>{pk}</Td>
               <Td>{medication_name}</Td>
-              <Td>{cost}</Td>
               <Td>{application_method}</Td>
             </Tr>
           );
@@ -223,9 +222,6 @@ const MonthlyReport = () => {
             </Th>
             <Th fontSize='0.8em' color='white'>
                 <Text>Medication</Text>
-            </Th>
-            <Th fontSize='0.8em' color='white'>
-                <Text>Cost</Text>
             </Th>
             <Th fontSize='0.8em' color='white'>
                 <Text>Application Method</Text>
