@@ -90,16 +90,36 @@ const MonthlyReport = () => {
     };
 
     const [medication, setMedication] = useState([]);
+    const [monthMedi, setMonthMedi] = useState('01');
+    const [yearMedi, setYearMedi] = useState('2022');
+    const setMonth = (event) => {
+        if (!event.target.value){
+            setMonthMedi("01");
+        }else{
+            setMonthMedi(event.target.value);
+        }
+        fetchMedication();
+    }
+    const setYear = (event) => {
+        if (!event.target.value){
+            setYearMedi("2022");
+        }else{
+            setYearMedi(event.target.value);
+        }
+        fetchMedication();
+    }
+
     const fetchMedication = () => {
+        console.log(monthMedi, yearMedi);
         fetch('http://127.0.0.1:8000/staff/patients/drugs-prescribed/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ "month": "01", "year":"2022" }),
+          body: JSON.stringify({ "month": monthMedi, "year":yearMedi }),
         })
           .then((response) => response.json())
           .then((actualData) => {
             const data = JSON.parse(actualData.medication_info);
-            console.log(data);
+            //console.log(data);
             // all info
             data.sort((a, b) => a.pk - b.pk);
             setMedication(data);
@@ -108,9 +128,7 @@ const MonthlyReport = () => {
             console.log(err.message);
           });
       };
-    useEffect(() => {
-       fetchMedication();
-    }, []);
+
     // render table for Medication
     const renderBody = () => {
 
@@ -128,7 +146,9 @@ const MonthlyReport = () => {
         });
     };
 
-
+    useEffect(() => {
+       fetchMedication();
+    }, []);
     return(
         <ChakraProvider>
         <Text color='#FB5058' fontWeight='bold' fontSize='5xl' paddingLeft='30px'>
@@ -162,10 +182,11 @@ const MonthlyReport = () => {
               />
               <Input
                 type='text'
-                placeholder='eg. 123'
+                placeholder='eg. 01'
                 borderRadius='80px'
                 backgroundColor='#F3EED9'
                 focusBorderColor='#F3EED9'
+                onBlur={setMonth}
               />
             </InputGroup>
             <Divider height='30px' orientation='vertical' />
@@ -178,10 +199,11 @@ const MonthlyReport = () => {
               />
               <Input
                 type='text'
-                placeholder='eg. 123'
+                placeholder='eg. 2022'
                 borderRadius='80px'
                 backgroundColor='#F3EED9'
                 focusBorderColor='#F3EED9'
+                onBlur={setYear}
               />
             </InputGroup>
           </HStack>
