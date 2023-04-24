@@ -38,11 +38,9 @@ def login_view(request):
             # print(password)
             user = authenticate(request, username=username, password=password)
 
-            if request.user.is_superuser:
-                # user logged in is admin, return int 0 indicating user is admin
+            if user.is_superuser:
                 user_id = 0
             else:
-                # user logged in is staff, return int 1
                 user_id = 1
 
             if user is not None:
