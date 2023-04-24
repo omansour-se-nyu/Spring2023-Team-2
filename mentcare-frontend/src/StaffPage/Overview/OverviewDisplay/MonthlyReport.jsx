@@ -110,7 +110,6 @@ const MonthlyReport = () => {
     }
 
     const fetchMedication = () => {
-        console.log(monthMedi, yearMedi);
         fetch('http://127.0.0.1:8000/staff/patients/drugs-prescribed/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

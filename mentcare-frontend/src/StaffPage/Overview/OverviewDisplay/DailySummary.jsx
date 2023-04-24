@@ -40,6 +40,8 @@ const DailySummary = () => {
     const [doctorName, setDoctorName] = useState('');
     const [departmentName, setDepartmentName] = useState('');
     const [email, setEmail] = useState('');
+    const [dosage, setDosage] = useState('');
+    const [date, setAppointmentDate] = useState('');
 
     function doctorIDChange(event){
         setGlobalDoctorID(event.target.value);
@@ -52,10 +54,13 @@ const DailySummary = () => {
         .then((response) => response.json())
         .then((actualData) => {
             if(actualData.status === "Success"){
+                console.log(actualData.all_patients_under_this_doctor);
                 const data = JSON.parse(actualData.all_patients_under_this_doctor);
                 setPatientUnderDoctor(data[0].fields);
                 setMedicationID(data[0].fields.medication_id);
                 setAppointmentId(data[0].fields.appointment_id);
+                setAppointmentDate(data[0].fields.date);
+                setDosage(data[0].fields.dosage);
 
                 const data2 = JSON.parse(actualData.all_patients_information);
                 setFullname(data2[0].fields.first_name + ' ' + data2[0].fields.last_name);
@@ -133,6 +138,13 @@ const DailySummary = () => {
                       <Text fontSize='lg'>{'Patient Allergies: '} {allergies}</Text>
                       <br></br>
                       <Text fontSize='lg'>{'Patient Behavior: '} {patientInformation}</Text>
+                      <br></br>
+                      <Text fontSize='lg'>{'Appointment Id: '} {appointmentId}</Text>
+                      <br></br>
+                      <Text fontSize='lg'>{'Appointment Date: '} {date}</Text>
+                      <br></br>
+                      <Text fontSize='lg'>{'Medication Dosage: '} {dosage}</Text>
+
             </CardBody>
         </Card>
         </ChakraProvider>
