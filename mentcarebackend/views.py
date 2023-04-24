@@ -28,8 +28,8 @@ def login_view(request):
             data = request.body.decode('utf-8')
             data = json.loads(data)
             username = data['username']
-            # print(username)
             password = data['password']
+            userType = data['userType']
 
             if username is None or password is None:
                 return JsonResponse({'status': 'Error', 'message': 'No username or password given',
@@ -45,7 +45,13 @@ def login_view(request):
                 # user logged in is staff, return int 1
                 user_id = 1
 
+            print('temp123', user_id, userType)
+
             if user is not None:
+                if (user_id != userType):
+                    return JsonResponse({'status': 'Error', 'message': 'No username or password given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
