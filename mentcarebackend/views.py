@@ -75,7 +75,7 @@ def logout_user(request):
     if request.method == 'POST':
         logout(request)
 
-        return JsonResponse({'status': 'Error',
+        return JsonResponse({'status': 'Success',
                              'message': 'Sucessfully logged user out',
                              'code': status.HTTP_200_OK})
     else:
