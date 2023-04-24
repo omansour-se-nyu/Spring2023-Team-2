@@ -6,13 +6,15 @@ import { v4 as uuid } from 'uuid';
 import userPng from '../../assets/user.png';
 
 const Nav = () => {
-  const navText = ['Overview', 'Patients', 'Daily Summary', 'Logout'];
+  const navText = ['Overview', 'Patients', 'Monthly Report', 'Daily Summary', 'Logout'];
 
   const {
     overviewPage,
     setOverviewPage,
     patientManagementPage,
     setPatientManagementPage,
+    monthlyReportPage,
+    setMonthlyReportPage,
     dailySummaryPage,
     setDailySummaryPage,
     logoutPage,
@@ -27,6 +29,10 @@ const Nav = () => {
     {
       text: 'Daily Summary',
       handleOnClick: () => setDailySummaryPage(true),
+    },
+    {
+      text: 'Monthly Report',
+      handleOnClick: () => setMonthlyReportPage(true),
     },
     { text: 'Logout', handleOnClick: () => {} },
   ];
@@ -45,6 +51,7 @@ const Nav = () => {
           if (overviewPage && text === 'Overview') onPage = true;
           else if (patientManagementPage && text === 'Patients') onPage = true;
           else if (dailySummaryPage && text === 'Daily Summary') onPage = true;
+           else if (monthlyReportPage && text === 'Monthly Report') onPage = true;
           else if (logoutPage && text === 'Logout') onPage = true;
           return (
             <MenuText

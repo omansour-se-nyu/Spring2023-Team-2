@@ -10,7 +10,7 @@ const CardSelection = ({ title, imageLink, handleOnClick  }) => {
       alignItems='center'
       gap='20%'
       flexDirection='column'
-      height='100%'
+      height='50%'
       transitionDuration='0.5s'
       _hover={{
         opacity: '70%',

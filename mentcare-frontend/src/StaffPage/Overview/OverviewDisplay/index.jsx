@@ -5,6 +5,7 @@ import patientIcon from '../../../assets/patientIcon.png';
 import database from '../../../assets/database.png';
 import summary from '../../../assets/clipboard-list.png';
 import logout from '../../../assets/logout.png';
+import report from '../../../assets/file-medical-alt.png';
 import { useNavigate } from 'react-router-dom';
 import { StaffContext } from '../../context/StaffContext';
 import { useContext } from 'react';
@@ -14,6 +15,7 @@ const OverviewDisplay = () => {
   const { setPatientManagementPage } = useContext(StaffContext);
   const { setLogoutPage } = useContext(StaffContext);
   const { setDailySummaryPage } = useContext(StaffContext);
+  const { setMonthlyReportPage } = useContext(StaffContext);
 
   const summaryOnClick = () => {
     setDailySummaryPage(true);
@@ -23,6 +25,12 @@ const OverviewDisplay = () => {
   const handleOnClickPatientView = () => {
     setPatientManagementPage(true);
     navigate('/staff/records');
+  };
+
+  const monthlyReportOnClick = () => {
+    console.log('Monthly Reports');
+    setMonthlyReportPage(true);
+    navigate('/staff/monthly-report');
   };
 
   // logout if successful
@@ -36,11 +44,12 @@ const OverviewDisplay = () => {
     // import images link when it is imported later
     ['Patients', patientIcon, handleOnClickPatientView],
     ['Daily Summary', summary, summaryOnClick],
+    ['Monthly Report', report, monthlyReportOnClick],
     ['Logout', logout, logoutOnClick],
   ];
 
   return (
-    <Grid templateColumns='repeat(3, 1fr)' gap='5' padding='30px' height='20%'>
+    <Grid templateColumns='repeat(4, 1fr)' gap='5' padding='30px' height='100%'>
       {cardTitleImages.map(([title, imageLink, handleOnClick]) => (
         <GridItem colSpan={1} key={uuid()}>
           <CardSelection

@@ -7,6 +7,7 @@ import AdminPage from './AdminPage';
 import StaffPage from './StaffPage';
 import PatientListView from './StaffPage/Overview/OverviewDisplay/PatientListView';
 import DailySummary from './StaffPage/Overview/OverviewDisplay/DailySummary';
+import MonthlyReport from './StaffPage/Overview/OverviewDisplay/MonthlyReport';
 import HIPPACompliance from './AdminPage/Dashboard/DashboardMainDisplay/HIPPACompliance';
 import StaffManagement from './AdminPage/Dashboard/DashboardMainDisplay/StaffManagement';
 import { ChakraProvider } from '@chakra-ui/react';
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'daily-summary',
         element: <DailySummary />
+      },
+      {
+        path: 'monthly-report',
+        element: <MonthlyReport />
       },
     ],
   },
