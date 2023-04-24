@@ -88,7 +88,7 @@ const StaffPage = () => {
             <Route exact path='/' element={<Overview />} />
             <Route path='/records' element={<PatientListView />} />
             <Route path='/daily-summary' element={<DailySummary />} />
-            <Route path='/monthly-report' element={<monthlyReport />} />
+            <Route path='/monthly-report' element={<MonthlyReport />} />
           </Routes>
         </GridItem>
       </Grid>
