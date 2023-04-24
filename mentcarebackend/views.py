@@ -786,10 +786,17 @@ def number_of_patients_treated(request):
                                      'code': status.HTTP_400_BAD_REQUEST})
 
             elif isinstance(month, str) and isinstance(year, str):
-                month_of_interest = PrescribeMedicationModel.objects.filter(
-                    date__month=month,
-                    date__year=year
-                )
+                
+                if (month == '00'):
+                    month_of_interest = PrescribeMedicationModel.objects.filter(
+                        date__year=year
+                    )
+                    
+                else:
+                    month_of_interest = PrescribeMedicationModel.objects.filter(
+                        date__month=month,
+                        date__year=year
+                    )
 
                 # get count of number of patients treated that month
                 patients_count = month_of_interest.count()
