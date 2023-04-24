@@ -15,6 +15,7 @@ const Menu = () => {
     setMonthlyReportsPage,
     compliancePage,
     setCompliancePage,
+    setLogoutPage,
   } = useContext(AdminContext);
 
   const menuData = [
@@ -28,6 +29,7 @@ const Menu = () => {
       handleOnClick: () => setMonthlyReportsPage(true),
     },
     { text: 'HIPPA Compliance', handleOnClick: () => setCompliancePage(true) },
+    { text: 'Lougout', handleOnClick: () => setLogoutPage(true) },
   ];
 
   return (
