@@ -21,7 +21,7 @@ from mentcarebackend import views
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('login/', views.login_view, name="Login Page"),
-    path('logout/', views.logout, name="Logout"),
+    path('logout/', views.logout_user, name="Logout"),
     path('account/register/', views.register_user, name="Registration Page"),
     path('account/change-password/', views.change_password, name="Change Password"),
     path('staff/patients/records/create/', views.create_patient_records, name="Create Patient Records"),
