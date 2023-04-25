@@ -313,7 +313,7 @@ const PatientListView = () => {
     ).then(() => toast({
           title: 'Account Deleted.',
           description: "We've deleted the patient account for you.",
-          status: 'error',
+          status: 'success',
           duration: 9000,
           isClosable: true,
         }));
@@ -389,36 +389,6 @@ const PatientListView = () => {
 
   const renderTableBodyRow = () => {
     if (displayUserData.length === 0) return null;
-    if (global_patientID > 8000){
-      return displayUserData.map(({ pk, fields }) => {
-      const { first_name, last_name, dob, gender , address, phone_num , allergies } = fields || {};
-      return (
-        <Tr key={pk}>
-          <Td>{pk}</Td>
-          <Td>{first_name}</Td>
-          <Td>{last_name}</Td>
-          <Td>{dob}</Td>
-          <Td>{gender}</Td>
-          <Td>{address}</Td>
-          <Td>{phone_num}</Td>
-          <Td>{allergies}</Td>
-          <Td>
-            <HStack align='center' justify='center'>
-              <DownloadIcon
-                variant='ghost'
-                _hover={{ cursor: 'pointer', color: '#FB5058' }}
-                colorScheme='black'
-                aria-label='Download Patient Info'
-                fontSize='0.8em'
-                marginLeft={2}
-                onClick={() => download(userData)}
-              />
-            </HStack>
-          </Td>
-        </Tr>
-      );
-    });
-    }
     return displayUserData.map(({ pk, fields }) => {
       const { first_name, last_name, dob, gender , address, phone_num , allergies } = fields || {};
       return (
