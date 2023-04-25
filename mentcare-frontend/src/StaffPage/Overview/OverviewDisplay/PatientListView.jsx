@@ -67,6 +67,7 @@ const PatientListView = () => {
   const onChangeSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
+    console.log(value);
     global_patientID = value || 0;
     if (!value) {
       setDisplayUserData(userData);
