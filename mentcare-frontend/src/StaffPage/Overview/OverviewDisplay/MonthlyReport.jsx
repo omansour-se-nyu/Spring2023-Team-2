@@ -320,7 +320,7 @@ const MonthlyReport = () => {
             </InputGroup>
           </HStack>
         </VStack>
-        <TableContainer height='52vh' width='100%' overflowY='auto'>
+        <TableContainer height='50vh' width='100%' overflowY='auto'>
           <Table size='sm' variant='striped'>
             <Thead
               style={{
