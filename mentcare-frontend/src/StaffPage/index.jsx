@@ -22,6 +22,7 @@ const StaffPage = () => {
     setPatientManagementPage(false);
     setDailySummaryPage(false);
     setMonthlyReportPage(false);
+    navigate('/');
   }, [logoutPage]);
 
   useEffect(() => {
