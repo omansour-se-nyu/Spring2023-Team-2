@@ -9,11 +9,7 @@ import hipaaIcon from '../../../assets/HIPAA_Icon.png';
 import logoutIcon from '../../../assets/logout.png';
 
 const DashboardMainDisplay = () => {
-<<<<<<< HEAD
-  const { setCompliancePage, setStaffManagementPage , setMonthlyReportsPage } =
-=======
-  const { setCompliancePage, setStaffManagementPage, setLogoutPage } =
->>>>>>> dc5e83a881604c11aa54ea9ea4abcd2f2a047c6f
+  const { setCompliancePage, setStaffManagementPage , setMonthlyReportsPage , setLogoutPage } =
     useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
