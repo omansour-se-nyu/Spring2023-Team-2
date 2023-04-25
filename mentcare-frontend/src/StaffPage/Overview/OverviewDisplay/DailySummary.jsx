@@ -135,7 +135,7 @@ const DailySummary = () => {
         </Text>
         <Flex marginLeft={'30px'} marginTop={'30px'}>
           <Avatar />
-          <Box ml='3'>
+          <Box ml='3' marginBottom={'30px'}>
             <Text fontWeight='bold' color='#FB5058'>
               {doctorName}
             </Text>
