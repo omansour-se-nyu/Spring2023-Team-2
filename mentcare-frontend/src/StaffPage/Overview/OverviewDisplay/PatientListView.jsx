@@ -316,7 +316,7 @@ const PatientListView = () => {
       const response = await fetch(url, config).then((res) => res.json());
       const { status } = response;
       if (status === 'Success') {
-        displayToast({
+        toast({
           title: 'Account Deletion Successful',
           description: `Account #${global_patientID} has been successfully deleted`,
           status: 'success',
@@ -325,7 +325,7 @@ const PatientListView = () => {
         });
       }
     } catch (error) {
-      displayToast({
+      toast({
         title: 'Account Deletion Failed',
         description: `Account #${global_patientID} failed to be deleted`,
         status: 'error',
