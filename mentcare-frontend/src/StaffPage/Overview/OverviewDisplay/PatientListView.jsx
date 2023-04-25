@@ -188,6 +188,13 @@ const PatientListView = () => {
       .then((response) => response.json())
       .then((result) => {
         fetchData();
+        toast({
+          title: 'Account Created.',
+          description: "We've created the patient account for you.",
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
       })
       .catch((err) => {
         console.log(err.message);
@@ -282,20 +289,35 @@ const PatientListView = () => {
             'Edited ' +
             global_patientID +
             "'s Patient Record.\n";
+            toast({
+          title: 'Account Edited.',
+          description: "We've edited the patient account for you.",
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
           fetchData();
         });
     }
   }
 
   // Delete Patients ===========================
+  const toast = useToast();
   function deletePatient() {
-    console.log('Deleting...', global_patientID);
+    //console.log('Deleting...', global_patientID);
     fetch(
       'http://127.0.0.1:8000/staff/patients/records/delete/' +
         global_patientID +
         '/',
       { method: 'DELETE' }
-    ).then(() => console.log('Delete successful'));
+    ).then(() => toast({
+          title: 'Account Deleted.',
+          description: "We've deleted the patient account for you.",
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        }));
+
     fetchData();
   }
 
@@ -350,6 +372,15 @@ const PatientListView = () => {
           <Text>Gender</Text>
         </Th>
         <Th fontSize='0.8em' color='white'>
+          <Text>Address</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Phone Number</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
+          <Text>Allergies</Text>
+        </Th>
+        <Th fontSize='0.8em' color='white'>
           <Text align='center'>Download</Text>
         </Th>
       </Tr>
@@ -358,8 +389,9 @@ const PatientListView = () => {
 
   const renderTableBodyRow = () => {
     if (displayUserData.length === 0) return null;
-    return displayUserData.map(({ pk, fields }) => {
-      const { first_name, last_name, dob, gender } = fields || {};
+    if (global_patientID > 8000){
+      return displayUserData.map(({ pk, fields }) => {
+      const { first_name, last_name, dob, gender , address, phone_num , allergies } = fields || {};
       return (
         <Tr key={pk}>
           <Td>{pk}</Td>
@@ -367,6 +399,38 @@ const PatientListView = () => {
           <Td>{last_name}</Td>
           <Td>{dob}</Td>
           <Td>{gender}</Td>
+          <Td>{address}</Td>
+          <Td>{phone_num}</Td>
+          <Td>{allergies}</Td>
+          <Td>
+            <HStack align='center' justify='center'>
+              <DownloadIcon
+                variant='ghost'
+                _hover={{ cursor: 'pointer', color: '#FB5058' }}
+                colorScheme='black'
+                aria-label='Download Patient Info'
+                fontSize='0.8em'
+                marginLeft={2}
+                onClick={() => download(userData)}
+              />
+            </HStack>
+          </Td>
+        </Tr>
+      );
+    });
+    }
+    return displayUserData.map(({ pk, fields }) => {
+      const { first_name, last_name, dob, gender , address, phone_num , allergies } = fields || {};
+      return (
+        <Tr key={pk}>
+          <Td>{pk}</Td>
+          <Td>{first_name}</Td>
+          <Td>{last_name}</Td>
+          <Td>{dob}</Td>
+          <Td>{gender}</Td>
+          <Td>{address}</Td>
+          <Td>{phone_num}</Td>
+          <Td>{allergies}</Td>
           <Td>
             <HStack align='center' justify='center'>
               <DownloadIcon
@@ -443,24 +507,6 @@ const PatientListView = () => {
               icon={<EditIcon />}
               onClick={onOpen}
               marginLeft={2}
-            />
-            <IconButton
-              variant='outline'
-              colorScheme={notif ? 'red' : 'black'}
-              aria-label='Get Patient Update'
-              fontSize='20px'
-              icon={<ChatIcon />}
-              onClick={onOpen2}
-              marginLeft={2}
-            />
-            <IconButton
-              variant='outline'
-              colorScheme='black'
-              aria-label='View Patient Info'
-              fontSize='20px'
-              icon={<ViewIcon />}
-              marginLeft={2}
-              onClick={onOpen3}
             />
           </HStack>
         </VStack>
@@ -549,73 +595,6 @@ const PatientListView = () => {
       </Modal>
 
       <Modal
-        onClose={onClose3}
-        isOpen={isOpen3}
-        isCentered
-        initialFocusRef={initialRef3}
-        finalFocusRef={finalRef3}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Expanded Patient View</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <VStack align='start'>
-              <Text>
-                {global_patientID !== 0
-                  ? 'Name: ' +
-                    userData[global_patientID - 1].fields.first_name +
-                    ' ' +
-                    userData[global_patientID - 1].fields.last_name
-                  : 'Name: '}
-              </Text>
-              <Text>
-                {global_patientID !== 0
-                  ? 'Gender: ' +
-                    JSON.stringify(userData[global_patientID - 1].fields.gender)
-                  : 'Gender: '}
-              </Text>
-              <Text>
-                {global_patientID !== 0
-                  ? 'D.O.B: ' +
-                    JSON.stringify(userData[global_patientID - 1].fields.dob)
-                  : 'D.O.B: '}
-              </Text>
-              <Text>
-                {global_patientID !== 0
-                  ? 'Address: ' +
-                    JSON.stringify(
-                      userData[global_patientID - 1].fields.address
-                    )
-                  : 'Address: '}
-              </Text>
-              <Text>
-                {global_patientID !== 0
-                  ? 'Phone Number: ' +
-                    JSON.stringify(
-                      userData[global_patientID - 1].fields.phone_num
-                    )
-                  : 'Phone Number: '}
-              </Text>
-              <Text>
-                {global_patientID !== 0
-                  ? 'Allergies: ' +
-                    JSON.stringify(
-                      userData[global_patientID - 1].fields.allergies
-                    )
-                  : 'Allergies: '}
-              </Text>
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button backgroundColor='#F3EED9' onClick={onClose3}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <Modal
         onClose={onClose}
         isOpen={isOpen}
         isCentered
@@ -681,37 +660,6 @@ const PatientListView = () => {
               Confirm Changes
             </Button>
             <Button backgroundColor='#F3EED9' onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <Modal
-        onClose={onClose2}
-        isOpen={isOpen2}
-        isCentered
-        initialFocusRef={initialRef2}
-        finalFocusRef={finalRef2}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Notifications</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            {editingString.split('\n').map((str) => (
-              <p>{str}</p>
-            ))}
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              backgroundColor='#F3EED9'
-              onClick={() => clearNotif()}
-              marginRight={3}
-            >
-              Clear
-            </Button>
-            <Button backgroundColor='#F3EED9' onClick={onClose2}>
               Close
             </Button>
           </ModalFooter>
