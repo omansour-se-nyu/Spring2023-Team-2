@@ -13,6 +13,7 @@ const AdminPage = () => {
   const [staffManagementPage, setStaffManagementPage] = useState(false);
   const [monthlyReportsPage, setMonthlyReportsPage] = useState(false);
   const [compliancePage, setCompliancePage] = useState(false);
+  const [logoutPage, setLogoutPage] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,6 +22,7 @@ const AdminPage = () => {
     setStaffManagementPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
+    setLogoutPage(false);
     navigate('/admin/');
   }, [overviewPage]);
 
@@ -29,6 +31,7 @@ const AdminPage = () => {
     setOverviewPage(false);
     setMonthlyReportsPage(false);
     setCompliancePage(false);
+    setLogoutPage(false);
     navigate('/admin/user-management');
   }, [staffManagementPage]);
 
@@ -37,6 +40,7 @@ const AdminPage = () => {
     setOverviewPage(false);
     setStaffManagementPage(false);
     setCompliancePage(false);
+    setLogoutPage(false);
     navigate('/admin/monthly-report')
   }, [monthlyReportsPage]);
 
@@ -45,8 +49,18 @@ const AdminPage = () => {
     setOverviewPage(false);
     setStaffManagementPage(false);
     setMonthlyReportsPage(false);
+    setLogoutPage(false);
     navigate('/admin/compliance');
   }, [compliancePage]);
+
+  useEffect(() => {
+    if (!logoutPage) return;
+    setOverviewPage(false);
+    setStaffManagementPage(false);
+    setMonthlyReportsPage(false);
+    setCompliancePage(false);
+    navigate('/');
+  });
 
   return (
     <AdminContext.Provider
@@ -59,6 +73,8 @@ const AdminPage = () => {
         setMonthlyReportsPage,
         compliancePage,
         setCompliancePage,
+        logoutPage,
+        setLogoutPage,
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%' width='100%'>

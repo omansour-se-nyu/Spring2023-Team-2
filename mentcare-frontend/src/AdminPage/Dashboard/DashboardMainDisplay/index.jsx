@@ -4,13 +4,16 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import CardSelection from './CardSelection';
 import { v4 as uuid } from 'uuid';
 import usersIcon from '../../../assets/usersIcon.png';
-import settingsIcon from '../../../assets/settingsIcon.png';
 import reportsIcon from '../../../assets/reportsIcon.png';
 import hipaaIcon from '../../../assets/HIPAA_Icon.png';
-import { useNavigate } from 'react-router-dom';
+import logoutIcon from '../../../assets/logout.png';
 
 const DashboardMainDisplay = () => {
+<<<<<<< HEAD
   const { setCompliancePage, setStaffManagementPage , setMonthlyReportsPage } =
+=======
+  const { setCompliancePage, setStaffManagementPage, setLogoutPage } =
+>>>>>>> dc5e83a881604c11aa54ea9ea4abcd2f2a047c6f
     useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
@@ -25,10 +28,32 @@ const DashboardMainDisplay = () => {
     setMonthlyReportsPage(true);
   };
 
+  const handleOnClickLogoutPage = async () => {
+    const url = 'http://127.0.0.1:8000/logout/';
+    const data = {};
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const loginResponse = await fetch(url, config).then((res) => res.json());
+      const { status } = loginResponse;
+      if (status === 'Success') {
+        setLogoutPage(true);
+      }
+    } catch (err) {
+      console.log('error from logging out:', err);
+    }
+  };
+
   const cardTitleImages = [
     ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
     ['Monthly Reports', reportsIcon, handleOnClickAdminMonthlyPage],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
+    ['Logout', logoutIcon, handleOnClickLogoutPage],
   ];
 
   return (

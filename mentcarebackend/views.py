@@ -28,8 +28,8 @@ def login_view(request):
             data = request.body.decode('utf-8')
             data = json.loads(data)
             username = data['username']
-            # print(username)
             password = data['password']
+            userType = data['userType']
 
             if username is None or password is None:
                 return JsonResponse({'status': 'Error', 'message': 'No username or password given',
@@ -38,20 +38,21 @@ def login_view(request):
             # print(password)
             user = authenticate(request, username=username, password=password)
 
-            if request.user.is_superuser:
-                # user logged in is admin, return int 0 indicating user is admin
+            if user.is_superuser:
                 user_id = 0
             else:
-                # user logged in is staff, return int 1
                 user_id = 1
 
             if user is not None:
+                if (user_id != userType):
+                    return JsonResponse({'status': 'Error', 'message': 'No username or password given',
+                                 'code': status.HTTP_400_BAD_REQUEST})
+
                 login(request, user)
                 return JsonResponse({'status': 'Success',
                                      'message': 'Login successful',
                                      'code': status.HTTP_200_OK,
-                                     'staff_username': username,
-                                     'user_id': user_id
+                                     'staff_username': username
                                      })
             else:
                 return JsonResponse({'status': 'Unauthorized', 'message': 'Access Forbidden',
@@ -75,7 +76,7 @@ def logout_user(request):
     if request.method == 'POST':
         logout(request)
 
-        return JsonResponse({'status': 'Error',
+        return JsonResponse({'status': 'Success',
                              'message': 'Sucessfully logged user out',
                              'code': status.HTTP_200_OK})
     else:

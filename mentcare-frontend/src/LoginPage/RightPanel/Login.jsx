@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormControl, Button, Input, Link, Text } from '@chakra-ui/react';
 
 const Login = () => {
@@ -10,6 +10,7 @@ const Login = () => {
   const [invalidLogin, setInvalidLogin] = useState(false);
   const [validLogin, setValidLogin] = useState(false);
   const [logginIn, setLoggingIn] = useState(false);
+  const navigate = useNavigate();
 
   const onClickLogin = async () => {
     if (username && password) {
@@ -37,6 +38,8 @@ const Login = () => {
           setTimeout(() => setInvalidLogin(false), 1000);
         } else if (message === 'Login successful') {
           setValidLogin(true);
+          if (isAdmin) navigate('/admin/');
+          else navigate('/staff/');
         }
         console.log('repsonse received', loginResponse);
       } catch (err) {
@@ -56,70 +59,67 @@ const Login = () => {
   };
 
   return (
-    <>
-      {validLogin && <Navigate to='/admin' replace={true} />}
-      <form>
-        <FormControl
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            minWidth: '300px',
-            maxWidth: '500px',
-            width: '100%',
-            alignItems: 'center',
-            gap: '10px',
+    <form>
+      <FormControl
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: '300px',
+          maxWidth: '500px',
+          width: '100%',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <Text fontSize='3em' fontWeight='bold' color='#FB5058'>
+          SIGN IN
+        </Text>
+        <Input
+          placeholder='enter username'
+          size='md'
+          type='email'
+          width='100%'
+          onChange={onChangeUsername}
+          borderRadius='80px'
+          backgroundColor='#F3EED9'
+          autoComplete='off'
+          _focusVisible={{
+            outlineColor: '#F3EED9',
           }}
+        />
+        <Input
+          placeholder='enter password'
+          size='md'
+          type='password'
+          borderRadius='80px'
+          onChange={onChangePassword}
+          backgroundColor='#F3EED9'
+          auto
+          autoComplete='off'
+          _focusVisible={{
+            outlineColor: '#F3EED9',
+          }}
+        />
+        {invalidLogin ? <Text fontSize='sm'>Invalid Login</Text> : null}
+        <Button
+          borderRadius='80px'
+          minWidth='200px'
+          isLoading={logginIn}
+          backgroundColor='#FB5058'
+          color='#FFFFFF'
+          _hover={{
+            opacity: '70%',
+          }}
+          _active={{
+            opacity: '90%',
+          }}
+          onClick={onClickLogin}
         >
-          <Text fontSize='3em' fontWeight='bold' color='#FB5058'>
-            SIGN IN
-          </Text>
-          <Input
-            placeholder='enter username'
-            size='md'
-            type='email'
-            width='100%'
-            onChange={onChangeUsername}
-            borderRadius='80px'
-            backgroundColor='#F3EED9'
-            autoComplete='off'
-            _focusVisible={{
-              outlineColor: '#F3EED9',
-            }}
-          />
-          <Input
-            placeholder='enter password'
-            size='md'
-            type='password'
-            borderRadius='80px'
-            onChange={onChangePassword}
-            backgroundColor='#F3EED9'
-            auto
-            autoComplete='off'
-            _focusVisible={{
-              outlineColor: '#F3EED9',
-            }}
-          />
-          {invalidLogin ? <Text fontSize='sm'>Invalid Login</Text> : null}
-          <Button
-            borderRadius='80px'
-            minWidth='200px'
-            isLoading={logginIn}
-            backgroundColor='#FB5058'
-            color='#FFFFFF'
-            _hover={{
-              opacity: '70%',
-            }}
-            _active={{
-              opacity: '90%',
-            }}
-            onClick={onClickLogin}
-          >
-            Login
-          </Button>
-          <Link color='#FB5058'>Forgot password?</Link>
-        </FormControl>
-      </form>
-    </>
+          Login
+        </Button>
+        <Link color='#FB5058'>Forgot password?</Link>
+      </FormControl>
+    </form>
   );
 };
 
