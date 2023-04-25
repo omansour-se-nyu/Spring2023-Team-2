@@ -43,6 +43,8 @@ var global_patientID = 0;
 let editingString = '';
 
 const PatientListView = () => {
+  const toast = useToast();
+
   const [userData, setUserData] = useState([]);
   const [search, setSearch] = useState('');
   const [displayUserData, setDisplayUserData] = useState([]);
@@ -302,48 +304,38 @@ const PatientListView = () => {
   }
 
   // Delete Patients ===========================
-  const toast = useToast();
-  function deletePatient() {
-    //console.log('Deleting...', global_patientID);
-    fetch(
-      'http://127.0.0.1:8000/staff/patients/records/delete/' +
-        global_patientID +
-        '/',
-      { method: 'DELETE' }
-    ).then(() => toast({
-          title: 'Account Deleted.',
-          description: "We've deleted the patient account for you.",
+  const deletePatient = async () => {
+    const url = `http://127.0.0.1:8000/staff/patients/records/delete/` + global_patientID;
+    const config = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    try {
+      const response = await fetch(url, config).then((res) => res.json());
+      const { status } = response;
+      if (status === 'Success') {
+        displayToast({
+          title: 'Account Deletion Successful',
+          description: `Account #${global_patientID} has been successfully deleted`,
           status: 'success',
-          duration: 9000,
+          duration: 5000,
           isClosable: true,
-        }));
-
-    fetchData();
-  }
-
-  // Show expanded information =============================
-  function expandedView() {
-    console.log(global_patientID);
-    fetch('http://127.0.0.1:8000/staff/patients/records/retrieve/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patient_id: global_patientID }),
-    })
-      .then((response) => response.json())
-      .then((actualData) => {
-        const split_json = JSON.parse(actualData.patient_information);
-        console.log(split_json[0]);
-        setUserFullName(
-          split_json[0].fields.first_name + ' ' + split_json[0].fields.last_name
-        );
-        setAddressStr(split_json[0].fields.address);
-        setPhoneNum(split_json[0].fields.phone_num);
-        setAllergies(split_json[0].fields.allergies);
-      })
-      .catch((err) => {
-        console.log(err.message);
+        });
+      }
+    } catch (error) {
+      displayToast({
+        title: 'Account Deletion Failed',
+        description: `Account #${global_patientID} failed to be deleted`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       });
-  }
+      console.log('error from deleting patient account', error);
+    }
+    fetchData();
+  };
 
   useEffect(() => {
     fetchData();
