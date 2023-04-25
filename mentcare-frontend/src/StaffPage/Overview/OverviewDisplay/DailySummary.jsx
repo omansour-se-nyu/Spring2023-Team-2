@@ -17,7 +17,19 @@ import {
     FormLabel,
     ChakraProvider,
     Card,
-    CardBody
+    CardBody,
+    Grid,
+    Avatar,
+    AvatarBadge,
+    AvatarGroup,
+    Stack,
+    CardHeader,
+    Heading,
+    StackDivider,
+    Box,
+    Divider,
+    Flex,
+    Badge
 } from '@chakra-ui/react';
 import { SearchIcon } from "@chakra-ui/icons";
 
@@ -40,6 +52,8 @@ const DailySummary = () => {
     const [doctorName, setDoctorName] = useState('');
     const [departmentName, setDepartmentName] = useState('');
     const [email, setEmail] = useState('');
+    const [dosage, setDosage] = useState('');
+    const [date, setAppointmentDate] = useState('');
 
     function doctorIDChange(event){
         setGlobalDoctorID(event.target.value);
@@ -52,10 +66,13 @@ const DailySummary = () => {
         .then((response) => response.json())
         .then((actualData) => {
             if(actualData.status === "Success"){
+                console.log(actualData.all_patients_under_this_doctor);
                 const data = JSON.parse(actualData.all_patients_under_this_doctor);
                 setPatientUnderDoctor(data[0].fields);
                 setMedicationID(data[0].fields.medication_id);
                 setAppointmentId(data[0].fields.appointment_id);
+                setAppointmentDate(data[0].fields.date);
+                setDosage(data[0].fields.dosage);
 
                 const data2 = JSON.parse(actualData.all_patients_information);
                 setFullname(data2[0].fields.first_name + ' ' + data2[0].fields.last_name);
@@ -114,27 +131,97 @@ const DailySummary = () => {
             />
         </InputGroup>
         <Text color='#FB5058' fontWeight='bold' fontSize='2xl' paddingLeft='30px' paddingTop={'30px'}>
-            {'Welcome, Dr. ' + doctorName + '!'}
+            {'Welcome!'}
         </Text>
-        <Text color='#FB5058' fontWeight='' fontSize='lg' paddingLeft='30px'>
-            Department - {departmentName}
-        </Text>
-        <Text color='#FB5058' fontWeight='' fontSize='lg' paddingLeft='30px'>
-            Email - {email}
-        </Text>
-        <Card backgroundColor='#F3EED9' focusBorderColor='#F3EED9' width='80%' marginLeft={5} marginTop={3}>
-            <CardBody>
-                      <Text fontSize='xl' as='b'>{"Current Patient"}</Text>
-                      <br></br>
-                      <Text marginTop={3} fontSize='lg'>{'Patient Full Name: '} {fullname}</Text>
-                       <br></br>
-                      <Text fontSize='lg'>{'Patient ID: '} {patientID}</Text>
-                      <br></br>
-                      <Text fontSize='lg'>{'Patient Allergies: '} {allergies}</Text>
-                      <br></br>
-                      <Text fontSize='lg'>{'Patient Behavior: '} {patientInformation}</Text>
-            </CardBody>
-        </Card>
+        <Flex marginLeft={'30px'} marginTop={'30px'}>
+          <Avatar />
+          <Box ml='3' marginBottom={'30px'}>
+            <Text fontWeight='bold' color='#FB5058'>
+              {doctorName}
+            </Text>
+            <Text fontSize='sm'>{departmentName}</Text>
+            <Text fontSize='sm'>{email}</Text>
+          </Box>
+        </Flex>
+        <Divider />
+        <Grid templateColumns='repeat(2, 1fr)' padding='5px' height='30%'>
+        <Card backgroundColor='#FB5058' focusBorderColor='#F3EED9' width='85%' marginLeft={5} marginTop={3}>
+              <CardHeader>
+                <Heading color='white' size='md'>Current Patient</Heading>
+              </CardHeader>
+
+              <CardBody>
+                <Stack divider={<StackDivider />} spacing='4'>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Patient Name
+                    </Heading>
+                    <Text pt='2' fontSize='sm' color='white'>
+                        Patient name is {fullname}.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Patient ID
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                      Your patient's ID is {patientID}.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Patient Allergies
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                      Your patient has an allergy of {allergies}.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Status Update
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                      Your patient is feeling {patientInformation}.
+                    </Text>
+                  </Box>
+                </Stack>
+              </CardBody>
+            </Card>
+        <Card backgroundColor='#FB5058' focusBorderColor='#F3EED9' width='80%' marginLeft={5} marginTop={3}>
+              <CardHeader>
+                <Heading color='white' size='md'>Patient Report</Heading>
+              </CardHeader>
+
+              <CardBody>
+                <Stack divider={<StackDivider />} spacing='4'>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Appointment ID
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                        Patient ID is {appointmentId}.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Past Appointment
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                      Your previous appointment was on {date}.
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Heading color='white' size='xs' textTransform='uppercase'>
+                      Medication/Dosage
+                    </Heading>
+                    <Text color='white' pt='2' fontSize='sm'>
+                      You administered a dosage of {dosage}.
+                    </Text>
+                  </Box>
+                </Stack>
+              </CardBody>
+            </Card>
+        </Grid>
         </ChakraProvider>
     );
 

@@ -32,6 +32,17 @@ import {
     Card,
     CardBody,
     InputLeftAddon,
+    Grid,
+    CardHeader,
+    Heading,
+    Stack,
+    StackDivider,
+    Box,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionIcon,
+    AccordionPanel
 } from '@chakra-ui/react';
 import {
   Chart as ChartJS,
@@ -42,10 +53,12 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Line , Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(
+  ArcElement,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -57,7 +70,6 @@ ChartJS.register(
 
 
 const MonthlyReport = () => {
-    // get total patients per month in 2022
 
     // create chart
     const options = {
@@ -110,7 +122,6 @@ const MonthlyReport = () => {
     }
 
     const fetchMedication = () => {
-        console.log(monthMedi, yearMedi);
         fetch('http://127.0.0.1:8000/staff/patients/drugs-prescribed/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -134,31 +145,132 @@ const MonthlyReport = () => {
 
         if (medication.length === 0) return null;
         return medication.map(({ pk, fields }) => {
-          const { medication_name, cost, application_method } = fields || {};
+          const { medication_name, application_method } = fields || {};
           return (
             <Tr key={pk}>
               <Td>{pk}</Td>
               <Td>{medication_name}</Td>
-              <Td>{cost}</Td>
               <Td>{application_method}</Td>
             </Tr>
           );
         });
     };
 
+    const fetchPatientsIn = () => {
+        fetch('http://127.0.0.1:8000/admin/patients/system-status/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "month": "01", "year":"2022" }),
+        })
+          .then((response) => response.json())
+          .then((actualData) => {
+            //console.log(actualData.incoming_patients, actualData.outgoing_patients);
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
+      };
+
+    // data
+    const data1 = {
+      labels,
+      datasets: [
+        {
+          label: 'Patients In',
+          data: [72, 65, 88, 80, 84, 79, 92, 87, 89, 79, 81, 94],
+          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+          label: 'Patients Out',
+          data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        },
+      ],
+    };
+
+        const data2 = {
+      labels,
+      datasets: [
+        {
+          label: 'Patients In',
+          data: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+          label: 'Patients Out',
+          data: [ 90, 62, 82, 95, 80, 86, 87, 81, 77, 90, 83, 77],
+          borderColor: 'rgb(53, 162, 235)',
+          backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        },
+      ],
+    };
+
     useEffect(() => {
        fetchMedication();
     }, []);
+
+    useEffect(() => {
+       fetchPatientsIn();
+    }, []);
+
+
     return(
         <ChakraProvider>
         <Text color='#FB5058' fontWeight='bold' fontSize='5xl' paddingLeft='30px'>
             Monthly Report
         </Text>
-        <Text color='#FB5058' fontWeight='bold' fontSize='3xl' paddingLeft='30px'>
-            Monthly Patient Visits
-        </Text>
-        <Line options={options} data={data} />
-        <VStack height='100vh' width='100%'>
+        <Grid templateColumns='repeat(2, 1fr)' padding='5px' height='40%'>
+            <Card backgroundColor='white' focusBorderColor='#F3EED9' width='80%' marginLeft={5}>
+              <CardHeader>
+                    <Text color='#FB5058' fontWeight='bold' fontSize='3xl' paddingLeft='30px'>
+                    Patients in/out per month
+                    </Text>
+              </CardHeader>
+              <Accordion defaultIndex={[0]} allowMultiple>
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton onClick={fetchPatientsIn}>
+                        <Box as="span" flex='1' textAlign='left'>
+                          2022 Statistics
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                        <Line options={options} data={data1} />
+                    </AccordionPanel>
+                  </AccordionItem>
+
+                  <AccordionItem>
+                    <h2>
+                      <AccordionButton>
+                        <Box as="span" flex='1' textAlign='left'>
+                          2023 Statistics
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                    </h2>
+                    <AccordionPanel pb={4}>
+                        <Line options={options} data={data2} />
+                    </AccordionPanel>
+                  </AccordionItem>
+                </Accordion>
+            </Card>
+
+            <Card backgroundColor='#white' focusBorderColor='#F3EED9' width='80%' marginLeft={5}>
+                <CardHeader>
+                    <Text color='#FB5058' fontWeight='bold' fontSize='3xl' paddingLeft='30px'>
+                    Monthly Patient Visits
+                    </Text>
+                </CardHeader>
+                <Line options={options} data={data} />
+            </Card>
+        </Grid>
+
+      <VStack height='70vh' width='100%'>
       <VStack width='100%' height='100vh' align='start'>
         <VStack
           height='20vh'
@@ -169,8 +281,8 @@ const MonthlyReport = () => {
           paddingLeft='5px'
           paddingRight='5px'
         >
-          <Text color='#FB5058' fontWeight='bold' align='center' fontSize='4xl'>
-            Patient Overview
+          <Text color='#FB5058' fontWeight='bold' align='center' fontSize='4xl' marginTop='50px'>
+            Medication Perscribed per Patient
           </Text>
           <HStack width='100%' height='100%' justify='center'>
             <InputGroup width='350px'>
@@ -208,7 +320,7 @@ const MonthlyReport = () => {
             </InputGroup>
           </HStack>
         </VStack>
-        <TableContainer height='80vh' width='100%' overflowY='auto'>
+        <TableContainer height='50vh' width='100%' overflowY='auto'>
           <Table size='sm' variant='striped'>
             <Thead
               style={{
@@ -224,9 +336,6 @@ const MonthlyReport = () => {
             </Th>
             <Th fontSize='0.8em' color='white'>
                 <Text>Medication</Text>
-            </Th>
-            <Th fontSize='0.8em' color='white'>
-                <Text>Cost</Text>
             </Th>
             <Th fontSize='0.8em' color='white'>
                 <Text>Application Method</Text>

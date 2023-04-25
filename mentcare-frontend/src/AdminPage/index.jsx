@@ -6,6 +6,7 @@ import Dashboard from './Dashboard';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import HIPPACompliance from './Dashboard/DashboardMainDisplay/HIPPACompliance';
 import StaffManagement from './Dashboard/DashboardMainDisplay/StaffManagement';
+import AdminMonthlyReport from './Dashboard/DashboardMainDisplay/AdminMonthlyReport';
 
 const AdminPage = () => {
   const [overviewPage, setOverviewPage] = useState(true);
@@ -40,6 +41,7 @@ const AdminPage = () => {
     setStaffManagementPage(false);
     setCompliancePage(false);
     setLogoutPage(false);
+    navigate('/admin/monthly-report')
   }, [monthlyReportsPage]);
 
   useEffect(() => {
@@ -84,6 +86,7 @@ const AdminPage = () => {
             <Route exact path='/' element={<Dashboard />} />
             <Route path='/compliance' element={<HIPPACompliance />} />
             <Route path='/user-management' element={<StaffManagement />} />
+            <Route path='/monthly-report' element={<AdminMonthlyReport />} />
           </Routes>
         </GridItem>
       </Grid>
