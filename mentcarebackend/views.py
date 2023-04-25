@@ -285,6 +285,47 @@ def create_patient_records(request):
 
                 record.save()
 
+                behaviors_list = [
+                    'Lonely',
+                    'Moody',
+                    'Confused',
+                    'Self - conscious',
+                    'Ashamed',
+                    'Sleepy',
+                    'Indifferent',
+                    'Eager',
+                    'Energetic',
+                    'Excited',
+                    'Content',
+                    'Frustrated',
+                    'Comfortable',
+                    'Tense',
+                    'Gloomy',
+                    'Silly',
+                    'Resentful',
+                    'Happy',
+                    'Stressed',
+                    'Angry',
+                    'Afraid',
+                    'Bored',
+                    'Sad',
+                    'Overwhelmed',
+                    'Annoyed',
+                    'Miserable',
+                    'Chill',
+                    'Depressed',
+                    'Anxious',
+                    'Uncomfortable'
+                ]
+
+                behavior = PatientBehaviorModel.objects.create(
+                    behavior_id=PatientBehaviorModel.objects.last().behavior_id + 1,
+                    patient_id=record.patient_id,
+                    behavior=random.choice(behaviors_list)
+                )
+
+                behavior.save()
+
                 return JsonResponse({'status': 'Success',
                                      'message': 'Patient record created successfully',
                                      'code': status.HTTP_201_CREATED})
