@@ -34,10 +34,25 @@ const OverviewDisplay = () => {
   };
 
   // logout if successful
-  const logoutOnClick = () => {
-    console.log('Logout');
-    setLogoutPage(true);
-    navigate('/');
+  const logoutOnClick = async () => {
+    const url = 'http://127.0.0.1:8000/logout/';
+    const data = {};
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+    try {
+      const loginResponse = await fetch(url, config).then((res) => res.json());
+      const { status } = loginResponse;
+      if (status === 'Success') {
+        setLogoutPage(true);
+      }
+    } catch (err) {
+      console.log('error from logging out:', err);
+    }
   };
 
   const cardTitleImages = [

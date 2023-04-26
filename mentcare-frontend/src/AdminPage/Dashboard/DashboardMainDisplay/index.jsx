@@ -9,7 +9,7 @@ import hipaaIcon from '../../../assets/HIPAA_Icon.png';
 import logoutIcon from '../../../assets/logout.png';
 
 const DashboardMainDisplay = () => {
-  const { setCompliancePage, setStaffManagementPage, setLogoutPage } =
+  const { setCompliancePage, setStaffManagementPage , setMonthlyReportsPage , setLogoutPage } =
     useContext(AdminContext);
 
   const handleOnClickCompliance = () => {
@@ -18,6 +18,10 @@ const DashboardMainDisplay = () => {
 
   const handleOnClickStaffManagementPage = () => {
     setStaffManagementPage(true);
+  };
+
+  const handleOnClickAdminMonthlyPage = () => {
+    setMonthlyReportsPage(true);
   };
 
   const handleOnClickLogoutPage = async () => {
@@ -43,7 +47,7 @@ const DashboardMainDisplay = () => {
 
   const cardTitleImages = [
     ['Staff Management', usersIcon, handleOnClickStaffManagementPage],
-    ['Monthly Reports', reportsIcon, () => {}],
+    ['Monthly Reports', reportsIcon, handleOnClickAdminMonthlyPage],
     ['HIPPA Compliance', hipaaIcon, handleOnClickCompliance],
     ['Logout', logoutIcon, handleOnClickLogoutPage],
   ];
