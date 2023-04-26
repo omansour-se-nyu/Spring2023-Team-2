@@ -285,6 +285,47 @@ def create_patient_records(request):
 
                 record.save()
 
+                behaviors_list = [
+                    'Lonely',
+                    'Moody',
+                    'Confused',
+                    'Self - conscious',
+                    'Ashamed',
+                    'Sleepy',
+                    'Indifferent',
+                    'Eager',
+                    'Energetic',
+                    'Excited',
+                    'Content',
+                    'Frustrated',
+                    'Comfortable',
+                    'Tense',
+                    'Gloomy',
+                    'Silly',
+                    'Resentful',
+                    'Happy',
+                    'Stressed',
+                    'Angry',
+                    'Afraid',
+                    'Bored',
+                    'Sad',
+                    'Overwhelmed',
+                    'Annoyed',
+                    'Miserable',
+                    'Chill',
+                    'Depressed',
+                    'Anxious',
+                    'Uncomfortable'
+                ]
+
+                behavior = PatientBehaviorModel.objects.create(
+                    behavior_id=PatientBehaviorModel.objects.last().behavior_id + 1,
+                    patient_id=record.patient_id,
+                    behavior=random.choice(behaviors_list)
+                )
+
+                behavior.save()
+
                 return JsonResponse({'status': 'Success',
                                      'message': 'Patient record created successfully',
                                      'code': status.HTTP_201_CREATED})
@@ -788,7 +829,7 @@ def number_of_patients_treated(request):
 
             elif isinstance(month, str) and isinstance(year, str):
                 
-                if (month == '00'):
+                if month == '00':
                     month_of_interest = PrescribeMedicationModel.objects.filter(
                         date__year=year
                     )
@@ -972,10 +1013,17 @@ def drugs_cost(request):
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
 
-                prescription_info = PrescribeMedicationModel.objects.filter(
-                    date__year=year,
-                    date__month=month,
-                )
+                if month == '00':
+                    prescription_info = PrescribeMedicationModel.objects.filter(
+                        date__year=year,
+                    )
+
+                else:
+                    prescription_info = PrescribeMedicationModel.objects.filter(
+                        date__year=year,
+                        date__month=month,
+                    )
+
 
                 medication_info = MedicationModel.objects.filter(
                     medication_id__in=prescription_info
