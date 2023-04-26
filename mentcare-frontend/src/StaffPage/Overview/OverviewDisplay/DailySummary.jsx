@@ -131,6 +131,7 @@ const DailySummary = () => {
             />
         </InputGroup>
         <Text color='#FB5058' fontWeight='bold' fontSize='2xl' paddingLeft='30px' paddingTop={'30px'}>
+
             {'Welcome, Doctor!'}
         </Text>
         <Flex marginLeft={'30px'} marginTop={'30px'}>
