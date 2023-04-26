@@ -829,7 +829,7 @@ def number_of_patients_treated(request):
 
             elif isinstance(month, str) and isinstance(year, str):
                 
-                if (month == '00'):
+                if month == '00':
                     month_of_interest = PrescribeMedicationModel.objects.filter(
                         date__year=year
                     )
@@ -1013,10 +1013,17 @@ def drugs_cost(request):
             # checks all params are in format str
             elif isinstance(month, str) and isinstance(year, str):
 
-                prescription_info = PrescribeMedicationModel.objects.filter(
-                    date__year=year,
-                    date__month=month,
-                )
+                if month == '00':
+                    prescription_info = PrescribeMedicationModel.objects.filter(
+                        date__year=year,
+                    )
+
+                else:
+                    prescription_info = PrescribeMedicationModel.objects.filter(
+                        date__year=year,
+                        date__month=month,
+                    )
+
 
                 medication_info = MedicationModel.objects.filter(
                     medication_id__in=prescription_info
