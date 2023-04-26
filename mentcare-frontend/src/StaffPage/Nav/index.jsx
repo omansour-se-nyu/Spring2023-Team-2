@@ -18,6 +18,7 @@ const Nav = () => {
     dailySummaryPage,
     setDailySummaryPage,
     logoutPage,
+    setLogoutPage,
   } = useContext(StaffContext);
 
   const navData = [
@@ -34,7 +35,7 @@ const Nav = () => {
       text: 'Monthly Report',
       handleOnClick: () => setMonthlyReportPage(true),
     },
-    { text: 'Logout', handleOnClick: () => {} },
+    { text: 'Logout', handleOnClick: () => setLogoutPage(true) },
   ];
 
   return (
