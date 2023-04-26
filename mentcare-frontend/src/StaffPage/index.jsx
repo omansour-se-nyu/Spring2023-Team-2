@@ -22,6 +22,7 @@ const StaffPage = () => {
     setPatientManagementPage(false);
     setDailySummaryPage(false);
     setMonthlyReportPage(false);
+    navigate('/');
   }, [logoutPage]);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const StaffPage = () => {
       }}
     >
       <Grid templateColumns='repeat(12, 1fr)' height='100%'>
-        <GridItem colSpan={2} backgroundColor='#F488C4'>
+        <GridItem colSpan={2} backgroundColor='#F488C4' height='100%'>
           <Nav />
         </GridItem>
         <GridItem colSpan={10} height='100%' width='100%'>

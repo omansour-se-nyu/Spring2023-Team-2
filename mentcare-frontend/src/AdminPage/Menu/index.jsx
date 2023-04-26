@@ -29,7 +29,7 @@ const Menu = () => {
       handleOnClick: () => setMonthlyReportsPage(true),
     },
     { text: 'HIPPA Compliance', handleOnClick: () => setCompliancePage(true) },
-    { text: 'Lougout', handleOnClick: () => setLogoutPage(true) },
+    { text: 'Logout', handleOnClick: () => setLogoutPage(true) },
   ];
 
   return (
