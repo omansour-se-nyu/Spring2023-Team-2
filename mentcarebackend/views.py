@@ -319,8 +319,7 @@ def create_patient_records(request):
                 ]
 
                 behavior = PatientBehaviorModel.objects.create(
-                    behavior_id=PatientBehaviorModel.objects.last().behavior_id + 1,
-                    patient_id=record.patient_id,
+                    patient_id=record,
                     behavior=random.choice(behaviors_list)
                 )
 
